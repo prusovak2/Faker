@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Faker", "Faker\Faker.csproj", "{E6E64BB6-F416-4715-ADD0-2E02A92AECCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakerTests", "FakerTests\FakerTests.csproj", "{ADDD40E1-2CA2-4680-BAB8-EB3AE0D7E6DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E6E64BB6-F416-4715-ADD0-2E02A92AECCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6E64BB6-F416-4715-ADD0-2E02A92AECCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6E64BB6-F416-4715-ADD0-2E02A92AECCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6E64BB6-F416-4715-ADD0-2E02A92AECCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADDD40E1-2CA2-4680-BAB8-EB3AE0D7E6DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADDD40E1-2CA2-4680-BAB8-EB3AE0D7E6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADDD40E1-2CA2-4680-BAB8-EB3AE0D7E6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADDD40E1-2CA2-4680-BAB8-EB3AE0D7E6DE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {628CF61B-7684-4216-9B22-4E091BAABE3E}
+	EndGlobalSection
+EndGlobal
