@@ -21,7 +21,7 @@ namespace Faker
         public ulong Next();
         public static ulong getCurrentUnixTime()
         {
-            return (ulong)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            return (ulong)Environment.TickCount64;
         }
     }
     /// <summary>
@@ -29,26 +29,26 @@ namespace Faker
     /// </summary>
     internal class Xoshiro256starstar : IRandomGeneratorAlg
     {
-        public ulong Seed { get; }
+        public ulong Seed { get => this.StateRandomGenerator.Seed; }
         private ulong[] State = new ulong[4];
-        private Splitmix64 SeedRandomGenerator;
+        /// <summary>
+        /// uses given seed or new sedd based on the current time and the Weyl's sequence to generate a pseudorandom initial state for xorshift algorithm
+        /// </summary>
+        private Splitmix64 StateRandomGenerator;
         public Xoshiro256starstar()
         {
-            ulong seed = IRandomGeneratorAlg.getCurrentUnixTime();
-            this.Seed = seed;
-            this.SeedRandomGenerator = new Splitmix64(seed);
+            this.StateRandomGenerator = new Splitmix64();
             for (int i = 0; i < 4; i++)
             {
-                this.State[i] = this.SeedRandomGenerator.Next();
+                this.State[i] = this.StateRandomGenerator.Next();
             }
         }
         public Xoshiro256starstar(ulong seed)
         {
-            this.Seed = seed;
-            this.SeedRandomGenerator = new Splitmix64(seed);
+            this.StateRandomGenerator = new Splitmix64(seed);
             for (int i = 0; i < 4; i++)
             {
-                this.State[i] = this.SeedRandomGenerator.Next();
+                this.State[i] = this.StateRandomGenerator.Next();
             }
         }
 
@@ -81,6 +81,7 @@ namespace Faker
     /// </summary>
     internal class Splitmix64 : IRandomGeneratorAlg
     {
+        private static ulong WeylSequenceSeedCounter = 0;
         public ulong Seed { get; }
         private ulong State { get; set; }
         /// <summary>
@@ -97,9 +98,16 @@ namespace Faker
         /// </summary>
         public Splitmix64()
         {
-            ulong unixDate = IRandomGeneratorAlg.getCurrentUnixTime();
-            this.Seed = unixDate;
-            this.State = unixDate;
+            //TODO: figure out, wheather it is a goood idea
+            //this constant should be relatively prime to 2^64 and thuts adding it each time ctor is called to a counter
+            //should produce a Weyl's sequence in WeylSequenceSeedCounter and so values of a counter should resamble a uniform distribution
+            //to avoid prodicing the same seed for a two PRNGs seeded soon after each other
+            Splitmix64.WeylSequenceSeedCounter += 0xb5ad4eceda1ce2a9; 
+            ulong ticks = IRandomGeneratorAlg.getCurrentUnixTime();
+            ulong counter = Splitmix64.WeylSequenceSeedCounter;
+            ulong seed = ticks ^ counter;
+            this.Seed = seed;
+            this.State = seed;
         }
         public ulong Next()
         {
