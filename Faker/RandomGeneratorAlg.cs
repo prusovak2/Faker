@@ -56,7 +56,10 @@ namespace Faker
         {
             return (toRoll << rollAmount) | (toRoll >> (64 - rollAmount));
         }
-
+        /// <summary>
+        /// returns another random number
+        /// </summary>
+        /// <returns></returns>
         public ulong Next()
         {
             ulong result = Roll64(this.State[1] * 5, 7) * 9;
@@ -98,10 +101,10 @@ namespace Faker
         /// </summary>
         public Splitmix64()
         {
-            //TODO: figure out, wheather it is a goood idea
-            //this constant should be relatively prime to 2^64 and thuts adding it each time ctor is called to a counter
+            //this constant should be relatively prime to 2^64 and thus adding it each time ctor is called to a counter
             //should produce a Weyl's sequence in WeylSequenceSeedCounter and so values of a counter should resamble a uniform distribution
-            //to avoid prodicing the same seed for a two PRNGs seeded soon after each other
+            //to avoid producing the same seed for a two PRNGs seeded soon after each other
+            //TODO: figure out, wheather it is a goood idea
             Splitmix64.WeylSequenceSeedCounter += 0xb5ad4eceda1ce2a9; 
             ulong ticks = IRandomGeneratorAlg.getCurrentUnixTime();
             ulong counter = Splitmix64.WeylSequenceSeedCounter;
