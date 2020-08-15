@@ -7,7 +7,7 @@ namespace Faker
     public static class DoubleExtensions
     {
         /// <summary>
-        /// compare two double values for equality taking into account relative margin of difference between two values (0.00001 * lowerNumber)
+        /// compare two double values for equality with respect to relative margin of difference between two values (0.00001 * lowerNumber)
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -24,7 +24,7 @@ namespace Faker
             {
                 epsilon = Math.Abs(b * 0.00001);
             }
-            Console.WriteLine(epsilon);
+            //Console.WriteLine(epsilon);
             // Compare the values
             if (Math.Abs(a - b) <= epsilon)
             {
