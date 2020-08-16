@@ -161,5 +161,59 @@ namespace Faker
             float randomFloat = this.RandomFloat(float.MinValue, float.MaxValue);
             return randomFloat;
         }
+        internal decimal RandomZeroToOneDecimal()
+        {
+            decimal value = 1m;
+            while (value >= 1) //it is possible but unlikely to generate combination if low, mid and high, that gives decimal >=1
+            {
+                int low = this.RandomInt();
+                int mid = this.RandomInt();
+                int high = this.RandomInt(0, 542101087); //value of high of  0.9999999999999999999999999999m - to keep decimal in [0-1)
+                value = new decimal(low, mid, high, false, 28);
+            }
+            return value;
+        }
+        public decimal RandomDecimal(decimal lower, decimal upper)
+        {
+            //TODO: are all corner cases solved?
+            // swap numbers so that lower is actually lower
+            if (lower.EpsilonEquals(upper))
+            {
+                return lower;
+            }
+            if (lower > upper)
+            {
+                decimal tmp = lower;
+                lower = upper;
+                upper = tmp;
+            }
+            //TODO: Adjust this for decimals
+            decimal rangeLenght = Math.Abs(upper - lower); 
+
+            //when interval is too large to store its size in double, divide it into two interval of a half size
+          /*  if (double.IsInfinity(rangeLenght))
+            {
+                double middlePoint = (lower + upper) / 2;
+                //Console.WriteLine("middle point {0}", middlePoint);
+                double lowerRandom = this.RandomDouble(lower, middlePoint);
+                //determine randomly, which of halfintervals is to be used
+                bool useLower = this.RandomBool();
+                if (useLower)
+                {
+                    return lower;
+                }
+                else
+                {
+                    double upperRandom = this.RandomDouble(middlePoint, upper);
+                    return upperRandom;
+                }
+            }*/
+
+            decimal random01 = this.RandomZeroToOneDecimal();
+            decimal scaled = random01 * rangeLenght;
+            //shift scaled random number to interval required
+            decimal random = lower + scaled;
+            return random;
+        }
     }
 }
