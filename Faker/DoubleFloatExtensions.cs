@@ -56,5 +56,27 @@ namespace Faker
                 return false;
             }
         }
+        public static bool EpsilonEquals(this decimal a, decimal b)
+        {
+            decimal epsilon;
+            // Define the tolerance for variation in their values based on lower number
+            if (a <= b)
+            {
+                epsilon = Math.Abs(a * 0.00001m);
+            }
+            else
+            {
+                epsilon = Math.Abs(b * 0.00001m);
+            }
+            //TODO: this will throw System.OverflowException for too large interval - can it be solved in some better way than by try-catch block?
+            if (Math.Abs(a - b) <= epsilon)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
