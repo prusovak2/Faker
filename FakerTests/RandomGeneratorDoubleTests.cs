@@ -44,7 +44,7 @@ namespace FakerTests
             Console.WriteLine("{0} - {1}", lower,upper);
             for (int i = 0; i < 50; i++)
             {
-                double rd = r.RandomDoubleFromRange(lower, upper);
+                double rd = r.RandomDouble(lower, upper);
                 Assert.IsTrue(rd >= lower && rd < upper);
                 Console.WriteLine(rd);
             }
@@ -55,7 +55,7 @@ namespace FakerTests
             Console.WriteLine("{0} - {1}", lower, upper);
             for (int i = 0; i < 50; i++)
             {
-                double rd = r.RandomDoubleFromRange(lower, upper);
+                double rd = r.RandomDouble(lower, upper);
                 Assert.IsTrue(rd >= lower && rd < upper);
                 Console.WriteLine(rd);
             }
@@ -65,7 +65,7 @@ namespace FakerTests
             Console.WriteLine("{0} - {1}", lower, upper);
             for (int i = 0; i < 50; i++)
             {
-                double rd = r.RandomDoubleFromRange(lower, upper);
+                double rd = r.RandomDouble(lower, upper);
                 Assert.IsTrue(rd >= lower && rd < upper);
                 Console.WriteLine(rd);
             }
@@ -75,7 +75,7 @@ namespace FakerTests
             Console.WriteLine("{0} - {1}", lower, upper);
             for (int i = 0; i < 50; i++)
             {
-                double rd = r.RandomDoubleFromRange(lower, upper);
+                double rd = r.RandomDouble(lower, upper);
                 Assert.IsTrue(rd >= lower && rd < upper);
                 Console.WriteLine(rd);
             }
@@ -85,7 +85,7 @@ namespace FakerTests
             Console.WriteLine("{0} - {1}", lower, upper);
             for (int i = 0; i < 50; i++)
             {
-                double rd = r.RandomDoubleFromRange(lower, upper);
+                double rd = r.RandomDouble(lower, upper);
                 Assert.IsTrue(rd >= lower && rd < upper);
                 Console.WriteLine(rd);
             }
@@ -101,7 +101,7 @@ namespace FakerTests
             Console.WriteLine("{0} - {1}", lower, upper);
             for (int i = 0; i < 50; i++)
             {
-                double rd = r.RandomDoubleFromRange(lower, upper);
+                double rd = r.RandomDouble(lower, upper);
                 Console.WriteLine(rd);
                 Assert.IsTrue(rd >= lower && rd < upper);
             }
@@ -112,7 +112,7 @@ namespace FakerTests
             Console.WriteLine("{0} - {1}", lower, upper);
             for (int i = 0; i < 50; i++)
             {
-                double rd = r.RandomDoubleFromRange(lower, upper);
+                double rd = r.RandomDouble(lower, upper);
                 Console.WriteLine(rd);
                 Assert.IsTrue(rd >= lower && rd < upper);
             }
@@ -124,7 +124,7 @@ namespace FakerTests
             Console.WriteLine("{0} - {1}", lower, upper);
             for (int i = 0; i < 50; i++)
             {
-                double rd = r.RandomDoubleFromRange(lower, upper);
+                double rd = r.RandomDouble(lower, upper);
                 Console.WriteLine(rd);
                 Assert.IsTrue(rd >= upper && rd < lower);                
             }
@@ -153,6 +153,21 @@ namespace FakerTests
                 double rd = r.RandomDouble();
                 Console.WriteLine(rd);
                 Assert.IsTrue(double.IsNormal(rd));
+            }
+        }
+        [TestMethod]
+        public void RandomDouble01Test()
+        {
+            RandomGenerator r = new RandomGenerator();
+            RandomGenerator r2 = new RandomGenerator();
+            for (int i = 0; i < 30; i++)
+            {
+                double rd = r.RandomDouble(0,1);
+                double rd2 = r2.RandomDouble(0,1);
+                Console.WriteLine("r:   {0}", rd);
+                Console.WriteLine("r2: {0}", rd2);
+                Assert.IsTrue(rd < 1 && rd >= 0);
+                Assert.IsTrue(rd2 < 1 && rd2 >= 0);
             }
         }
 

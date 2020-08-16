@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Faker
 {
-    public class RandomGenerator
+    public partial class RandomGenerator
     {
         private IRandomGeneratorAlg RandomGeneratorAlg { get; set; } 
         public RandomGenerator()
@@ -19,7 +19,7 @@ namespace Faker
         /// generates a random double from interval [0,1)
         /// </summary>
         /// <returns></returns>
-        public double RandomZeroToOneDouble()
+        internal double RandomZeroToOneDouble()
         {
             ulong random = this.RandomGeneratorAlg.Next();
             random >>= 11; //throw away lower 11 bits of uncertain quality, use remaining 53 bits as significand of [0,1) double
@@ -32,7 +32,7 @@ namespace Faker
         /// <param name="lower"></param>
         /// <param name="upper"></param>
         /// <returns></returns>
-        public double RandomDoubleFromRange(double lower, double upper)
+        public double RandomDouble(double lower, double upper)
         {
             //TODO: are all corner cases solved?
             // swap numbers so that lower is actually lower
@@ -53,7 +53,7 @@ namespace Faker
             {
                 double middlePoint = (lower + upper) / 2;
                 //Console.WriteLine("middle point {0}", middlePoint);
-                double lowerRandom = this.RandomDoubleFromRange(lower, middlePoint);
+                double lowerRandom = this.RandomDouble(lower, middlePoint);
                 //determine randomly, which of halfintervals is to be used
                 bool useLower = this.RandomBool();
                 if (useLower)
@@ -62,7 +62,7 @@ namespace Faker
                 }
                 else
                 {
-                    double upperRandom = this.RandomDoubleFromRange(middlePoint, upper);
+                    double upperRandom = this.RandomDouble(middlePoint, upper);
                     return upperRandom;
                 }
             }
@@ -87,24 +87,79 @@ namespace Faker
             return false;
         }
         /// <summary>
-        /// generates a random double
+        /// generates a random double from interval [double.MinValue,Double.MaxValue)
         /// </summary>
         /// <returns></returns>
         public double RandomDouble()
         {
-            double randomDouble = this.RandomDoubleFromRange(double.MinValue, double.MaxValue);
+            double randomDouble = this.RandomDouble(double.MinValue, double.MaxValue);
             return randomDouble;
         }
+        /// <summary>
+        /// generates a random float from interval [0,1)
+        /// </summary>
+        /// <returns></returns>
+        internal float RandomZeroToOneFloat()
+        {
+            ulong random = this.RandomGeneratorAlg.Next();
+            random >>= 41; //it's enough to have 23 random bits to generate a random significand of float number
+            float result = random / (float)8388608; // divide by 2^23 - normalize number to [0-1) interval
+            return result;
+        }
+        /// <summary>
+        /// generates a random float from interval [lowrr,upper)
+        /// </summary>
+        /// <param name="lower"></param>
+        /// <param name="upper"></param>
+        /// <returns></returns>
+        public float RandomFloat(float lower, float upper) 
+        {
+            //TODO: are all corner cases solved?
+            // swap numbers so that lower is actually lower
+            if (lower.EpsilonEquals(upper))
+            {
+                return lower;
+            }
+            if (lower > upper)
+            {
+                float tmp = lower;
+                lower = upper;
+                upper = tmp;
+            }
+            float rangeLenght = Math.Abs(upper - lower); //this will be infinity for too large interval
+
+            //when interval is too large to store its size in float, divide it into two interval of a half size
+            if (float.IsInfinity(rangeLenght))
+            {
+                float middlePoint = (lower + upper) / 2;
+                float lowerRandom = this.RandomFloat(lower, middlePoint);
+                //determine randomly, which of halfintervals is to be used
+                bool useLower = this.RandomBool();
+                if (useLower)
+                {
+                    return lower;
+                }
+                else
+                {
+                    float upperRandom = this.RandomFloat(middlePoint, upper);
+                    return upperRandom;
+                }
+            }
+
+            float random01 = this.RandomZeroToOneFloat();
+            float scaled = random01 * rangeLenght;
+            //shift scaled random number to interval required
+            float random = lower + scaled;
+            return random;
+        }
+        /// <summary>
+        /// generates a random float from interval [float.MinValue,floa.MaxValue)
+        /// </summary>
+        /// <returns></returns>
         public float RandomFloat()
         {
-            double inFloatRange = this.RandomDoubleFromRange(float.MinValue, float.MaxValue);
-            float randomFloat = (float)inFloatRange;
+            float randomFloat = this.RandomFloat(float.MinValue, float.MaxValue);
             return randomFloat;
-        }
-        //TODO:check wheather this works and concider generating floats independentally on doubles
-        public float RandomFloatFromRange(float lower, float upper)
-        {
-            return (float) this.RandomDoubleFromRange(lower, upper);
         }
     }
 }
