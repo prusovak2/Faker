@@ -137,7 +137,7 @@ namespace FakerTests
             for (int i = 0; i < 30; i++)
             {
                 double rd = r.RandomZeroToOneDouble();
-                double rd2 = r2.RandomZeroToOneDouble();
+                double rd2 = r2.RandomDouble();
                 Console.WriteLine("r:   {0}",rd );
                 Console.WriteLine("r2: {0}", rd2);
                 Assert.IsTrue(rd < 1 && rd >= 0);

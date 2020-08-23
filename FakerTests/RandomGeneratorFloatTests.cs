@@ -42,7 +42,7 @@ namespace FakerTests
             for (int i = 0; i < 30; i++)
             {
                 float rf = r.RandomZeroToOneFloat();
-                float rf2 = r2.RandomZeroToOneFloat();
+                float rf2 = r2.RandomFloat();
                 Console.WriteLine("r:   {0}", rf);
                 Console.WriteLine("r2: {0}", rf2);
                 Assert.IsTrue(rf < 1 && rf >= 0);
@@ -312,7 +312,7 @@ namespace FakerTests
             for (int i = 0; i < 30; i++)
             {
                 decimal rd = r.RandomDecimal(0, 1);
-                decimal rd2 = r2.RandomDecimal(0, 1);
+                decimal rd2 = r2.RandomDecimal();
                 Console.WriteLine("r:   {0}", rd);
                 Console.WriteLine("r2: {0}", rd2);
                 Assert.IsTrue(rd <= 1 && rd >= 0);
