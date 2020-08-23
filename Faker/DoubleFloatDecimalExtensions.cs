@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Faker
 {
-    public static class DoubleFloatExtensions
+    public static class DoubleFloatDecimalExtensions
     {
         /// <summary>
         /// compare two double values for equality with respect to relative margin of difference between two values (0.00001 * lowerNumber)
@@ -24,7 +24,6 @@ namespace Faker
             {
                 epsilon = Math.Abs(b * 0.00001);
             }
-            //Console.WriteLine(epsilon);
             // Compare the values
             if (Math.Abs(a - b) <= epsilon)
             {
