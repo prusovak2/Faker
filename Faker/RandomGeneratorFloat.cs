@@ -51,13 +51,12 @@ namespace Faker
             if (double.IsInfinity(rangeLenght))
             {
                 double middlePoint = (lower + upper) / 2;
-                //Console.WriteLine("middle point {0}", middlePoint);
-                double lowerRandom = this.RandomDouble(lower, middlePoint);
                 //determine randomly, which of halfintervals is to be used
                 bool useLower = this.RandomBool();
                 if (useLower)
                 {
-                    return lower;
+                    double lowerRandom = this.RandomDouble(lower, middlePoint);
+                    return lowerRandom;
                 }
                 else
                 {
@@ -117,12 +116,12 @@ namespace Faker
             if (float.IsInfinity(rangeLenght))
             {
                 float middlePoint = (lower + upper) / 2;
-                float lowerRandom = this.RandomFloat(lower, middlePoint);
                 //determine randomly, which of halfintervals is to be used
                 bool useLower = this.RandomBool();
                 if (useLower)
                 {
-                    return lower;
+                    float lowerRandom = this.RandomFloat(lower, middlePoint);
+                    return lowerRandom;
                 }
                 else
                 {
@@ -170,7 +169,7 @@ namespace Faker
             }
 
             // swap numbers so that lower is actually lower
-            if (lower.EpsilonEquals(upper))
+            if (lower.EpsilonEquals(upper, out bool RangeTooLarge))
             {
                 return lower;
             }
@@ -181,27 +180,24 @@ namespace Faker
                 upper = tmp;
             }
             //TODO: Adjust this for decimals
-            decimal rangeLenght = Math.Abs(upper - lower); 
-
-            //when interval is too large to store its size in double, divide it into two interval of a half size
-          /*  if (double.IsInfinity(rangeLenght))
+            //when interval is too large to store its size in ddecimal, divide it into two interval of a half size
+            if (RangeTooLarge)
             {
-                double middlePoint = (lower + upper) / 2;
-                //Console.WriteLine("middle point {0}", middlePoint);
-                double lowerRandom = this.RandomDouble(lower, middlePoint);
-                //determine randomly, which of halfintervals is to be used
+                decimal middlePoint = (lower + upper) / 2;
                 bool useLower = this.RandomBool();
                 if (useLower)
                 {
-                    return lower;
+                    decimal lowerRandom = this.RandomDecimal(lower, middlePoint);
+                    return lowerRandom;
                 }
                 else
                 {
-                    double upperRandom = this.RandomDouble(middlePoint, upper);
+                    decimal upperRandom = this.RandomDecimal(middlePoint, upper);
                     return upperRandom;
                 }
-            }*/
-
+            }
+            //only reached, when interval size is small enough to fit into decimal
+            decimal rangeLenght = Math.Abs(upper - lower); 
             decimal random01 = this.RandomZeroToOneDecimal();
             decimal scaled = random01 * rangeLenght;
             //shift scaled random number to interval required

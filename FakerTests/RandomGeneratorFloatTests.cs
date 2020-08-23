@@ -294,7 +294,7 @@ namespace FakerTests
             }
 
             Console.WriteLine();
-            lower = -39051076023322;
+            lower = -3905107602332200;
             upper = 210496433832442233;
             Console.WriteLine("{0} - {1}", lower, upper);
             for (int i = 0; i < 50; i++)
