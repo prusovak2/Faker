@@ -7,14 +7,6 @@ using System.Text;
 
 namespace Faker
 {
-    //example by Mianen
-    /*public class RandomGenerator 
-    {
-        public int Int(int min = int.MinValue, int max = int.MaxValue)
-        {
-            return 0;
-        }
-    }*/
     internal interface IRandomGeneratorAlg
     {
         public ulong Seed { get; }
@@ -29,23 +21,39 @@ namespace Faker
     /// </summary>
     internal class Xoshiro256starstar : IRandomGeneratorAlg
     {
+        /// <summary>
+        /// seed of this RNG, any instance created with the same value of seed is going to produce the same sequence of pseudorandom numbers
+        /// </summary>
         public ulong Seed { get => this.StateRandomGenerator.Seed; }
+        /// <summary>
+        /// internal state necessary for generating pseudorandom numbers 
+        /// </summary>
         private ulong[] State = new ulong[4];
         /// <summary>
-        /// uses given seed or new sedd based on the current time and the Weyl's sequence to generate a pseudorandom initial state for xorshift algorithm
+        /// uses given seed or new seed based on the current time and the Weyl's sequence to generate a pseudorandom initial state for xorshift algorithm
         /// </summary>
         private Splitmix64 StateRandomGenerator;
+        /// <summary>
+        /// Initialize seed by a current time <br/>
+        /// due to use of Weyl's sequence, seeds of two RandomGenerators created soon after each other should differ
+        /// </summary>
         public Xoshiro256starstar()
         {
             this.StateRandomGenerator = new Splitmix64();
+            //use inner simple random generator to initialize the state
             for (int i = 0; i < 4; i++)
             {
                 this.State[i] = this.StateRandomGenerator.Next();
             }
         }
+        /// <summary>
+        /// Initialize seed by a given value
+        /// </summary>
+        /// <param name="seed"></param>
         public Xoshiro256starstar(ulong seed)
         {
             this.StateRandomGenerator = new Splitmix64(seed);
+            //use inner simple random generator to initialize the state
             for (int i = 0; i < 4; i++)
             {
                 this.State[i] = this.StateRandomGenerator.Next();
@@ -57,7 +65,8 @@ namespace Faker
             return (toRoll << rollAmount) | (toRoll >> (64 - rollAmount));
         }
         /// <summary>
-        /// returns another random number
+        /// returns another random 64 bit number <br/>
+        /// only upper 53 bits are of a sufficient quality of randomness to be used
         /// </summary>
         /// <returns></returns>
         public ulong Next()
@@ -88,7 +97,7 @@ namespace Faker
         public ulong Seed { get; }
         private ulong State { get; set; }
         /// <summary>
-        /// Initialize seed by given value
+        /// Initialize seed by a given value
         /// </summary>
         /// <param name="seed"></param>
         public Splitmix64(ulong seed)
@@ -97,7 +106,8 @@ namespace Faker
             this.State = seed;
         }
         /// <summary>
-        /// Initialize seed by current time
+        /// Initialize seed by current time <br/>
+        /// due to use of Weyl's sequence, seeds of two RandomGenerators created soon after each other should differ
         /// </summary>
         public Splitmix64()
         {
@@ -112,6 +122,10 @@ namespace Faker
             this.Seed = seed;
             this.State = seed;
         }
+        /// <summary>
+        /// returns another 64 bit random number
+        /// </summary>
+        /// <returns></returns>
         public ulong Next()
         {
             ulong next = (this.State += 0x9e3779b97f4a7c15);
