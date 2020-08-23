@@ -37,8 +37,14 @@ namespace FakerTests
                 Console.WriteLine(r);
                 Console.WriteLine(d);
             }
-
         }
+        [TestMethod]
+        public void SeedTest()
+        {
+            RandomGenerator r = new RandomGenerator(42);
+            Assert.AreEqual(42ul, r.Seed);
+        }
+        
     }
 }
 
