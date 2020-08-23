@@ -35,6 +35,12 @@ namespace Faker
                 return false;
             }    
         }
+        /// <summary>
+        /// compare two float values for equality with respect to relative margin of difference between two values (0.00001 * lowerNumber)
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool EpsilonEquals(this float a, float b)
         {
             float epsilon;
@@ -56,15 +62,22 @@ namespace Faker
                 return false;
             }
         }
+        /// <summary>
+        /// compare two decimal values for equality with respect to relative margin of difference between two values (0.00001 * lowerNumber)
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool EpsilonEquals(this decimal a, decimal b)
         {
+            //check, wheather the lenght of an interval does fit into decimal
+            //if interval between values is that large, values obviously are not equal
             if (a.RangeTooLarge(b))
             {
                 return false;
             }
 
             decimal epsilon;
-
             // Define the tolerance for variation in their values based on lower number
             if (a <= b)
             {
@@ -75,7 +88,7 @@ namespace Faker
                 epsilon = Math.Abs(b * 0.00001m);
             }
 
-            //TODO: this will throw System.OverflowException for too large interval - can it be solved in some better way than by try-catch block?
+            //this would throw System.OverflowException for too large interval
             if (Math.Abs(a - b) <= epsilon)
             {
                 return true;
@@ -85,8 +98,17 @@ namespace Faker
                 return false;
             }
         }
+        /// <summary>
+        ///  compare two decimal values for equality with respect to relative margin of difference between two values (0.00001 * lowerNumber)
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="RangeTooLarge">true, if interval [a,b] is to large to fit its lenght into a decimal variable</param>
+        /// <returns></returns>
         public static bool EpsilonEquals(this decimal a, decimal b, out bool RangeTooLarge)
         {
+            //check, wheather the lenght of an interval does fit into decimal
+            //if interval between values is that large, values obviously are not equal
             if (a.RangeTooLarge(b))
             {
                 RangeTooLarge = true;
@@ -103,7 +125,7 @@ namespace Faker
             {
                 epsilon = Math.Abs(b * 0.00001m);
             }
-            //TODO: this will throw System.OverflowException for too large interval - can it be solved in some better way than by try-catch block?
+            //this would throw System.OverflowException for too large interval
             if (Math.Abs(a - b) <= epsilon)
             {
                 return true;
@@ -113,12 +135,21 @@ namespace Faker
                 return false;
             }
         }
-
+        /// <summary>
+        /// determines, whether the lenght of the interval [a,b] is to high to fit into a decimal variable <br/>
+        /// sufficient but not necessary condition <br/>
+        /// may return true even when the interval is short enough, but never returns false for too long interval
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         internal static bool RangeTooLarge(this decimal a, decimal b)
         {
             decimal upperBound = (decimal.MaxValue / 2) ;
             decimal lowerBound = (upperBound-1) * -1;
-            decimal test = Math.Abs(upperBound - lowerBound);
+            //lenght of [lowerBound,upperBound] is decimal.MaxValue
+            //decimal test = Math.Abs(upperBound - lowerBound); //
+            //is the interval too long?
             if ((a < lowerBound && b >= 0) || (b < lowerBound && a >= 0) || (a > upperBound && b <= 0) || (b > upperBound && a <= 0))
             {
                 return true;
