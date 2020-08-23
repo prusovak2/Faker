@@ -6,15 +6,6 @@ namespace Faker
 {
     public partial class RandomGenerator
     {
-        private IRandomGeneratorAlg RandomGeneratorAlg { get; set; } 
-        public RandomGenerator()
-        {
-            this.RandomGeneratorAlg = new Xoshiro256starstar();
-        }
-        public RandomGenerator(ulong seed)
-        {
-            this.RandomGeneratorAlg = new Xoshiro256starstar(seed);
-        }
         /// <summary>
         /// generates a random double from interval [0,1)
         /// </summary>
@@ -27,14 +18,22 @@ namespace Faker
             return result;
         }
         /// <summary>
-        /// generates random double from inteval [lower, upper)
+        /// generates random double from inteval [lower, upper) <br/>
+        /// when lower/upper bound is not specified, 0/1 is used 
         /// </summary>
         /// <param name="lower"></param>
         /// <param name="upper"></param>
         /// <returns></returns>
-        public double RandomDouble(double lower, double upper)
+        public double RandomDouble(double lower = 0d, double upper = 1d)
         {
             //TODO: are all corner cases solved?
+
+            //to make a generating of doubles from [0,1) interval as fast as possible
+            if(lower==0d && upper == 1d)
+            {
+                return this.RandomZeroToOneDouble();
+            }
+
             // swap numbers so that lower is actually lower
             if (lower.EpsilonEquals(upper))
             {
@@ -73,28 +72,7 @@ namespace Faker
             double random = lower + scaled;
             return random;
         }
-        /// <summary>
-        /// generates a random boolean
-        /// </summary>
-        /// <returns></returns>
-        public bool RandomBool()
-        {
-            double random = this.RandomZeroToOneDouble();
-            if (random < 0.5)
-            {
-                return true;
-            }
-            return false;
-        }
-        /// <summary>
-        /// generates a random double from interval [double.MinValue,Double.MaxValue)
-        /// </summary>
-        /// <returns></returns>
-        public double RandomDouble()
-        {
-            double randomDouble = this.RandomDouble(double.MinValue, double.MaxValue);
-            return randomDouble;
-        }
+
         /// <summary>
         /// generates a random float from interval [0,1)
         /// </summary>
@@ -107,14 +85,21 @@ namespace Faker
             return result;
         }
         /// <summary>
-        /// generates a random float from interval [lowrr,upper)
+        /// generates a random float from interval [lower,upper) <br/>
+        /// when lower/upper bound is not specified, 0/1 is used 
         /// </summary>
         /// <param name="lower"></param>
         /// <param name="upper"></param>
         /// <returns></returns>
-        public float RandomFloat(float lower, float upper) 
+        public float RandomFloat(float lower = 0f, float upper = 1f) 
         {
             //TODO: are all corner cases solved?
+
+            //to make a generating of floats from [0,1) interval as fast as possible
+            if (lower == 0f && upper == 1f)
+            {
+                return this.RandomZeroToOneFloat();
+            }
             // swap numbers so that lower is actually lower
             if (lower.EpsilonEquals(upper))
             {
@@ -153,14 +138,9 @@ namespace Faker
             return random;
         }
         /// <summary>
-        /// generates a random float from interval [float.MinValue,floa.MaxValue)
+        /// generates a random decimal from interval [0,1)
         /// </summary>
         /// <returns></returns>
-        public float RandomFloat()
-        {
-            float randomFloat = this.RandomFloat(float.MinValue, float.MaxValue);
-            return randomFloat;
-        }
         internal decimal RandomZeroToOneDecimal()
         {
             decimal value = 1m;
@@ -173,9 +153,22 @@ namespace Faker
             }
             return value;
         }
-        public decimal RandomDecimal(decimal lower, decimal upper)
+        /// <summary>
+        /// generates a random decimal from interval [lower,upper) <br/>
+        /// when lower/upper bound is not specified, 0/1 is used 
+        /// </summary>
+        /// <param name="lower"></param>
+        /// <param name="upper"></param>
+        /// <returns></returns>
+        public decimal RandomDecimal(decimal lower = 0m, decimal upper = 1m)
         {
             //TODO: are all corner cases solved?
+            //to make a generating of doubles from [0,1) interval as fast as possible
+            if (lower == 0m && upper == 1m)
+            {
+                return this.RandomZeroToOneDecimal();
+            }
+
             // swap numbers so that lower is actually lower
             if (lower.EpsilonEquals(upper))
             {
