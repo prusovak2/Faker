@@ -11,17 +11,40 @@ namespace Faker
         public RandomGenerator Random { get; }
 
         IDictionary<PropertyInfo, object> InnerFakers;
-        IDictionary<PropertyInfo, PropertyStorage> Rules;
+        IDictionary<PropertyInfo, Func<object>> Rules = new Dictionary<PropertyInfo, Func<object>>();
 
         public BaseFaker()
         {
             this.Random = new RandomGenerator();
         }
+        public BaseFaker(ulong seed)
+        {
+            this.Random = new RandomGenerator(seed);
+        }
 
         public TClass Generate()
         {
             // Use rules
-            return default;
+            //TODO:GETCONSTRUCTORS????
+            Type type = typeof(TClass);
+            ConstructorInfo ctor = type.GetConstructor(Type.EmptyTypes);
+            TClass instance = (TClass)ctor.Invoke(null);
+            
+            foreach (var item in this.Rules)
+            {
+                this.GenerateProperty(instance, item.Key, item.Value);
+            }
+            return instance;
+        }
+        public TClass Generate(Func<TClass> ctor)
+        {
+            TClass instance = (TClass)ctor();
+
+            foreach (var item in this.Rules)
+            {
+                this.GenerateProperty(instance, item.Key, item.Value);
+            }
+            return instance;
         }
 
         /// <summary>
@@ -35,24 +58,15 @@ namespace Faker
             Func<RandomGenerator, TProperty> setter)
         {
             PropertyInfo propertyInfo = this.GetPropertyFromExpression(selector);
-            PropertyStorage<TProperty> storage = new PropertyStorage<TProperty>(setter);
-            //Func<RandomGenerator, object> a = (Func<RandomGenerator, object>)setter;
-            this.Rules.Add(propertyInfo, storage);
+            this.Rules.Add(propertyInfo, () => setter(this.Random));
         }
-        private void GenerateProperty(TClass instance, PropertyInfo propertyInfo, PropertyStorage storage)
+
+        private void GenerateProperty(TClass instance, PropertyInfo propertyInfo, Func<object> setter)
         {
             Type propertyType = propertyInfo.PropertyType;
-            //var v = Convert.ChangeType(storage,Pro)
-            //var s = setter();
-        }
-        private class PropertyStorage { }
-        private class PropertyStorage<TProperty>: PropertyStorage
-        {
-            Func<RandomGenerator, TProperty> setterFunc;
-            public PropertyStorage(Func<RandomGenerator,TProperty> setter)
-            {
-                this.setterFunc = setter;
-            }
+            var o = setter();
+            var value = Convert.ChangeType(o, propertyType);
+            propertyInfo.SetValue(instance, value);
         }
 
         private PropertyInfo GetPropertyFromExpression<TProperty>(Expression<Func<TClass, TProperty>> GetPropertyLambda)
@@ -99,5 +113,4 @@ namespace Faker
              //Store rule
          }*/
     }
-    //public delegate void Setter<TProperty>(Func<RandomGenerator, TProperty> setter);
 }
