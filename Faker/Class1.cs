@@ -4,8 +4,8 @@ namespace Faker
 {
     public class Class1
     {
-        /* public class BaseFaker<TClass> where TClass : class
-   {
+ /* public class BaseFaker<TClass> where TClass : class
+    {
 
        public RandomGenerator Random { get; set; }
 
@@ -78,7 +78,18 @@ namespace Faker
        }
    }
 
-   public class StorageFaker : BaseFaker<Storage>
+        IDictionary<PropertyInfo, object> InnerFakers;
+
+        public void SetFaker<TInnerClass>(Expression<Func<TClass, TInnerClass>> selector, BaseFaker<TInnerClass> faker) where TInnerClass : class
+        {
+            / TInnerClass is stored in PropertyInfo
+            InnerFakers.Add(/selector to PropertyInfo/ null, faker);
+
+            /Store to list of known fakers
+        }
+
+
+    public class StorageFaker : BaseFaker<Storage>
    {
        public StorageFaker()
        {
