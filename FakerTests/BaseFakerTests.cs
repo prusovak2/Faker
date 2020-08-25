@@ -11,10 +11,18 @@ namespace FakerTests
         public ValueClass Value { get; set; }
 
         public int Test { get; set; }
+        public byte Field;
+        public string Text { get; set; }
         public override string ToString()
         {
-            return $"Storage, Test = {this.Test}";
+            return $"Storage, Test = {this.Test}, Field = {this.Field}, Text = {this.Text}";
         }
+        public Storage(int num, string text, bool abraka) 
+        {
+            this.Text = text;
+        }
+        public Storage() { }
+        
     }
 
     public class ValueClassFaker : BaseFaker<ValueClass>
@@ -30,6 +38,7 @@ namespace FakerTests
         {
             //SetFaker(e => e.Value, new BaseFaker<ValueClass>());
             RuleFor(e => e.Test, f => f.RandomInt());
+            //RuleFor(e => e.Field, f => f.RandomByte()); THROWS EXCEPTION!
 
         }
     }
@@ -44,9 +53,13 @@ namespace FakerTests
         public void GenerateCreateInstanceTest()
         {
             StorageFaker s = new StorageFaker();
-            Storage a = s.Generate();
+            Storage a = s.Generate(new object[] { 42, "text", true });
             Console.WriteLine(a);
-            Storage b = s.Generate(Storage())
+            Assert.AreEqual("text", a.Text);
+            Assert.ThrowsException<ArgumentException>(() => { Storage b = s.Generate(new object[] { "dabra"}); });
+            Storage b = s.Generate();
+            Console.WriteLine(b);
+
         }
     }
 }

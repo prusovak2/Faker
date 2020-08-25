@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
@@ -10,7 +11,7 @@ namespace Faker
     {
         public RandomGenerator Random { get; }
 
-        IDictionary<PropertyInfo, object> InnerFakers;
+        IDictionary<PropertyInfo, object> InnerFakers = new Dictionary<PropertyInfo, object>();
         IDictionary<PropertyInfo, Func<object>> Rules = new Dictionary<PropertyInfo, Func<object>>();
 
         public BaseFaker()
@@ -24,26 +25,44 @@ namespace Faker
 
         public TClass Generate()
         {
-            // Use rules
-            //TODO:GETCONSTRUCTORS????
             Type type = typeof(TClass);
             ConstructorInfo ctor = type.GetConstructor(Type.EmptyTypes);
+            if(ctor is null)
+            {
+                throw new ArgumentException("Your class does not have a parameterless constructor, use other overload of generate");
+            }
+
             TClass instance = (TClass)ctor.Invoke(null);
-            
+
+            // Use rules
+            instance = this.Populate(instance);
+            return instance;
+        }
+        public TClass Populate(TClass instance)
+        {
+            // Use rules
             foreach (var item in this.Rules)
             {
                 this.GenerateProperty(instance, item.Key, item.Value);
             }
             return instance;
         }
-        public TClass Generate(Func<TClass> ctor)
+        public TClass Generate(object[] CtorParams)
         {
-            TClass instance = (TClass)ctor();
-
-            foreach (var item in this.Rules)
+            Type[] paramTypes = new Type[CtorParams.Length];
+            for (int i = 0; i < CtorParams.Length; i++)
             {
-                this.GenerateProperty(instance, item.Key, item.Value);
+                paramTypes[i] = CtorParams[i].GetType();
             }
+            Type type = typeof(TClass);
+            ConstructorInfo ctor = type.GetConstructor(paramTypes);
+            if (ctor is null)
+            {
+                throw new ArgumentException("Your class does not have a constructor with corresponding parameters");
+            }
+            TClass instance = (TClass)ctor.Invoke(CtorParams);
+
+            instance = Populate(instance);
             return instance;
         }
 
@@ -58,7 +77,18 @@ namespace Faker
             Func<RandomGenerator, TProperty> setter)
         {
             PropertyInfo propertyInfo = this.GetPropertyFromExpression(selector);
-            this.Rules.Add(propertyInfo, () => setter(this.Random));
+            if (this.InnerFakers.ContainsKey(propertyInfo))
+            {
+                throw new FakerException("You stated a RuleFor a property that already has a InnerFaker set for it.");
+            }
+            try
+            {
+                this.Rules.Add(propertyInfo, () => setter(this.Random));
+            }
+            catch (ArgumentException)
+            {
+                throw new FakerException("You have stated multiple rules for the same property.");
+            }
         }
 
         private void GenerateProperty(TClass instance, PropertyInfo propertyInfo, Func<object> setter)
@@ -76,13 +106,14 @@ namespace Faker
             //this line is necessary, because sometimes the expression comes in as Convert(originalexpression)
             if (GetPropertyLambda.Body is UnaryExpression unaryExpression)
             {
-                //var UnExp = (UnaryExpression)GetPropertyLambda.Body;
                 if (unaryExpression.Operand is MemberExpression)
                 {
                     expression = (MemberExpression)unaryExpression.Operand;
                 }
                 else
+                {
                     throw new ArgumentException();
+                }
             }
             else if (GetPropertyLambda.Body is MemberExpression)
             {
@@ -113,4 +144,5 @@ namespace Faker
              //Store rule
          }*/
     }
+
 }
