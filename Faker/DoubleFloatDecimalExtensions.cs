@@ -69,7 +69,7 @@ namespace Faker
         /// <returns></returns>
         public static bool EpsilonEquals(this decimal a, decimal b)
         {
-            //check, wheather the lenght of an interval does fit into decimal
+            //check, whether the length of an interval does fit into decimal
             //if interval between values is that large, values obviously are not equal
             if (a.RangeTooLarge(b))
             {
@@ -102,11 +102,11 @@ namespace Faker
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
-        /// <param name="RangeTooLarge">true, if interval [a,b] is to large to fit its lenght into a decimal variable</param>
+        /// <param name="RangeTooLarge">true, if interval [a,b] is to large to fit its length into a decimal variable</param>
         /// <returns></returns>
         public static bool EpsilonEquals(this decimal a, decimal b, out bool RangeTooLarge)
         {
-            //check, wheather the lenght of an interval does fit into decimal
+            //check, whether the length of an interval does fit into decimal
             //if interval between values is that large, values obviously are not equal
             if (a.RangeTooLarge(b))
             {
@@ -135,7 +135,7 @@ namespace Faker
             }
         }
         /// <summary>
-        /// determines, whether the lenght of the interval [a,b] is to high to fit into a decimal variable <br/>
+        /// determines, whether the length of the interval [a,b] is to high to fit into a decimal variable <br/>
         /// sufficient but not necessary condition <br/>
         /// may return true even when the interval is short enough, but never returns false for too long interval
         /// </summary>
@@ -146,7 +146,7 @@ namespace Faker
         {
             decimal upperBound = (decimal.MaxValue / 2) ;
             decimal lowerBound = (upperBound-1) * -1;
-            //lenght of [lowerBound,upperBound] is decimal.MaxValue
+            //length of [lowerBound,upperBound] is decimal.MaxValue
             //decimal test = Math.Abs(upperBound - lowerBound); //
             //is the interval too long?
             if ((a < lowerBound && b >= 0) || (b < lowerBound && a >= 0) || (a > upperBound && b <= 0) || (b > upperBound && a <= 0))

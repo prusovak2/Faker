@@ -22,15 +22,15 @@ namespace Faker
     internal class Xoshiro256starstar : IRandomGeneratorAlg
     {
         /// <summary>
-        /// seed of this RNG, any instance created with the same value of seed is going to produce the same sequence of pseudorandom numbers
+        /// seed of this RNG, any instance created with the same value of seed is going to produce the same sequence of pseudo-random numbers
         /// </summary>
         public ulong Seed { get => this.StateRandomGenerator.Seed; }
         /// <summary>
-        /// internal state necessary for generating pseudorandom numbers 
+        /// internal state necessary for generating pseudo-random numbers 
         /// </summary>
         private ulong[] State = new ulong[4];
         /// <summary>
-        /// uses given seed or new seed based on the current time and the Weyl's sequence to generate a pseudorandom initial state for xorshift algorithm
+        /// uses given seed or new seed based on the current time and the Weyl's sequence to generate a pseudo-random initial state for xorshift algorithm
         /// </summary>
         private Splitmix64 StateRandomGenerator;
         /// <summary>
@@ -112,9 +112,9 @@ namespace Faker
         public Splitmix64()
         {
             //this constant should be relatively prime to 2^64 and thus adding it each time ctor is called to a counter
-            //should produce a Weyl's sequence in WeylSequenceSeedCounter and so values of a counter should resamble a uniform distribution
+            //should produce a Weyl's sequence in WeylSequenceSeedCounter and so values of a counter should resemble a uniform distribution
             //to avoid producing the same seed for a two PRNGs seeded soon after each other
-            //TODO: figure out, wheather it is a goood idea
+            //TODO: figure out, whether it is a good idea
             Splitmix64.WeylSequenceSeedCounter += 0xb5ad4eceda1ce2a9; 
             ulong ticks = IRandomGeneratorAlg.getCurrentUnixTime();
             ulong counter = Splitmix64.WeylSequenceSeedCounter;
