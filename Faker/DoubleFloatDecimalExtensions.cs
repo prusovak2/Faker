@@ -156,4 +156,38 @@ namespace Faker
             return false;
         }
     }
+    internal static class TypeExtensions
+    {
+        internal static Dictionary<Type, object> SampleInstances { get; }
+
+        static TypeExtensions()
+        {
+            TypeExtensions.SampleInstances = new Dictionary<Type, object>();
+            SampleInstances.Add(typeof(byte), new byte());
+            SampleInstances.Add(typeof(sbyte), new sbyte());
+            SampleInstances.Add(typeof(short), new short());
+            SampleInstances.Add(typeof(ushort), new ushort());
+            SampleInstances.Add(typeof(int), new int());
+            SampleInstances.Add(typeof(uint), new uint());
+            SampleInstances.Add(typeof(long), new long());
+            SampleInstances.Add(typeof(ulong), new ulong());
+            SampleInstances.Add(typeof(float), new float());
+            SampleInstances.Add(typeof(double), new double());
+            SampleInstances.Add(typeof(decimal), new decimal());
+            SampleInstances.Add(typeof(char), new char());
+            SampleInstances.Add(typeof(bool), new bool());
+            SampleInstances.Add(typeof(string), "string");
+            SampleInstances.Add(typeof(DateTime), new DateTime());
+            SampleInstances.Add(typeof(Guid), new Guid());
+
+        }
+        internal static object GetSampleInstance(this Type type)
+        {
+            if (!SampleInstances.ContainsKey(type))
+            {
+                return null;
+            }
+            return SampleInstances[type];
+        }
+    }
 }
