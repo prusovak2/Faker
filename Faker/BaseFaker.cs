@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -8,15 +9,16 @@ using System.Text;
 
 namespace Faker
 {
-    public interface IFaker
+    internal interface IFaker
     {
-        public object Generate(object instance);
+        internal object Generate(object instance);
     }
     public class BaseFaker<TClass>: IFaker where TClass : class 
     {
         public RandomGenerator Random { get; }
         public CtorToUseWhenUsedAsInnerFaker CtorFlag { get; protected set; } = CtorToUseWhenUsedAsInnerFaker.Parameterless;
         public object[] CtorParametrs { get; set; } = new object[] { };
+        public UnfilledMembers WhatWithUnfilledMembers { get; protected set; } = UnfilledMembers.LeaveBlank;
 
         IDictionary<MemberInfo, IFaker> InnerFakers = new Dictionary<MemberInfo, IFaker>();
         IDictionary<MemberInfo, Func<object>> Rules = new Dictionary<MemberInfo, Func<object>>();
@@ -48,6 +50,7 @@ namespace Faker
             }
             try
             {
+                //magical line
                 this.Rules.Add(memberInfo, () => setter(this.Random));
             }
             catch (ArgumentException)
@@ -88,15 +91,15 @@ namespace Faker
                 case CtorToUseWhenUsedAsInnerFaker.GivenParameters:
                     return this.Generate(this.CtorParametrs);
                 case CtorToUseWhenUsedAsInnerFaker.PopulateExistingInstance:
+                    if(instance is null)
+                    {
+                        throw new FakerException("InnerFaker set to PopulateExisting instance can only be used to fill member, that is already initialized by instance of particular type.");
+                    }
                     return this.Populate((TClass)instance);
                 default:
                     throw new NotImplementedException();
             }
-          
         }
-
-
-
         /// <summary>
         /// Creates new instance of TClass using parameterless constructor, generates a random content base on RulesFor stated for this Faker
         /// </summary>
@@ -157,6 +160,10 @@ namespace Faker
             foreach (var innerFaker in this.InnerFakers)
             {
                 this.UseInnerFaker(instance, innerFaker.Key, innerFaker.Value);
+            }
+            if (this.WhatWithUnfilledMembers == UnfilledMembers.DefaultRandomFunc)
+            {
+                this.RandomlyFillRemainingMembers(instance);
             }
             return instance;
         }
@@ -247,7 +254,65 @@ namespace Faker
 
             return (MemberInfo)expression.Member;
         }
-
+        internal void RandomlyFillRemainingMembers(TClass instance)
+        {
+            HashSet<MemberInfo> membersToFill = this.GetSetOfMembersWithNoRuleOrFaker();
+            foreach (var member in membersToFill)
+            {
+                if(member is PropertyInfo propertyInfo)
+                {
+                    Type propertyType = propertyInfo.PropertyType;
+                    var sampleInstance = propertyType.GetSampleInstance();
+                    var fillingFunc = this.Random.GetDefaultRandomFuncForType(sampleInstance);
+                    if(fillingFunc is null)
+                    {
+                        //no Default Random Func for this type of property (property is not of supported basic type)
+                        continue;
+                    }
+                    var o = fillingFunc();
+                    var value = Convert.ChangeType(o, propertyType);
+                    propertyInfo.SetValue(instance, value);
+                }
+                if (member is FieldInfo fieldInfo)
+                {
+                    Type fieldType = fieldInfo.FieldType;
+                    var sampleInstance = fieldType.GetSampleInstance();
+                    var fillingFunc = this.Random.GetDefaultRandomFuncForType(sampleInstance);
+                    if (fillingFunc is null)
+                    {
+                        //no Default Random Func for this type of property (property is not of supported basic type)
+                        continue;
+                    }
+                    var o = fillingFunc();
+                    var value = Convert.ChangeType(o, fieldType);
+                    fieldInfo.SetValue(instance, value);
+                }
+            }
+        }
+        /// <summary>
+        /// returns HashSet of all fields and properties of TClass that does not have RuleFor or InnerFaker set in this Faker
+        /// </summary>
+        /// <returns></returns>
+        internal HashSet<MemberInfo> GetSetOfMembersWithNoRuleOrFaker()
+        {
+            Type type = typeof(TClass);
+            HashSet < MemberInfo > memberInfos = type.GetMembers().Where(memberInfo => (memberInfo is PropertyInfo || memberInfo is FieldInfo)).ToHashSet();
+            
+            /*foreach (var item in memberInfos)
+            {
+                Console.WriteLine(item.Name);
+            }*/
+            HashSet<MemberInfo> HasRulefor = this.Rules.Keys.ToHashSet();
+            HashSet<MemberInfo> HasSetFaker = this.InnerFakers.Keys.ToHashSet();
+            memberInfos.ExceptWith(HasRulefor);
+            memberInfos.ExceptWith(HasSetFaker);
+            /*Console.WriteLine();
+            foreach (var item in memberInfos)
+            {
+                Console.WriteLine(item.Name);
+            }*/
+            return memberInfos;
+        }
 
         /*public void GetFrom<TProperty>(
              Expression<Func<TClass, TProperty>> selector,
@@ -287,7 +352,12 @@ namespace Faker
         {
             Parameterless,
             GivenParameters,
-            PopulateExistingInstance,
+            PopulateExistingInstance
+        }
+        public enum UnfilledMembers
+        {
+            LeaveBlank,
+            DefaultRandomFunc
         }
     }
 
