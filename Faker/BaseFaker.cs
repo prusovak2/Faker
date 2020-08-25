@@ -3,15 +3,22 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Faker
 {
-    public class BaseFaker<TClass> where TClass : class
+    public interface IFaker
+    {
+        public object Generate(object instance);
+    }
+    public class BaseFaker<TClass>: IFaker where TClass : class 
     {
         public RandomGenerator Random { get; }
+        public CtorToUseWhenUsedAsInnerFaker CtorFlag { get; protected set; } = CtorToUseWhenUsedAsInnerFaker.Parameterless;
+        public object[] CtorParametrs { get; set; } = new object[] { };
 
-        IDictionary<MemberInfo, object> InnerFakers = new Dictionary<MemberInfo, object>();
+        IDictionary<MemberInfo, IFaker> InnerFakers = new Dictionary<MemberInfo, IFaker>();
         IDictionary<MemberInfo, Func<object>> Rules = new Dictionary<MemberInfo, Func<object>>();
 
         public BaseFaker()
@@ -37,7 +44,7 @@ namespace Faker
             MemberInfo memberInfo = this.GetMemberFromExpression(selector);
             if (this.InnerFakers.ContainsKey(memberInfo))
             {
-                throw new FakerException("You stated a RuleFor a property that already has a InnerFaker set for it.");
+                throw new FakerException("You stated a RuleFor a member that already has a InnerFaker set for it.");
             }
             try
             {
@@ -45,9 +52,49 @@ namespace Faker
             }
             catch (ArgumentException)
             {
-                throw new FakerException("You have stated multiple rules for the same property.");
+                throw new FakerException("You have stated multiple rules for the same member.");
             }
         }
+        public void SetFaker<TInnerClass>(Expression<Func<TClass, TInnerClass>> selector, 
+            BaseFaker<TInnerClass> faker) where TInnerClass : class
+        {
+            //TODO: FakerExceptions
+            MemberInfo memberInfo = this.GetMemberFromExpression(selector);
+            if (this.Rules.ContainsKey(memberInfo))
+            {
+                throw new FakerException("You tried to SetFaker for a member that already has a Rule for it.");
+            }
+            try
+            {
+                // Store to list of known fakers
+                InnerFakers.Add(memberInfo, faker);
+            }
+            catch (ArgumentException)
+            {
+                throw new FakerException("You tried to set multiple InnerFakers for the same member.");
+            }
+        }
+        /// <summary>
+        /// Called when faker is used as an innerFaker
+        /// </summary>
+        /// <returns></returns>
+        object IFaker.Generate(object instance)
+        {
+            //TODO: ADJUST TO OTHER CONSTRUCTORS
+            switch (this.CtorFlag)
+            {
+                case CtorToUseWhenUsedAsInnerFaker.Parameterless:
+                    return this.Generate();
+                case CtorToUseWhenUsedAsInnerFaker.GivenParameters:
+                    return this.Generate(this.CtorParametrs);
+                case CtorToUseWhenUsedAsInnerFaker.PopulateExistingInstance:
+                    return this.Populate((TClass)instance);
+                default:
+                    throw new NotImplementedException();
+            }
+          
+        }
+
 
 
         /// <summary>
@@ -103,9 +150,13 @@ namespace Faker
         public TClass Populate(TClass instance)
         {
             // Use rules
-            foreach (var item in this.Rules)
+            foreach (var rule in this.Rules)
             {
-                this.GenerateProperty(instance, item.Key, item.Value);
+                this.UseRule(instance, rule.Key, rule.Value);
+            }
+            foreach (var innerFaker in this.InnerFakers)
+            {
+                this.UseInnerFaker(instance, innerFaker.Key, innerFaker.Value);
             }
             return instance;
         }
@@ -115,7 +166,7 @@ namespace Faker
         /// <param name="instance">instance, whose member is to be filled</param>
         /// <param name="MemberInfo">info about member to be filled</param>
         /// <param name="setter">Function, that generates a content to be used as the member value</param>
-        internal void GenerateProperty(TClass instance, MemberInfo MemberInfo, Func<object> setter)
+        internal void UseRule(TClass instance, MemberInfo MemberInfo, Func<object> setter)
         {
             //member is a property
             if(MemberInfo is PropertyInfo propertyInfo)
@@ -136,6 +187,31 @@ namespace Faker
             else
             {
                 throw new ArgumentException("Member is not a property nor a field.");
+            }
+        }
+        internal void UseInnerFaker(TClass instance, MemberInfo memberInfo, IFaker faker)
+        {
+            if(memberInfo is PropertyInfo propertyInfo)
+            {
+                Type propertyType = propertyInfo.PropertyType;
+                //TODO: other constructor type/only populate? flag?
+
+                var instanceInProperty =  propertyInfo.GetValue(instance);
+                var o = faker.Generate(instanceInProperty);
+                
+                var innerClass = Convert.ChangeType(o, propertyType);
+                propertyInfo.SetValue(instance, innerClass);
+            }
+            if (memberInfo is FieldInfo fieldInfo)
+            {
+                Type propertyType = fieldInfo.FieldType;
+                //TODO: other constructor type/only populate? flag?
+
+                var instanceInField = fieldInfo.GetValue(instance);
+                var o = faker.Generate(instanceInField);
+
+                var innerClass = Convert.ChangeType(o, propertyType);
+                fieldInfo.SetValue(instance, innerClass);
             }
         }
         /// <summary>
@@ -172,13 +248,6 @@ namespace Faker
             return (MemberInfo)expression.Member;
         }
 
-        public void SetFaker<TInnerClass>(Expression<Func<TClass, TInnerClass>> selector, BaseFaker<TInnerClass> faker) where TInnerClass : class
-        {
-            // TInnerClass is stored in PropertyInfo
-            InnerFakers.Add(/* selector to PropertyInfo */ null, faker);
-
-            // Store to list of known fakers
-        }
 
         /*public void GetFrom<TProperty>(
              Expression<Func<TClass, TProperty>> selector,
@@ -214,6 +283,12 @@ namespace Faker
 
              return (PropertyInfo)expression.Member;
          }*/
+        public enum CtorToUseWhenUsedAsInnerFaker
+        {
+            Parameterless,
+            GivenParameters,
+            PopulateExistingInstance,
+        }
     }
 
 }
