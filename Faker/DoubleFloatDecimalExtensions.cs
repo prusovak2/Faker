@@ -181,6 +181,9 @@ namespace Faker
             SampleInstances.Add(typeof(Guid), new Guid());
 
         }
+        /// <summary>
+        /// provides a sample instance of type to be used as param. of RandomGenerator.GetDefaultRandomFuncForType(object o)
+        /// </summary>
         internal static object GetSampleInstance(this Type type)
         {
             if (!SampleInstances.ContainsKey(type))
