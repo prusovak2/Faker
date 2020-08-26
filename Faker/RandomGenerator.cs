@@ -16,9 +16,26 @@ namespace Faker
             this.RandomGeneratorAlg = new Xoshiro256starstar(seed);
         }
         public ulong Seed => this.RandomGeneratorAlg.Seed;
-
+        /// <summary>
+        /// returns delegate to default function of this instance of RandomGenerator to provide values of given type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public Func<object> GetDefaultRandomFuncForType(Type type)
+        {
+            var sampleInstance = type.GetSampleInstance();
+            var defaultFunc = this.GetDefaultRandomFuncForType(sampleInstance);
+            return defaultFunc;
+        }
+        /// <summary>
+        /// returns delegate to default function of this instance of RandomGenerator to provide values of type of given object
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public Func<object> GetDefaultRandomFuncForType(object o)
         {
+            //only way to switch by a type is switch by a type of an instance, one cannot switch by the value of variable of Type type
+            //thats way Type.GetSampleInstance is used to provide input values for this function - to avoid using reflexion to create an instance -  slow
             switch (o)
             {
                 case byte b:
