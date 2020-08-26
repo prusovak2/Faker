@@ -178,7 +178,9 @@ namespace Faker
         }
         public char RandomChar()
         {
-            throw new NotImplementedException();
+            //TODO: RECONCIDER THIS
+            ushort randomUshort = this.RandomUshort(Char.MinValue, Char.MaxValue);
+            return (char)randomUshort;
         }
         public string RandomString()
         {
