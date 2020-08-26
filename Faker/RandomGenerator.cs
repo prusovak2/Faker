@@ -93,9 +93,47 @@ namespace Faker
         {
             throw new NotImplementedException();
         }
+        /// <summary>
+        /// returns random Guid
+        /// </summary>
+        /// <returns></returns>
         public Guid RandomGuid()
         {
-            throw new NotImplementedException();
+            //get 159 random bits of satisfying quality
+            ulong upper = this.RandomGeneratorAlg.Next();
+            ulong middle = this.RandomGeneratorAlg.Next();
+            ulong lower = this.RandomGeneratorAlg.Next();
+            upper >>= 24; //keep upper 40 bits
+            middle >>= 24; //keep upper 40 bits
+            lower >>= 16; //keep upper 48 bits
+            byte[] upperBytes = BitConverter.GetBytes(upper);
+            byte[] middleBytes = BitConverter.GetBytes(middle);
+            byte[] lowerBytes = BitConverter.GetBytes(lower);
+
+            //extract bytes with nonzero value
+            byte[] bytesForGuid = new byte[16];
+            if (BitConverter.IsLittleEndian)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    bytesForGuid[i] = upperBytes[i];
+                    bytesForGuid[i + 5] = middleBytes[i];
+                    bytesForGuid[i + 10] = lowerBytes[i];
+                }
+                bytesForGuid[15] = lowerBytes[5];
+            }
+            else
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    bytesForGuid[i] = upperBytes[7 - i];
+                    bytesForGuid[i + 5] = middleBytes[7 - i];
+                    bytesForGuid[i + 10] = lowerBytes[7 - i];
+                }
+                bytesForGuid[15] = lowerBytes[7 - 5];
+            }
+            Guid randomGuid = new Guid(bytesForGuid);
+            return randomGuid;
         }
         public DateTime RandomDateTime()
         {
