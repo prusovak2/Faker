@@ -7,6 +7,17 @@ using System.Reflection;
 
 namespace FakerTests
 {
+    public class NestedClass
+    {
+        public int num;
+        public ValueClass value { get; set; } 
+        public NestedClass() { }
+        public override string ToString()
+        {
+            return $"Nested:num:{this.num},{this.value},";
+        }
+    }
+
     public class AwesomeClass
     {
         public int Number;
@@ -15,6 +26,7 @@ namespace FakerTests
         private sbyte Private { get; set; }
         public bool IsAwesome;
         public string SomeString { get; set; }
+        public NestedClass nested { get; set; }
         public AwesomeClass() { }
         public AwesomeClass(string s, int a)
         {
@@ -23,7 +35,7 @@ namespace FakerTests
         }
         public override string ToString()
         {
-            return $"Number={this.Number},SmallerNumber={this.SmallerNumber},{this.Value},Private={this.Private},IsAwesome={this.IsAwesome},SomeString={this.SomeString}";
+            return $"Number={this.Number},SmallerNumber={this.SmallerNumber},{this.Value},Private={this.Private},\nIsAwesome={this.IsAwesome},SomeString={this.SomeString} nested:{this.nested}";
         }
     }
     public class Storage
@@ -62,7 +74,7 @@ namespace FakerTests
     {
         public ValueClassFakerParams()
         {
-            this.CtorFlag = CtorToUseWhenUsedAsInnerFaker.GivenParameters;
+            this.CtorUsageFlag = InnerFakerConstructorUsage.GivenParameters;
             this.CtorParametrs = new object[] { 73 };
             RuleFor(e => e.Value, f => 10);
         }
@@ -71,7 +83,7 @@ namespace FakerTests
     {
         public ValueClassFakerFlawedParams()
         {
-            this.CtorFlag = CtorToUseWhenUsedAsInnerFaker.GivenParameters;
+            this.CtorUsageFlag = InnerFakerConstructorUsage.GivenParameters;
             this.CtorParametrs = new object[] { "flawed param" };
             RuleFor(e => e.Value, f => 10);
         }
@@ -93,7 +105,7 @@ namespace FakerTests
     {
         public ValueClassFakerParameterless()
         {
-            this.CtorFlag = CtorToUseWhenUsedAsInnerFaker.Parameterless;
+            this.CtorUsageFlag = InnerFakerConstructorUsage.Parameterless;
             RuleFor(e => e.Value, f => 10);
         }
     }
@@ -101,7 +113,7 @@ namespace FakerTests
     {
         public ValueClassFakerPopulate()
         {
-            this.CtorFlag = CtorToUseWhenUsedAsInnerFaker.PopulateExistingInstance;
+            this.CtorUsageFlag = InnerFakerConstructorUsage.PopulateExistingInstance;
             RuleFor(e => e.Value, f => 10);
         }
     }
@@ -173,24 +185,75 @@ namespace FakerTests
         public StorageFakerFillDefault()
         {
             RuleFor(e => e.Text, f => "ABRAKA DABRA");
-            this.WhatWithUnfilledMembers = UnfilledMembers.DefaultRandomFunc;
+            this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
         }
     }
     public class AwesomeFakerNoRules : BaseFaker<AwesomeClass>
     {
-        public AwesomeFakerNoRules(UnfilledMembers unfilled, CtorToUseWhenUsedAsInnerFaker ctorFlag, object[] parameters)
+        public AwesomeFakerNoRules(UnfilledMembers unfilled, InnerFakerConstructorUsage ctorFlag, object[] parameters)
         {
             RuleFor(e => e.SomeString, f => "ABRAKA");
-            this.WhatWithUnfilledMembers = unfilled;
-            this.CtorFlag = ctorFlag;
+            this.FillEmptyMembers = unfilled;
+            this.CtorUsageFlag = ctorFlag;
             this.CtorParametrs = parameters;
         }
     }
+    public class AwesomeFaker : BaseFaker<AwesomeClass>
+    {
+        public AwesomeFaker()
+        {
+            RuleFor(e => e.SomeString, f => "ABRAKA");
+            RuleFor(e => e.SmallerNumber, g => g.RandomByte());
+            RuleFor(e => e.Number, h => h.RandomInt());
+            RuleFor(e => e.IsAwesome, i => i.RandomBool());
+            this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            this.SetFaker(e => e.Value, new ValueClassFakerParameterless());
+        }
+    }
+    public class NestedFaker : BaseFaker<NestedClass>
+    {
+        public NestedFaker()
+        {
+            RuleFor(e => e.num, f => 42);
+            SetFaker(e => e.value, new ValueClassFakerParameterless());
+        }
+    }
+    public class AwesomeFakerNested :BaseFaker<AwesomeClass>
+    {
+        public AwesomeFakerNested()
+        {
+            RuleFor(e => e.SomeString, f => "ABRAKA");
+            this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            SetFaker(e => e.nested, new NestedFaker());
+        }
+    }
+
 
 
     [TestClass]
     public class BaseFakerTests
     {
+        [TestMethod]
+        public void NestedTest()
+        {
+            AwesomeFakerNested f = new AwesomeFakerNested();
+            AwesomeClass a = f.Generate();
+            Console.WriteLine(a);
+            Assert.IsInstanceOfType(a.nested, typeof(NestedClass));
+            Assert.IsInstanceOfType(a.nested.value, typeof(ValueClass));
+            Assert.AreEqual(42, a.nested.num);
+        }
+        [TestMethod]
+        public void SebastiansAwesomeTest()
+        {
+            AwesomeFaker awesomeFaker = new AwesomeFaker();
+            AwesomeClass awesome = awesomeFaker.Generate();
+            
+            Console.WriteLine(awesome);
+            Assert.IsTrue(awesome.Value is object);
+            Assert.IsTrue(awesome.IsAwesome == true || awesome.IsAwesome == false);
+            Assert.IsTrue(awesome.SomeString == "ABRAKA");
+        }
         [TestMethod]
         public void GenerateCreateInstanceTest()
         {
@@ -278,7 +341,7 @@ namespace FakerTests
         [TestMethod]
         public void AwesomeEmptyDefaultFillTest()
         {
-            AwesomeFakerNoRules af = new AwesomeFakerNoRules(BaseFaker<AwesomeClass>.UnfilledMembers.DefaultRandomFunc, BaseFaker<AwesomeClass>.CtorToUseWhenUsedAsInnerFaker.Parameterless, null);
+            AwesomeFakerNoRules af = new AwesomeFakerNoRules(BaseFaker<AwesomeClass>.UnfilledMembers.DefaultRandomFunc, BaseFaker<AwesomeClass>.InnerFakerConstructorUsage.Parameterless, null);
             AwesomeClass a = af.Generate();
             Console.WriteLine(a);
             Assert.AreNotEqual(0, a.Number);
