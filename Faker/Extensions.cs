@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Faker
 {
-    public static class DoubleFloatDecimalExtensions
+    public static class DoubleDecimaFloatExtensions
     {
         /// <summary>
         /// compare two double values for equality with respect to relative margin of difference between two values (0.00001 * lowerNumber)
@@ -193,4 +193,5 @@ namespace Faker
             return SampleInstances[type];
         }
     }
+
 }
