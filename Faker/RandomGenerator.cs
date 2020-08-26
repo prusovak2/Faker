@@ -89,10 +89,7 @@ namespace Faker
             }
             return false;
         }
-        public string RandomString()
-        {
-            throw new NotImplementedException();
-        }
+
         /// <summary>
         /// returns random Guid
         /// </summary>
@@ -135,11 +132,55 @@ namespace Faker
             Guid randomGuid = new Guid(bytesForGuid);
             return randomGuid;
         }
+        /// <summary>
+        /// returns random DateTime from [lower,upper] interval
+        /// </summary>
+        /// <param name="lower"></param>
+        /// <param name="upper"></param>
+        /// <returns></returns>
+        public DateTime RandomDateTime(DateTime lower , DateTime upper)
+        {
+            long randomLong = this.RandomLong(lower.Ticks, upper.Ticks);
+            DateTime randomDateTime = new DateTime(randomLong);
+            return randomDateTime;
+        }
+        /// <summary>
+        /// returns random DateTime from [DateTime.MinValue,DateTime.Maxvalue] interval
+        /// </summary>
+        /// <returns></returns>
         public DateTime RandomDateTime()
+        {
+            long randomLong = this.RandomLong(DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks);
+            DateTime randomDateTime = new DateTime(randomLong);
+            return randomDateTime;
+        }
+        /// <summary>
+        /// returns random DateTime from interval [DateTime.MinValue,border] when upper is true<br/>
+        /// or [border, DateTime.MaxValue] when upper is false
+        /// </summary>
+        /// <param name="border"></param>
+        /// <param name="upper">is border an upper border</param>
+        /// <returns></returns>
+        public DateTime RandomDateTime(DateTime border, bool upper)
+        {
+            if (upper)
+            {
+                long randomLong = this.RandomLong(DateTime.MinValue.Ticks, border.Ticks);
+                DateTime randomDateTime = new DateTime(randomLong);
+                return randomDateTime;
+            }
+            else
+            {
+                long randomLong = this.RandomLong(border.Ticks, DateTime.MaxValue.Ticks);
+                DateTime randomDateTime = new DateTime(randomLong);
+                return randomDateTime;
+            }
+        }
+        public char RandomChar()
         {
             throw new NotImplementedException();
         }
-        public char RandomChar()
+        public string RandomString()
         {
             throw new NotImplementedException();
         }

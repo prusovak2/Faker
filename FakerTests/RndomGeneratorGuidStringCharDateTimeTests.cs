@@ -26,5 +26,67 @@ namespace FakerTests
                 Console.WriteLine(g);
             }
         }
+        [TestMethod]
+        public void RandomDateTimeTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            HashSet<DateTime> areUnique = new HashSet<DateTime>();
+            DateTime lower = new DateTime(2000,1,1);
+            DateTime upper = new DateTime(6000,1,1);
+            Console.WriteLine("lower-upper");
+            for (int i = 0; i < 30; i++)
+            {
+                DateTime d = r.RandomDateTime(lower, upper);
+                Console.WriteLine(d);
+                Assert.IsTrue(d <= upper && d >= lower);
+                areUnique.Add(d);
+            }
+            Console.WriteLine();
+            areUnique.Clear();
+
+            Console.WriteLine("lower-max");
+            for (int i = 0; i < 30; i++)
+            {
+                DateTime d = r.RandomDateTime(lower, false);
+                Console.WriteLine(d);
+                Assert.IsTrue(d >= lower);
+                areUnique.Add(d);
+            }
+            Console.WriteLine();
+            areUnique.Clear();
+
+            Console.WriteLine("lower-max");
+            for (int i = 0; i < 30; i++)
+            {
+                DateTime d = r.RandomDateTime(upper, true);
+                Console.WriteLine(d);
+                Assert.IsTrue(d <= upper);
+                areUnique.Add(d);
+            }
+            Console.WriteLine();
+            areUnique.Clear();
+
+            Console.WriteLine("min-max");
+            for (int i = 0; i < 30; i++)
+            {
+                DateTime d = r.RandomDateTime();
+                Console.WriteLine(d);
+                Assert.IsTrue(d <= DateTime.MaxValue && d >= DateTime.MinValue);
+                areUnique.Add(d);
+            }
+            Console.WriteLine();
+            areUnique.Clear();
+
+            for (int i = 0; i < 30; i++)
+            {
+                DateTime l = r.RandomDateTime(lower, true);
+                DateTime h = r.RandomDateTime(lower, false);
+                Console.WriteLine("{0}<={1}", l, h);
+                Assert.IsTrue(l<=h);
+                areUnique.Add(l);
+                areUnique.Add(h);
+            }
+            
+        }
     }
 }
