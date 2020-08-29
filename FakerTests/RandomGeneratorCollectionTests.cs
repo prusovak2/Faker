@@ -110,6 +110,42 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(DateTime));
             }
         }
+        [TestMethod]
+        public void RandomCollectionNotPreciseTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            Console.WriteLine("default func");
+            ICollection<float> c= r.RandomCollection<float>(100, false);
+            Console.WriteLine(c.Count);
+            Assert.IsTrue(c.Count <= 100);
+            foreach (var item in c)
+            {
+                Assert.IsInstanceOfType(item, typeof(float));
+                Console.WriteLine(item);
+            }
+
+            Console.WriteLine("paramless");
+            ICollection<char> c2 = r.RandomCollection(r.RandomAlphanumericChar, 100, false);
+            Console.WriteLine(c2.Count);
+            Assert.IsTrue(c2.Count <= 100);
+            foreach (var item in c2)
+            {
+                Assert.IsInstanceOfType(item, typeof(char));
+                Assert.IsTrue(char.IsLetterOrDigit(item));
+                Console.WriteLine(item);
+            }
+
+            Console.WriteLine("with params");
+            ICollection<decimal> c3 = r.RandomCollection(r.RandomDecimal,200m, 100000m,100,false);
+            Console.WriteLine(c3.Count);
+            Assert.IsTrue(c3.Count <= 100);
+            foreach (var item in c3)
+            {
+                Assert.IsInstanceOfType(item, typeof(decimal));
+                Assert.IsTrue(item >= 200m && item <= 100000m);
+                Console.WriteLine(item);
+            }
+        }
     }
 }
 
