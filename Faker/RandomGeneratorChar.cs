@@ -114,6 +114,12 @@ namespace Faker
             char[] c = this.RandomList<char>(255).ToArray();
             return new string(c);
         }
-        
+        public string RandomString(int length, bool precise = true)
+        {
+            int lengthToUse = this.CountToUse(length, precise);
+            char[] c = this.RandomList<char>(lengthToUse).ToArray();
+            return new string(c);
+        }
+        //TODO: which overloads of RandomString with respect to RandomCollections
     }
 }
