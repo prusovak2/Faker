@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -68,6 +69,7 @@ namespace Faker
             int index = this.RandomInt(0, consonants.Length - 1);
             return consonants[index];
         }
+        //TODO: white/ non white random char?
         public string RandomString()
         {
             throw new NotImplementedException();
