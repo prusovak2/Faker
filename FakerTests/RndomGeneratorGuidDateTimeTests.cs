@@ -7,7 +7,7 @@ using Faker;
 namespace FakerTests
 {
     [TestClass]
-    public class RndomGeneratorGuidStringCharDateTimeTests
+    public class RndomGeneratorGuidDateTimeTests
     {
         [TestMethod]
         public void RandomGuidTest()
@@ -87,16 +87,6 @@ namespace FakerTests
                 areUnique.Add(h);
             }
         }
-        [TestMethod]
-        public void RandomCharTest()
-        {
-            RandomGenerator r = new RandomGenerator();
-            for (int i = 0; i < 200; i++)
-            {
-                Char c = r.RandomChar();
-                Assert.IsInstanceOfType(c, typeof(Char));
-                Console.WriteLine(c);
-            }
-        }
+       
     }
 }
