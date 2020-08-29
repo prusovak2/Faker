@@ -176,15 +176,6 @@ namespace Faker
                 return randomDateTime;
             }
         }
-        public char RandomChar()
-        {
-            //TODO: RECONCIDER THIS
-            ushort randomUshort = this.RandomUshort(Char.MinValue, Char.MaxValue);
-            return (char)randomUshort;
-        }
-        public string RandomString()
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

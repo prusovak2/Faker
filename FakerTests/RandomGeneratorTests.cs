@@ -99,7 +99,7 @@ namespace FakerTests
                 bool s = (bool)v12();
                 Console.WriteLine(s);
             }
-            /* Console.WriteLine("char");
+             Console.WriteLine("char");
               var v13 = r.GetDefaultRandomFuncForType(typeof(char).GetSampleInstance());
              for (int i = 0; i < 30; i++)
              {
@@ -126,7 +126,7 @@ namespace FakerTests
              {
                  Guid s = (Guid)v16();
                  Console.WriteLine(s);
-             }*/
+             }
         }
     }
 }
