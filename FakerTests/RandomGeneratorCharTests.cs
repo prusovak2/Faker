@@ -269,5 +269,11 @@ namespace FakerTests
                 Console.WriteLine("{0} appeared {1} times", item.Key, item.Value);
             }
         }
+        [TestMethod]
+        public void RandomStringTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            Console.WriteLine(r.RandomString());
+        }
     }
 }

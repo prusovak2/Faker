@@ -145,7 +145,109 @@ namespace FakerTests
                 Assert.IsTrue(item >= 200m && item <= 100000m);
                 Console.WriteLine(item);
             }
+
         }
+        [TestMethod]
+        public void RandomListNotPreciseTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            Console.WriteLine("default func");
+            IList<float> c = r.RandomList<float>(100, false);
+            Console.WriteLine(c.Count);
+            Assert.IsTrue(c.Count <= 100);
+            foreach (var item in c)
+            {
+                Assert.IsInstanceOfType(item, typeof(float));
+                Console.WriteLine(item);
+            }
+
+            Console.WriteLine("paramless");
+            IList<char> c2 = r.RandomList(r.RandomAlphanumericChar, 100, false);
+            Console.WriteLine(c2.Count);
+            Assert.IsTrue(c2.Count <= 100);
+            foreach (var item in c2)
+            {
+                Assert.IsInstanceOfType(item, typeof(char));
+                Assert.IsTrue(char.IsLetterOrDigit(item));
+                Console.WriteLine(item);
+            }
+
+            Console.WriteLine("with params");
+            IList<decimal> c3 = r.RandomList(r.RandomDecimal, 200m, 100000m, 100, false);
+            Console.WriteLine(c3.Count);
+            Assert.IsTrue(c3.Count <= 100);
+            foreach (var item in c3)
+            {
+                Assert.IsInstanceOfType(item, typeof(decimal));
+                Assert.IsTrue(item >= 200m && item <= 100000m);
+                Console.WriteLine(item);
+            }
+        }
+        [TestMethod]
+        public void RandomListParamlessTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            IList<char> c = r.RandomList(r.RandomLowerCaseLetter, 30);
+            Console.WriteLine(c.Count);
+            foreach (var item in c)
+            {
+                Console.WriteLine(item);
+                Assert.IsInstanceOfType(item, typeof(Char));
+                Assert.IsTrue(char.IsLower(item));
+            }
+            IList<DateTime> c2 = r.RandomList(r.RandomDateTime, 30);
+            Console.WriteLine(c.Count);
+            foreach (var item in c2)
+            {
+                Console.WriteLine(item);
+                Assert.IsInstanceOfType(item, typeof(DateTime));
+            }
+        }
+        [TestMethod]
+        public void RandomListParams()
+        {
+            RandomGenerator r = new RandomGenerator();
+            IList<byte> c = r.RandomList(r.RandomByte, (byte)5, byte.MaxValue, 30);
+            Console.WriteLine(c.Count);
+            foreach (var item in c)
+            {
+                Console.WriteLine(item);
+                Assert.IsInstanceOfType(item, typeof(byte));
+                Assert.IsTrue(item >= 5 && item <= byte.MaxValue);
+            }
+            IList<double> c2 = r.RandomList(r.RandomDouble, 5d, Double.MaxValue, 30);
+            Console.WriteLine(c.Count);
+            foreach (var item in c2)
+            {
+                Console.WriteLine(item);
+                Assert.IsInstanceOfType(item, typeof(double));
+                Assert.IsTrue(item >= 5 && item < double.MaxValue);
+            }
+        }
+       /* [TestMethod]
+        public void RandomEnumerableParamlessTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            IEnumerable<char> c = r.RandomEnumerable(r.RandomLowerCaseLetter);
+            int counter = 0;
+            foreach (var item in c)
+            {
+                Console.WriteLine(item);
+                Assert.IsInstanceOfType(item, typeof(Char));
+                Assert.IsTrue(char.IsLower(item));
+                counter++;
+                if (counter == 30)
+                    break;
+                
+            }
+            IList<DateTime> c2 = r.RandomList(r.RandomDateTime, 30);
+            Console.WriteLine(c.Count);
+            foreach (var item in c2)
+            {
+                Console.WriteLine(item);
+                Assert.IsInstanceOfType(item, typeof(DateTime));
+            }
+        }*/
     }
 }
 
