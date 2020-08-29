@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Faker;
+using System.Xml.Serialization;
 
 namespace FakerTests
 {
@@ -99,34 +100,35 @@ namespace FakerTests
                 bool s = (bool)v12();
                 Console.WriteLine(s);
             }
-             Console.WriteLine("char");
-              var v13 = r.GetDefaultRandomFuncForType(typeof(char).GetSampleInstance());
-             for (int i = 0; i < 30; i++)
-             {
-                 char s = (char)v13();
-                 Console.WriteLine(s);
-             }
+            Console.WriteLine("char");
+            var v13 = r.GetDefaultRandomFuncForType(typeof(char).GetSampleInstance());
+            for (int i = 0; i < 30; i++)
+            {
+                char s = (char)v13();
+                Console.WriteLine(s);
+            }
             Console.WriteLine("string");
-             var v14 = r.GetDefaultRandomFuncForType(typeof(string).GetSampleInstance());
-             for (int i = 0; i < 30; i++)
-             {
-                 string s = (string)v14();
-                 Console.WriteLine(s);
-             }
+            var v14 = r.GetDefaultRandomFuncForType(typeof(string).GetSampleInstance());
+            for (int i = 0; i < 30; i++)
+            {
+                string s = (string)v14();
+                Console.WriteLine(s);
+            }
             Console.WriteLine("DateTime");
-             var v15 = r.GetDefaultRandomFuncForType(typeof(DateTime).GetSampleInstance());
-             for (int i = 0; i < 30; i++)
-             {
-                 DateTime s = (DateTime)v15();
-                 Console.WriteLine(s);
-             }
+            var v15 = r.GetDefaultRandomFuncForType(typeof(DateTime).GetSampleInstance());
+            for (int i = 0; i < 30; i++)
+            {
+                DateTime s = (DateTime)v15();
+                Console.WriteLine(s);
+            }
             Console.WriteLine("Guid");
-             var v16 = r.GetDefaultRandomFuncForType(typeof(Guid).GetSampleInstance());
-             for (int i = 0; i < 30; i++)
-             {
-                 Guid s = (Guid)v16();
-                 Console.WriteLine(s);
-             }
+            var v16 = r.GetDefaultRandomFuncForType(typeof(Guid).GetSampleInstance());
+            for (int i = 0; i < 30; i++)
+            {
+                Guid s = (Guid)v16();
+                Console.WriteLine(s);
+            }
         }
-    }
+
+    }   
 }
