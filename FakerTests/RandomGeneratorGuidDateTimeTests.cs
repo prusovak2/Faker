@@ -7,7 +7,7 @@ using Faker;
 namespace FakerTests
 {
     [TestClass]
-    public class RndomGeneratorGuidDateTimeTests
+    public class RandomGeneratorGuidDateTimeTests
     {
         [TestMethod]
         public void RandomGuidTest()
