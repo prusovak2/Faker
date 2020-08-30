@@ -273,7 +273,208 @@ namespace FakerTests
         public void RandomStringTest()
         {
             RandomGenerator r = new RandomGenerator();
-            Console.WriteLine(r.RandomString());
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomString();
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                }
+            }
+        }
+        [TestMethod]
+        public void RandomStringParamsTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomString(10, false);
+                Assert.IsTrue(s.Length <= 10);
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                }
+            }
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomString(10, true);
+                Assert.IsTrue(s.Length == 10);
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                }
+            }
+        }
+        [TestMethod]
+        public void RandomLoweCaseStringTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomLowerCaseString();
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                    Assert.IsTrue(char.IsLower(item));
+                }
+            }
+        }
+        [TestMethod]
+        public void RandomLowerCaseStringParamsTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomLowerCaseString(10, false);
+                Assert.IsTrue(s.Length <= 10);
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                    Assert.IsTrue(char.IsLower(item));
+                }
+            }
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomLowerCaseString(10, true);
+                Assert.IsTrue(s.Length == 10);
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                    Assert.IsTrue(char.IsLower(item));
+                }
+            }
+        }
+        [TestMethod]
+        public void RandomUpperCaseStringParamsTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomUpperCaseString(10, false);
+                Assert.IsTrue(s.Length <= 10);
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                    Assert.IsTrue(char.IsUpper(item));
+                }
+            }
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomUpperCaseString(10, true);
+                Assert.IsTrue(s.Length == 10);
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                    Assert.IsTrue(char.IsUpper(item));
+                }
+            }
+        }
+        [TestMethod]
+        public void RandomUpperCaseStringTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomUpperCaseString();
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                    Assert.IsTrue(char.IsUpper(item));
+                }
+            }
+        }
+        [TestMethod]
+        public void RandomLettersTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomLatinLetters();
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                    Assert.IsTrue(char.IsLetter(item));
+                }
+            }
+        }
+        [TestMethod]
+        public void RandomLettersParamsTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomLatinLetters(10, false);
+                Assert.IsTrue(s.Length <= 10);
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                    Assert.IsTrue(char.IsLetter(item));
+                }
+            }
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomLatinLetters(10, true);
+                Assert.IsTrue(s.Length == 10);
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                    Assert.IsTrue(char.IsLetter(item));
+                }
+            }
+        }
+        [TestMethod]
+        public void RandomAplhanumericStringTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomAlphaNumericString();
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                    Assert.IsTrue(char.IsLetterOrDigit(item));
+                }
+            }
+        }
+        [TestMethod]
+        public void RandomAlphanumeriStringParamsTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomAlphaNumericString(10, false);
+                Assert.IsTrue(s.Length <= 10);
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                    Assert.IsTrue(char.IsLetterOrDigit(item));
+                }
+            }
+            for (int i = 0; i < 30; i++)
+            {
+                string s = r.RandomAlphaNumericString(10, true);
+                Assert.IsTrue(s.Length == 10);
+                Console.WriteLine(s);
+                foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                    Assert.IsTrue(char.IsLetterOrDigit(item));
+                }
+            }
         }
     }
 }

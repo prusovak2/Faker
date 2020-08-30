@@ -109,16 +109,116 @@ namespace Faker
             return consonants[index];
         }
         //TODO: white/ non white random char?
+
+        /// <summary>
+        /// generates a random string 255 characters long
+        /// </summary>
+        /// <returns></returns>
         public string RandomString()
         {
-            char[] c = this.RandomList<char>(255).ToArray();
-            return new string(c);
+            //parameterless overload necessary as default random function for string
+            char[] chars = this.RandomList<char>(255).ToArray();
+            return new string(chars);
         }
+        /// <summary>
+        /// generates a random string, when precise is true, length is used as length of string<br/>
+        /// otherwise a random int less or equal to length is generated and used as length of string
+        /// </summary>
+        /// <param name="length"></param>
+        /// <param name="precise"></param>
+        /// <returns></returns>
         public string RandomString(int length, bool precise = true)
         {
-            int lengthToUse = this.CountToUse(length, precise);
-            char[] c = this.RandomList<char>(lengthToUse).ToArray();
-            return new string(c);
+            char[] chars = this.RandomList<char>(length, precise).ToArray();
+            return new string(chars);
+        }
+        /// <summary>
+        /// generates a random string 255 characters long consisting of lowercase letters
+        /// </summary>
+        /// <returns></returns>
+        public string RandomLowerCaseString()
+        {
+            char[] chars = this.RandomList<char>(this.RandomLowerCaseLetter, 255, true).ToArray();
+            return new string(chars);
+        }
+        /// <summary>
+        /// generates a random string consisting of lowercase letters<br/>
+        /// when precise is true, length is used as length of string<br/>
+        /// otherwise a random int less or equal to length is generated and used as length of string
+        /// </summary>
+        /// <param name="length"></param>
+        /// <param name="precise"></param>
+        /// <returns></returns>
+        public string RandomLowerCaseString(int length, bool precise)
+        {
+            char[] chars = this.RandomList<char>(this.RandomLowerCaseLetter,length, precise).ToArray();
+            return new string(chars);
+        }
+        /// <summary>
+        /// generates a random string 255 characters long consisting of uppercase letters
+        /// </summary>
+        /// <returns></returns>
+        public string RandomUpperCaseString()
+        {
+            char[] chars = this.RandomList<char>(this.RandomUpperCaseLetter, 255, true).ToArray();
+            return new string(chars);
+        }
+        /// <summary>
+        /// generates a random string consisting of lowercase letters<br/>
+        /// when precise is true, length is used as length of string<br/>
+        /// otherwise a random int less or equal to length is generated and used as length of string
+        /// </summary>
+        /// <param name="length"></param>
+        /// <param name="precise"></param>
+        /// <returns></returns>
+        public string RandomUpperCaseString(int length, bool precise)
+        {
+            char[] chars = this.RandomList<char>(this.RandomUpperCaseLetter, length, precise).ToArray();
+            return new string(chars);
+        }
+        /// <summary>
+        /// generates a random string 255 characters long consisting of Latin letters (lower+uppercase)
+        /// </summary>
+        /// <returns></returns>
+        public string RandomLatinLetters()
+        {
+            char[] chars = this.RandomList<char>(this.RandomLetter, 255, true).ToArray();
+            return new string(chars);
+        }
+        /// <summary>
+        /// generates a random string consisting of Latin letters<br/>
+        /// when precise is true, length is used as length of string<br/>
+        /// otherwise a random int less or equal to length is generated and used as length of string
+        /// </summary>
+        /// <param name="length"></param>
+        /// <param name="precise"></param>
+        /// <returns></returns>
+        public string RandomLatinLetters(int length, bool precise)
+        {
+            char[] chars = this.RandomList<char>(this.RandomLetter, length, precise).ToArray();
+            return new string(chars);
+        }
+        /// <summary>
+        /// generates a random string 255 characters long consisting of alphanumeric characters
+        /// </summary>
+        /// <returns></returns>
+        public string RandomAlphaNumericString()
+        {
+            char[] chars = this.RandomList<char>(this.RandomAlphanumericChar, 255, true).ToArray();
+            return new string(chars);
+        }
+        /// <summary>
+        /// generates a random string consisting of alphanumeric characters<br/>
+        /// when precise is true, length is used as length of string<br/>
+        /// otherwise a random int less or equal to length is generated and used as length of string
+        /// </summary>
+        /// <param name="length"></param>
+        /// <param name="precise"></param>
+        /// <returns></returns>
+        public string RandomAlphaNumericString(int length, bool precise)
+        {
+            char[] chars = this.RandomList<char>(this.RandomAlphanumericChar, length, precise).ToArray();
+            return new string(chars);
         }
         //TODO: which overloads of RandomString with respect to RandomCollections
     }

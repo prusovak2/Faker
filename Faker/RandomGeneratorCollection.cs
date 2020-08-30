@@ -126,6 +126,7 @@ namespace Faker
             }
             return result;
         }
+
         /// <summary>
         /// returns a list of TMembers produced by Func<TMember> randomFunc <br/>
         /// when precise is true, count is used as a count of returned list <br/>
@@ -147,18 +148,20 @@ namespace Faker
                 result.Add(next);
             }
             return result;
-        }/// <summary>
-         /// returns a list of TMembers produced by Func<TMember, TMember, TMembe> randomFunc <br/>
-         /// when precise is true, count is used as a count of returned list <br/>
-         /// otherwise a random number less or equal to count is generated and used as a count
-         /// </summary>
-         /// <typeparam name="TMember"></typeparam>
-         /// <param name="randomFunc"></param>
-         /// <param name="lower">lower bound passed to random function</param>
-         /// <param name="upper">upper bound passed to random function</param>
-         /// <param name="count"></param>
-         /// <param name="precise"></param>
-         /// <returns></returns>
+        }
+
+        /// <summary>
+        /// returns a list of TMembers produced by Func<TMember, TMember, TMembe> randomFunc <br/>
+        /// when precise is true, count is used as a count of returned list <br/>
+        /// otherwise a random number less or equal to count is generated and used as a count
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="randomFunc"></param>
+        /// <param name="lower">lower bound passed to random function</param>
+        /// <param name="upper">upper bound passed to random function</param>
+        /// <param name="count"></param>
+        /// <param name="precise"></param>
+        /// <returns></returns>
         public IList<TMember> RandomList<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
         {
             IList<TMember> result = new List<TMember>();
