@@ -108,6 +108,12 @@ namespace Faker
             int index = this.RandomInt(0, consonants.Length - 1);
             return consonants[index];
         }
+        public char RandomHexadecimalDigit()
+        {
+            char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+            int index = this.RandomInt(0, hexDigits.Length - 1);
+            return hexDigits[index];
+        }
         //TODO: white/ non white random char?
 
         /// <summary>
@@ -220,6 +226,17 @@ namespace Faker
             char[] chars = this.RandomList<char>(this.RandomAlphanumericChar, length, precise).ToArray();
             return new string(chars);
         }
-        //TODO: which overloads of RandomString with respect to RandomCollections
+        public string RandomHexadecimalString(ulong lower, ulong upper)
+        {
+            ulong randomLong = this.RandomUlong(lower, upper);
+            string hexString = randomLong.ToString("X");
+            return hexString;
+        }
+        public string RandomHexadecimalString(int numDigits, bool precise)
+        {
+            char[] chars = this.RandomCollection<char>(this.RandomHexadecimalDigit, numDigits, precise).ToArray();
+            return new string(chars);
+        }
+
     }
 }

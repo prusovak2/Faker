@@ -90,6 +90,13 @@ namespace Faker
         }
         public int RandomOddInt(int lower = int.MinValue, int upper = int.MaxValue)
         {
+            //TODO: REPAIR, DOESNT WORK for -100,-20 produces -19!
+            if (lower > upper)
+            {
+                int tmp = lower;
+                lower = upper;
+                upper = tmp;
+            }
             if (lower % 2 == 0)
             {
                 lower++;

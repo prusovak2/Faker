@@ -77,6 +77,36 @@ namespace FakerTests
             }
         }
         [TestMethod]
+        public void RandomHexDigitTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            Dictionary<char, int> counter = new Dictionary<char, int>();
+
+            for (int i = 0; i < 200; i++)
+            {
+                char c = r.RandomHexadecimalDigit();
+                Console.WriteLine("hex:{0}",c);
+                if (!counter.ContainsKey(c))
+                {
+                    counter.Add(c, 0);
+                }
+                counter[c]++;
+                Assert.IsInstanceOfType(c, typeof(Char));
+                Assert.IsTrue(char.IsLetterOrDigit(c));
+                string s = new string(new char[] { c});
+                byte val = Convert.ToByte(s, 16);
+                Console.WriteLine("dec:{0}",val);
+
+            }
+            Console.WriteLine();
+            Console.WriteLine("counter dictionary");
+            var sorted = counter.ToImmutableSortedDictionary();
+            foreach (var item in sorted)
+            {
+                Console.WriteLine("{0} appeared {1} times", item.Key, item.Value);
+            }
+        }
+        [TestMethod]
         public void RandomLowerCaseTest()
         {
             RandomGenerator r = new RandomGenerator();
@@ -474,6 +504,32 @@ namespace FakerTests
                     Assert.IsInstanceOfType(item, typeof(char));
                     Assert.IsTrue(char.IsLetterOrDigit(item));
                 }
+            }
+        }
+        [TestMethod]
+        public void RandomHexStringRangeTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 40; i++)
+            {
+                string hex = r.RandomHexadecimalString(42, 10000);
+                Console.WriteLine("hex:{0}",hex);
+                ulong val = Convert.ToUInt64(hex, 16);
+                Console.WriteLine("dec:{0}",val);
+                Assert.IsTrue(val >= 42 && val <= 10000);
+            }
+        }
+        [TestMethod]
+        public void RandomHexStringTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 40; i++)
+            {
+                string hex = r.RandomHexadecimalString(5, false);
+                Console.WriteLine("hex:{0}", hex);
+                Assert.IsTrue(hex.Length <= 5);
+                ulong val = Convert.ToUInt64(hex, 16);
+                Console.WriteLine("dec:{0}", val);
             }
         }
     }
