@@ -224,30 +224,86 @@ namespace FakerTests
                 Assert.IsTrue(item >= 5 && item < double.MaxValue);
             }
         }
-       /* [TestMethod]
-        public void RandomEnumerableParamlessTest()
+        [TestMethod]
+        public void RandomCollectionOfCollectionsTest()
         {
             RandomGenerator r = new RandomGenerator();
-            IEnumerable<char> c = r.RandomEnumerable(r.RandomLowerCaseLetter);
-            int counter = 0;
+            ICollection<string> c = r.RandomCollection(r.RandomAlphaNumericString, 20, true, 30, false);
+            Console.WriteLine(c.Count);
+            Assert.AreEqual(20, c.Count);
             foreach (var item in c)
             {
                 Console.WriteLine(item);
-                Assert.IsInstanceOfType(item, typeof(Char));
-                Assert.IsTrue(char.IsLower(item));
-                counter++;
-                if (counter == 30)
-                    break;
-                
+                Assert.IsInstanceOfType(item, typeof(string));
+                Assert.IsTrue(item.Length <= 30);
             }
-            IList<DateTime> c2 = r.RandomList(r.RandomDateTime, 30);
-            Console.WriteLine(c.Count);
+            ICollection<ICollection<sbyte>> c2 = r.RandomCollection(r.RandomCollection<sbyte>, 20, false, 30, true);
+            Console.WriteLine(c2.Count);
+            Assert.IsTrue( c2.Count<=20);
             foreach (var item in c2)
             {
-                Console.WriteLine(item);
-                Assert.IsInstanceOfType(item, typeof(DateTime));
+                foreach (var b in item)
+                {
+                    Console.Write("{0}, ", b);
+                    Assert.IsInstanceOfType(b, typeof(sbyte));
+                }
+                Assert.IsInstanceOfType(item, typeof(ICollection<sbyte>));
+                Assert.AreEqual(30,item.Count);
+                Console.WriteLine();
             }
-        }*/
+        }
+        [TestMethod]
+        public void RandomListOfCollectionsTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            IList<string> c = r.RandomList(r.RandomAlphaNumericString, 20, true, 30, false);
+            Console.WriteLine(c.Count);
+            Assert.AreEqual(20, c.Count);
+            foreach (var item in c)
+            {
+                Console.WriteLine(item);
+                Assert.IsInstanceOfType(item, typeof(string));
+                Assert.IsTrue(item.Length <= 30);
+            }
+            IList<ICollection<sbyte>> c2 = r.RandomList(r.RandomCollection<sbyte>, 20, false, 30, true);
+            Console.WriteLine(c2.Count);
+            Assert.IsTrue(c2.Count <= 20);
+            foreach (var item in c2)
+            {
+                foreach (var b in item)
+                {
+                    Console.Write("{0}, ", b);
+                    Assert.IsInstanceOfType(b, typeof(sbyte));
+                }
+                Assert.IsInstanceOfType(item, typeof(ICollection<sbyte>));
+                Assert.AreEqual(30, item.Count);
+                Console.WriteLine();
+            }
+        }
+        /* [TestMethod]
+         public void RandomEnumerableParamlessTest()
+         {
+             RandomGenerator r = new RandomGenerator();
+             IEnumerable<char> c = r.RandomEnumerable(r.RandomLowerCaseLetter);
+             int counter = 0;
+             foreach (var item in c)
+             {
+                 Console.WriteLine(item);
+                 Assert.IsInstanceOfType(item, typeof(Char));
+                 Assert.IsTrue(char.IsLower(item));
+                 counter++;
+                 if (counter == 30)
+                     break;
+
+             }
+             IList<DateTime> c2 = r.RandomList(r.RandomDateTime, 30);
+             Console.WriteLine(c.Count);
+             foreach (var item in c2)
+             {
+                 Console.WriteLine(item);
+                 Assert.IsInstanceOfType(item, typeof(DateTime));
+             }
+         }*/
     }
 }
 
