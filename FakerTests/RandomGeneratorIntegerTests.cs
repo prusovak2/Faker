@@ -863,5 +863,91 @@ namespace FakerTests
                 Console.WriteLine(ri);
             }
         }
+        [TestMethod]
+        public void OddTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 50; i++)
+            {
+                int odd = r.RandomOddInt();
+                Console.WriteLine(odd);
+                Assert.IsTrue((odd % 2) != 0);
+            }
+            Console.WriteLine();
+            for (int i = 0; i < 50; i++)
+            {
+                int odd = r.RandomOddInt(-500, 333);
+                Console.WriteLine(odd);
+                Assert.IsTrue((odd % 2) != 0);
+                Assert.IsTrue(odd >= -500 && odd <= 333);
+            }
+            Console.WriteLine();
+            for (int i = 0; i < 50; i++)
+            {
+                int odd = r.RandomOddInt(-11, 10);
+                Console.WriteLine(odd);
+                Assert.IsTrue((odd % 2) != 0);
+                Assert.IsTrue(odd >= -11 && odd <= 10);
+            }
+            Console.WriteLine();
+            for (int i = 0; i < 50; i++)
+            {
+                int odd = r.RandomOddInt(20, 100);
+                Console.WriteLine(odd);
+                Assert.IsTrue((odd % 2) != 0);
+                Assert.IsTrue(odd >= 20 && odd <= 100);
+            }
+            Console.WriteLine();
+            for (int i = 0; i < 50; i++)
+            {
+                int odd = r.RandomOddInt(-20, -100);
+                Console.WriteLine(odd);
+                Assert.IsTrue((odd % 2) != 0);
+                Assert.IsTrue(odd >= -100 && odd <= -20);
+            }
+        }
+        [TestMethod]
+        public void EvenTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 50; i++)
+            {
+                int even = r.RandomEvenInt();
+                Console.WriteLine(even);
+                Assert.IsTrue((even % 2) == 0);
+            }
+            Console.WriteLine();
+            for (int i = 0; i < 50; i++)
+            {
+                int even = r.RandomEvenInt(-500, 333);
+                Console.WriteLine(even);
+                Assert.IsTrue((even % 2) == 0);
+                Assert.IsTrue(even >= -500 && even <= 333);
+            }
+            Console.WriteLine();
+            for (int i = 0; i < 50; i++)
+            {
+                int even = r.RandomEvenInt(-11, 10);
+                Console.WriteLine(even);
+                Assert.IsTrue((even % 2) == 0);
+                Assert.IsTrue(even >= -11 && even <= 10);
+            }
+            Console.WriteLine();
+            for (int i = 0; i < 50; i++)
+            {
+                int even = r.RandomEvenInt(20, 100);
+                Console.WriteLine(even);
+                Assert.IsTrue((even % 2) == 0);
+                Assert.IsTrue(even >= 20 && even <= 100);
+            }
+            Console.WriteLine();
+            for (int i = 0; i < 50; i++)
+            {
+                int even = r.RandomEvenInt(-20, -100);
+                Console.WriteLine(even);
+                Assert.IsTrue((even % 2) == 0);
+                Assert.IsTrue(even >=-100 && even <= -20);
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Faker
@@ -81,6 +82,24 @@ namespace Faker
             double randomDouble = this.RandomDouble(lower, upper);
             ulong randomUlong = (ulong)Math.Round(randomDouble);
             return randomUlong;
+        }
+        public int RandomEvenInt(int lower = int.MinValue, int upper = int.MaxValue)
+        {
+            int halfRangeInt = this.RandomInt(lower / 2, upper / 2);
+            return 2 * halfRangeInt;
+        }
+        public int RandomOddInt(int lower = int.MinValue, int upper = int.MaxValue)
+        {
+            if (lower % 2 == 0)
+            {
+                lower++;
+            }
+            if (upper % 2 == 0)
+            {
+                upper--;
+            }
+            int halfRangeInt = this.RandomInt(lower / 2, upper / 2);
+            return (2 * halfRangeInt) + 1;
         }
     }
 }
