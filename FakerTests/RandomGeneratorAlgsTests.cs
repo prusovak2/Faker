@@ -78,7 +78,7 @@ namespace FakerTests
             Console.WriteLine("thread {0} counter value {1}",this.id, Splitmix64.WeylSequenceSeedCounter);
             for (int i = 0; i < 30; i++)
             {
-                double random = r.Double();
+                double random = r.Random.Double();
                 this.nums[i] = random;
                 Console.WriteLine("{0} thread {1} generates random number {2}",i, this.id, random);
             }

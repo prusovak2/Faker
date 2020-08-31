@@ -19,7 +19,7 @@ namespace Faker
             int countToUse;
             if (!precise)
             {
-                countToUse = this.Int(1, count);
+                countToUse = this.Random.Int(1, count);
             }
             else
             {
