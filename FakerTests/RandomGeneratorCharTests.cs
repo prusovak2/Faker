@@ -17,7 +17,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 200; i++)
             {
-                char c = r.RandomChar();
+                char c = r.Char();
                 Assert.IsInstanceOfType(c, typeof(Char));
                 Console.WriteLine(c);
             }
@@ -30,7 +30,7 @@ namespace FakerTests
 
             for (int i = 0; i < 200; i++)
             {
-                char c = r.RandomChar('A','Z');
+                char c = r.Char('A','Z');
                 Console.WriteLine(c);
                 if (!counter.ContainsKey(c))
                 {
@@ -57,7 +57,7 @@ namespace FakerTests
 
             for (int i = 0; i < 200; i++)
             {
-                char c = r.RandomDigit();
+                char c = r.Digit();
                 Console.WriteLine(c);
                 if (!counter.ContainsKey(c))
                 {
@@ -84,7 +84,7 @@ namespace FakerTests
 
             for (int i = 0; i < 200; i++)
             {
-                char c = r.RandomHexadecimalDigit();
+                char c = r.HexadecimalDigit();
                 Console.WriteLine("hex:{0}",c);
                 if (!counter.ContainsKey(c))
                 {
@@ -114,7 +114,7 @@ namespace FakerTests
 
             for (int i = 0; i < 200; i++)
             {
-                char c = r.RandomLowerCaseLetter();
+                char c = r.LowerCaseLetter();
                 Console.WriteLine(c);
                 if (!counter.ContainsKey(c))
                 {
@@ -141,7 +141,7 @@ namespace FakerTests
 
             for (int i = 0; i < 200; i++)
             {
-                char c = r.RandomUpperCaseLetter();
+                char c = r.UpperCaseLetter();
                 Console.WriteLine(c);
                 if (!counter.ContainsKey(c))
                 {
@@ -168,7 +168,7 @@ namespace FakerTests
 
             for (int i = 0; i < 200; i++)
             {
-                char c = r.RandomLetter();
+                char c = r.Letter();
                 Console.WriteLine(c);
                 if (!counter.ContainsKey(c))
                 {
@@ -195,7 +195,7 @@ namespace FakerTests
 
             for (int i = 0; i < 400; i++)
             {
-                char c = r.RandomAlphanumericChar();
+                char c = r.AlphaNumeric();
                 Console.WriteLine(c);
                 if (!counter.ContainsKey(c))
                 {
@@ -222,7 +222,7 @@ namespace FakerTests
 
             for (int i = 0; i < 400; i++)
             {
-                char c = r.RandomAsciiChar();
+                char c = r.Ascii();
                 Console.WriteLine(c);
                 if (!counter.ContainsKey(c))
                 {
@@ -250,7 +250,7 @@ namespace FakerTests
 
             for (int i = 0; i < 100; i++)
             {
-                char c = r.RandomVowel();
+                char c = r.Vowel();
                 Console.WriteLine(c);
                 if (!counter.ContainsKey(c))
                 {
@@ -280,7 +280,7 @@ namespace FakerTests
             Console.WriteLine(consonant.Length);
             for (int i = 0; i < 100; i++)
             {
-                char c = r.RandomConsonant();
+                char c = r.Consonant();
                 Console.WriteLine(c);
                 if (!counter.ContainsKey(c))
                 {
@@ -305,7 +305,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomString();
+                string s = r.String();
                 Console.WriteLine(s);
                 foreach (var item in s)
                 {
@@ -319,7 +319,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomString(10, false);
+                string s = r.String(10, false);
                 Assert.IsTrue(s.Length <= 10);
                 Console.WriteLine(s);
                 foreach (var item in s)
@@ -329,7 +329,7 @@ namespace FakerTests
             }
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomString(10, true);
+                string s = r.String(10, true);
                 Assert.IsTrue(s.Length == 10);
                 Console.WriteLine(s);
                 foreach (var item in s)
@@ -344,7 +344,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomLowerCaseString();
+                string s = r.LowerCaseString();
                 Console.WriteLine(s);
                 foreach (var item in s)
                 {
@@ -359,7 +359,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomLowerCaseString(10, false);
+                string s = r.LowerCaseString(10, false);
                 Assert.IsTrue(s.Length <= 10);
                 Console.WriteLine(s);
                 foreach (var item in s)
@@ -370,7 +370,7 @@ namespace FakerTests
             }
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomLowerCaseString(10, true);
+                string s = r.LowerCaseString(10, true);
                 Assert.IsTrue(s.Length == 10);
                 Console.WriteLine(s);
                 foreach (var item in s)
@@ -386,7 +386,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomUpperCaseString(10, false);
+                string s = r.UpperCaseLetters(10, false);
                 Assert.IsTrue(s.Length <= 10);
                 Console.WriteLine(s);
                 foreach (var item in s)
@@ -397,7 +397,7 @@ namespace FakerTests
             }
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomUpperCaseString(10, true);
+                string s = r.UpperCaseLetters(10, true);
                 Assert.IsTrue(s.Length == 10);
                 Console.WriteLine(s);
                 foreach (var item in s)
@@ -413,7 +413,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomUpperCaseString();
+                string s = r.UpperCaseLetters();
                 Console.WriteLine(s);
                 foreach (var item in s)
                 {
@@ -428,7 +428,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomLatinLetters();
+                string s = r.Letters();
                 Console.WriteLine(s);
                 foreach (var item in s)
                 {
@@ -443,7 +443,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomLatinLetters(10, false);
+                string s = r.Letters(10, false);
                 Assert.IsTrue(s.Length <= 10);
                 Console.WriteLine(s);
                 foreach (var item in s)
@@ -454,7 +454,7 @@ namespace FakerTests
             }
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomLatinLetters(10, true);
+                string s = r.Letters(10, true);
                 Assert.IsTrue(s.Length == 10);
                 Console.WriteLine(s);
                 foreach (var item in s)
@@ -470,7 +470,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomAlphaNumericString();
+                string s = r.AlphaNumericString();
                 Console.WriteLine(s);
                 foreach (var item in s)
                 {
@@ -485,7 +485,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomAlphaNumericString(10, false);
+                string s = r.AlphaNumericString(10, false);
                 Assert.IsTrue(s.Length <= 10);
                 Console.WriteLine(s);
                 foreach (var item in s)
@@ -496,7 +496,7 @@ namespace FakerTests
             }
             for (int i = 0; i < 30; i++)
             {
-                string s = r.RandomAlphaNumericString(10, true);
+                string s = r.AlphaNumericString(10, true);
                 Assert.IsTrue(s.Length == 10);
                 Console.WriteLine(s);
                 foreach (var item in s)
@@ -512,7 +512,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 40; i++)
             {
-                string hex = r.RandomHexadecimalString(42, 10000);
+                string hex = r.HexadecimalString(42, 10000);
                 Console.WriteLine("hex:{0}",hex);
                 ulong val = Convert.ToUInt64(hex, 16);
                 Console.WriteLine("dec:{0}",val);
@@ -525,7 +525,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 40; i++)
             {
-                string hex = r.RandomHexadecimalString(5, false);
+                string hex = r.HexadecimalString(5, false);
                 Console.WriteLine("hex:{0}", hex);
                 Assert.IsTrue(hex.Length <= 5);
                 ulong val = Convert.ToUInt64(hex, 16);

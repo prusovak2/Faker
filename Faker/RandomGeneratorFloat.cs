@@ -24,7 +24,7 @@ namespace Faker
         /// <param name="lower"></param>
         /// <param name="upper"></param>
         /// <returns></returns>
-        public double RandomDouble(double lower = 0d, double upper = 1d)
+        public double Double(double lower = 0d, double upper = 1d)
         {
             //TODO: are all corner cases solved?
 
@@ -55,12 +55,12 @@ namespace Faker
                 bool useLower = this.RandomBool();
                 if (useLower)
                 {
-                    double lowerRandom = this.RandomDouble(lower, middlePoint);
+                    double lowerRandom = this.Double(lower, middlePoint);
                     return lowerRandom;
                 }
                 else
                 {
-                    double upperRandom = this.RandomDouble(middlePoint, upper);
+                    double upperRandom = this.Double(middlePoint, upper);
                     return upperRandom;
                 }
             }
@@ -90,7 +90,7 @@ namespace Faker
         /// <param name="lower"></param>
         /// <param name="upper"></param>
         /// <returns></returns>
-        public float RandomFloat(float lower = 0f, float upper = 1f) 
+        public float Float(float lower = 0f, float upper = 1f) 
         {
             //TODO: are all corner cases solved?
 
@@ -120,12 +120,12 @@ namespace Faker
                 bool useLower = this.RandomBool();
                 if (useLower)
                 {
-                    float lowerRandom = this.RandomFloat(lower, middlePoint);
+                    float lowerRandom = this.Float(lower, middlePoint);
                     return lowerRandom;
                 }
                 else
                 {
-                    float upperRandom = this.RandomFloat(middlePoint, upper);
+                    float upperRandom = this.Float(middlePoint, upper);
                     return upperRandom;
                 }
             }
@@ -145,9 +145,9 @@ namespace Faker
             decimal value = 1m;
             while (value >= 1) //it is possible but unlikely to generate combination if low, mid and high, that gives decimal >=1
             {
-                int low = this.RandomInt();
-                int mid = this.RandomInt();
-                int high = this.RandomInt(0, 542101087); //value of high of  0.9999999999999999999999999999m - to keep decimal in [0-1)
+                int low = this.Int();
+                int mid = this.Int();
+                int high = this.Int(0, 542101087); //value of high of  0.9999999999999999999999999999m - to keep decimal in [0-1)
                 value = new decimal(low, mid, high, false, 28);
             }
             return value;
@@ -159,7 +159,7 @@ namespace Faker
         /// <param name="lower"></param>
         /// <param name="upper"></param>
         /// <returns></returns>
-        public decimal RandomDecimal(decimal lower = 0m, decimal upper = 1m)
+        public decimal Decimal(decimal lower = 0m, decimal upper = 1m)
         {
             //TODO: are all corner cases solved?
             //to make a generating of doubles from [0,1) interval as fast as possible
@@ -187,12 +187,12 @@ namespace Faker
                 bool useLower = this.RandomBool();
                 if (useLower)
                 {
-                    decimal lowerRandom = this.RandomDecimal(lower, middlePoint);
+                    decimal lowerRandom = this.Decimal(lower, middlePoint);
                     return lowerRandom;
                 }
                 else
                 {
-                    decimal upperRandom = this.RandomDecimal(middlePoint, upper);
+                    decimal upperRandom = this.Decimal(middlePoint, upper);
                     return upperRandom;
                 }
             }

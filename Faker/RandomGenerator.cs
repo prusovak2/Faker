@@ -38,33 +38,33 @@ namespace Faker
             switch (o)
             {
                 case byte b:
-                    return () => this.RandomByte();
+                    return () => this.Byte();
                 case sbyte sb:
-                    return () => this.RandomSbyte();
+                    return () => this.Sbyte();
                 case short s:
-                    return () => this.RandomShort();
+                    return () => this.Short();
                 case ushort us:
-                    return () => this.RandomUshort();
+                    return () => this.Ushort();
                 case int i:
-                    return () => this.RandomInt();
+                    return () => this.Int();
                 case uint ui:
-                    return () => this.RandomUint();
+                    return () => this.Uint();
                 case long l:
-                    return () => this.RandomLong();
+                    return () => this.Long();
                 case ulong ul:
-                    return () => this.RandomUlong();
+                    return () => this.Ulong();
                 case float f:
-                    return () => this.RandomFloat();
+                    return () => this.Float();
                 case double d:
-                    return () => this.RandomDouble();
+                    return () => this.Double();
                 case decimal d:
-                    return () => this.RandomDecimal();
+                    return () => this.Decimal();
                 case char c:
-                    return () => this.RandomChar();
+                    return () => this.Char();
                 case bool b:
                     return () => this.RandomBool();
                 case string s:
-                    return () => this.RandomString();
+                    return () => this.String();
                 case DateTime dt:
                     return () => this.RandomDateTime();
                 case Guid g:
@@ -139,7 +139,7 @@ namespace Faker
         /// <returns></returns>
         public DateTime RandomDateTime(DateTime lower , DateTime upper)
         {
-            long randomLong = this.RandomLong(lower.Ticks, upper.Ticks);
+            long randomLong = this.Long(lower.Ticks, upper.Ticks);
             DateTime randomDateTime = new DateTime(randomLong);
             return randomDateTime;
         }
@@ -149,7 +149,7 @@ namespace Faker
         /// <returns></returns>
         public DateTime RandomDateTime()
         {
-            long randomLong = this.RandomLong(DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks);
+            long randomLong = this.Long(DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks);
             DateTime randomDateTime = new DateTime(randomLong);
             return randomDateTime;
         }
@@ -164,13 +164,13 @@ namespace Faker
         {
             if (upper)
             {
-                long randomLong = this.RandomLong(DateTime.MinValue.Ticks, border.Ticks);
+                long randomLong = this.Long(DateTime.MinValue.Ticks, border.Ticks);
                 DateTime randomDateTime = new DateTime(randomLong);
                 return randomDateTime;
             }
             else
             {
-                long randomLong = this.RandomLong(border.Ticks, DateTime.MaxValue.Ticks);
+                long randomLong = this.Long(border.Ticks, DateTime.MaxValue.Ticks);
                 DateTime randomDateTime = new DateTime(randomLong);
                 return randomDateTime;
             }

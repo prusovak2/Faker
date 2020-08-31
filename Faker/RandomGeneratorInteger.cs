@@ -8,13 +8,17 @@ namespace Faker
 {
     public partial class RandomGenerator
     {
+        public partial class Random
+        {
+
+        }
         /// <summary>
         /// generates a random integer from interval [lower,upper] <br/>
         /// when lower/upper bound is not specified, int.MinValue/int.MaxValue is used 
         /// </summary>
-        public int RandomInt(int lower = int.MinValue, int upper=int.MaxValue)
+        public int Int(int lower = int.MinValue, int upper=int.MaxValue)
         {
-            double randomDouble = this.RandomDouble(lower, upper);
+            double randomDouble = this.Double(lower, upper);
             int randomInt =(int) Math.Round(randomDouble);
             return randomInt;
         }
@@ -22,9 +26,9 @@ namespace Faker
         /// generates a random unsigned integer from interval [lower,upper] <br/>
         /// when lower/upper bound is not specified, uint.MinValue/uint.MaxValue is used 
         /// </summary>
-        public uint RandomUint(uint lower = uint.MinValue, uint upper = uint.MaxValue)
+        public uint Uint(uint lower = uint.MinValue, uint upper = uint.MaxValue)
         {
-            double randomDouble = this.RandomDouble(lower, upper);
+            double randomDouble = this.Double(lower, upper);
             uint randomUint = (uint)Math.Round(randomDouble);
             return randomUint;
         }
@@ -32,45 +36,45 @@ namespace Faker
         /// generates a random short from interval [lower,upper] <br/>
         /// when lower/upper bound is not specified, short.MinValue/short.MaxValue is used 
         /// </summary>
-        public short RandomShort(short lower = short.MinValue, short upper = short.MaxValue)
+        public short Short(short lower = short.MinValue, short upper = short.MaxValue)
         {
-            int randomInt = this.RandomInt(lower, upper);
+            int randomInt = this.Int(lower, upper);
             return (short)randomInt;
         }
         /// <summary>
         /// generates a random unsigned short from interval [lower,upper] <br/>
         /// when lower/upper bound is not specified, ushort.MinValue/ushort.MaxValue is used 
         /// </summary>
-        public ushort RandomUshort(ushort lower = ushort.MinValue, ushort upper = ushort.MaxValue)
+        public ushort Ushort(ushort lower = ushort.MinValue, ushort upper = ushort.MaxValue)
         {
-            uint randomUint = this.RandomUint(lower, upper);
+            uint randomUint = this.Uint(lower, upper);
             return (ushort)randomUint;
         }
         /// <summary>
         /// generates a random signed byte from interval [lower,upper] <br/>
         /// when lower/upper bound is not specified, sbyte.MinValue/sbyte.MaxValue is used 
         /// </summary>
-        public sbyte RandomSbyte(sbyte lower = sbyte.MinValue, sbyte upper=sbyte.MaxValue)
+        public sbyte Sbyte(sbyte lower = sbyte.MinValue, sbyte upper=sbyte.MaxValue)
         {
-            int randomInt = this.RandomInt(lower, upper);
+            int randomInt = this.Int(lower, upper);
             return (sbyte)randomInt;
         }
         /// <summary>
         /// generates a random byte from interval [lower,upper] <br/>
         /// when lower/upper bound is not specified, byte.MinValue/byte.MaxValue is used 
         /// </summary>
-        public byte RandomByte(byte lower = byte.MinValue, byte upper = byte.MaxValue)
+        public byte Byte(byte lower = byte.MinValue, byte upper = byte.MaxValue)
         {
-            uint randomUint = this.RandomUint(lower, upper);
+            uint randomUint = this.Uint(lower, upper);
             return (byte)randomUint;
         }
         /// <summary>
         /// generates a random long from interval [lower,upper] <br/>
         /// when lower/upper bound is not specified, long.MinValue/long.MaxValue is used 
         /// </summary>
-        public long RandomLong(long lower = long.MinValue, long upper = long.MaxValue)
+        public long Long(long lower = long.MinValue, long upper = long.MaxValue)
         {
-            double randomDouble = this.RandomDouble(lower, upper);
+            double randomDouble = this.Double(lower, upper);
             long randomLong = (long)Math.Round(randomDouble);
             return randomLong;
         }
@@ -78,13 +82,13 @@ namespace Faker
         /// generates a random unsigned long from interval [lower,upper] <br/>
         /// when lower/upper bound is not specified, ulong.MinValue/ulong.MaxValue is used 
         /// </summary>
-        public ulong RandomUlong(ulong lower = ulong.MinValue, ulong upper = ulong.MaxValue)
+        public ulong Ulong(ulong lower = ulong.MinValue, ulong upper = ulong.MaxValue)
         {
-            double randomDouble = this.RandomDouble(lower, upper);
+            double randomDouble = this.Double(lower, upper);
             ulong randomUlong = (ulong)Math.Round(randomDouble);
             return randomUlong;
         }
-        public int RandomEvenInt(int lower = int.MinValue, int upper = int.MaxValue)
+        public int IntEven(int lower = int.MinValue, int upper = int.MaxValue)
         {
             if ((lower == upper))
             {
@@ -114,11 +118,11 @@ namespace Faker
                 //we have to round down (subtract one)
                 halfUpper--;
             }
-            int halfRangeInt = this.RandomInt(halfLower,halfUpper);
+            int halfRangeInt = this.Int(halfLower,halfUpper);
             //bijection between all number from half sized interval and even numbers from original interval
             return 2 * halfRangeInt;
         }
-        public int RandomOddInt(int lower = int.MinValue, int upper = int.MaxValue)
+        public int IntOdd(int lower = int.MinValue, int upper = int.MaxValue)
         {
             if((lower == upper))
             {
@@ -140,7 +144,7 @@ namespace Faker
                 //there is one more odd number than there is even numbers in the interval
                 //shift lower to add one more even number to interval to gain bijection between odd and even numbers
                 lower--;
-                int even = this.RandomEvenInt(lower, upper);
+                int even = this.IntEven(lower, upper);
                 //map even number to closest higher odd number
                 return even + 1;
             }
@@ -149,21 +153,21 @@ namespace Faker
                 //there is one less odd number than there is even numbers in the interval
                 //shift upper so that we get rid of one extra even number
                 upper--;
-                int even = this.RandomEvenInt(lower, upper);
+                int even = this.IntEven(lower, upper);
                 //map even number to closest higher odd number
                 return even + 1;
             }
             if(lower % 2 == 0 && upper % 2 != 0)
             {
                 //same number of odd and even
-                int even = this.RandomEvenInt(lower, upper);
+                int even = this.IntEven(lower, upper);
                 //interval starts with even - shift up (+1)
                 return even + 1;
             }
             if (lower % 2 != 0 && upper % 2 == 0)
             {
                 //same number of odd and even
-                int even = this.RandomEvenInt(lower, upper);
+                int even = this.IntEven(lower, upper);
                 //interval ends with even - shift down (-1)
                 return even - 1;
             }

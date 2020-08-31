@@ -15,7 +15,7 @@ namespace FakerTests
         public void RandomCollectionParams()
         {
             RandomGenerator r = new RandomGenerator();
-            ICollection<byte> c = r.RandomCollection(r.RandomByte, (byte)5, byte.MaxValue, 30);
+            ICollection<byte> c = r.RandomCollection(r.Byte, (byte)5, byte.MaxValue, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c)
             {
@@ -23,7 +23,7 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(byte));
                 Assert.IsTrue(item >= 5 && item <= byte.MaxValue);
             }
-            ICollection<double> c2 = r.RandomCollection(r.RandomDouble, 5d, Double.MaxValue, 30);
+            ICollection<double> c2 = r.RandomCollection(r.Double, 5d, Double.MaxValue, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c2)
             {
@@ -94,7 +94,7 @@ namespace FakerTests
         public void RandomCollectionParamlessTest()
         {
             RandomGenerator r = new RandomGenerator();
-            ICollection<char> c = r.RandomCollection(r.RandomLowerCaseLetter, 30);
+            ICollection<char> c = r.RandomCollection(r.LowerCaseLetter, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c)
             {
@@ -125,7 +125,7 @@ namespace FakerTests
             }
 
             Console.WriteLine("paramless");
-            ICollection<char> c2 = r.RandomCollection(r.RandomAlphanumericChar, 100, false);
+            ICollection<char> c2 = r.RandomCollection(r.AlphaNumeric, 100, false);
             Console.WriteLine(c2.Count);
             Assert.IsTrue(c2.Count <= 100);
             foreach (var item in c2)
@@ -136,7 +136,7 @@ namespace FakerTests
             }
 
             Console.WriteLine("with params");
-            ICollection<decimal> c3 = r.RandomCollection(r.RandomDecimal,200m, 100000m,100,false);
+            ICollection<decimal> c3 = r.RandomCollection(r.Decimal,200m, 100000m,100,false);
             Console.WriteLine(c3.Count);
             Assert.IsTrue(c3.Count <= 100);
             foreach (var item in c3)
@@ -162,7 +162,7 @@ namespace FakerTests
             }
 
             Console.WriteLine("paramless");
-            IList<char> c2 = r.RandomList(r.RandomAlphanumericChar, 100, false);
+            IList<char> c2 = r.RandomList(r.AlphaNumeric, 100, false);
             Console.WriteLine(c2.Count);
             Assert.IsTrue(c2.Count <= 100);
             foreach (var item in c2)
@@ -173,7 +173,7 @@ namespace FakerTests
             }
 
             Console.WriteLine("with params");
-            IList<decimal> c3 = r.RandomList(r.RandomDecimal, 200m, 100000m, 100, false);
+            IList<decimal> c3 = r.RandomList(r.Decimal, 200m, 100000m, 100, false);
             Console.WriteLine(c3.Count);
             Assert.IsTrue(c3.Count <= 100);
             foreach (var item in c3)
@@ -187,7 +187,7 @@ namespace FakerTests
         public void RandomListParamlessTest()
         {
             RandomGenerator r = new RandomGenerator();
-            IList<char> c = r.RandomList(r.RandomLowerCaseLetter, 30);
+            IList<char> c = r.RandomList(r.LowerCaseLetter, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c)
             {
@@ -207,7 +207,7 @@ namespace FakerTests
         public void RandomListParams()
         {
             RandomGenerator r = new RandomGenerator();
-            IList<byte> c = r.RandomList(r.RandomByte, (byte)5, byte.MaxValue, 30);
+            IList<byte> c = r.RandomList(r.Byte, (byte)5, byte.MaxValue, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c)
             {
@@ -215,7 +215,7 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(byte));
                 Assert.IsTrue(item >= 5 && item <= byte.MaxValue);
             }
-            IList<double> c2 = r.RandomList(r.RandomDouble, 5d, Double.MaxValue, 30);
+            IList<double> c2 = r.RandomList(r.Double, 5d, Double.MaxValue, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c2)
             {
@@ -228,7 +228,7 @@ namespace FakerTests
         public void RandomCollectionOfCollectionsTest()
         {
             RandomGenerator r = new RandomGenerator();
-            ICollection<string> c = r.RandomCollection(r.RandomAlphaNumericString, 20, true, 30, false);
+            ICollection<string> c = r.RandomCollection(r.AlphaNumericString, 20, true, 30, false);
             Console.WriteLine(c.Count);
             Assert.AreEqual(20, c.Count);
             foreach (var item in c)
@@ -256,7 +256,7 @@ namespace FakerTests
         public void RandomListOfCollectionsTest()
         {
             RandomGenerator r = new RandomGenerator();
-            IList<string> c = r.RandomList(r.RandomAlphaNumericString, 20, true, 30, false);
+            IList<string> c = r.RandomList(r.AlphaNumericString, 20, true, 30, false);
             Console.WriteLine(c.Count);
             Assert.AreEqual(20, c.Count);
             foreach (var item in c)

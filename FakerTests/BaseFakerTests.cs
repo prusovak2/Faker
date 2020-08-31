@@ -95,8 +95,8 @@ namespace FakerTests
         {
 
             SetFaker(e => e.Value, new ValueClassFakerFlawedParams());
-            RuleFor(e => e.Test, f => f.RandomInt());
-            RuleFor(e => e.Field, f => f.RandomByte());
+            RuleFor(e => e.Test, f => f.Int());
+            RuleFor(e => e.Field, f => f.Byte());
 
         }
     }
@@ -125,8 +125,8 @@ namespace FakerTests
         {
 
             SetFaker(e => e.Value, new ValueClassFakerParams());
-            RuleFor(e => e.Test, f => f.RandomInt());
-            RuleFor(e => e.Field, f => f.RandomByte()); 
+            RuleFor(e => e.Test, f => f.Int());
+            RuleFor(e => e.Field, f => f.Byte()); 
 
         }
     }
@@ -136,8 +136,8 @@ namespace FakerTests
         {
 
             SetFaker(e => e.Value, new ValueClassFakerPopulate());
-            RuleFor(e => e.Test, f => f.RandomInt());
-            RuleFor(e => e.Field, f => f.RandomByte());
+            RuleFor(e => e.Test, f => f.Int());
+            RuleFor(e => e.Field, f => f.Byte());
 
         }
     }
@@ -147,8 +147,8 @@ namespace FakerTests
         {
 
             SetFaker(e => e.Value, new ValueClassFakerParameterless());
-            RuleFor(e => e.Test, f => f.RandomInt());
-            RuleFor(e => e.Field, f => f.RandomByte());
+            RuleFor(e => e.Test, f => f.Int());
+            RuleFor(e => e.Field, f => f.Byte());
 
         }
     }
@@ -156,9 +156,9 @@ namespace FakerTests
     {
         public StorageFakerMultipleRuleFor()
         {
-            RuleFor(e => e.Test, f => f.RandomInt());
-            RuleFor(e => e.Field, f => f.RandomByte());
-            RuleFor(e => e.Test, f => f.RandomInt());
+            RuleFor(e => e.Test, f => f.Int());
+            RuleFor(e => e.Field, f => f.Byte());
+            RuleFor(e => e.Test, f => f.Int());
         }
     }
     public class StorageFakerMultipleSetFaker : BaseFaker<Storage>
@@ -166,8 +166,8 @@ namespace FakerTests
         public StorageFakerMultipleSetFaker()
         {
             SetFaker(e => e.Value, new ValueClassFakerParameterless());
-            RuleFor(e => e.Test, f => f.RandomInt());
-            RuleFor(e => e.Field, f => f.RandomByte());
+            RuleFor(e => e.Test, f => f.Int());
+            RuleFor(e => e.Field, f => f.Byte());
             SetFaker(e => e.Value, new ValueClassFakerPopulate()) ;
         }
     }
@@ -176,7 +176,7 @@ namespace FakerTests
         public StorageFakerRuleForAndSetFaker()
         {
             SetFaker(e => e.Value, new ValueClassFakerParameterless());
-            RuleFor(e => e.Test, f => f.RandomInt());
+            RuleFor(e => e.Test, f => f.Int());
             RuleFor(e => e.Value, f => new ValueClass());
         }
     }
@@ -203,8 +203,8 @@ namespace FakerTests
         public AwesomeFaker()
         {
             RuleFor(e => e.SomeString, f => "ABRAKA");
-            RuleFor(e => e.SmallerNumber, g => g.RandomByte());
-            RuleFor(e => e.Number, h => h.RandomInt());
+            RuleFor(e => e.SmallerNumber, g => g.Byte());
+            RuleFor(e => e.Number, h => h.Int());
             RuleFor(e => e.IsAwesome, i => i.RandomBool());
             this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
             this.SetFaker(e => e.Value, new ValueClassFakerParameterless());
