@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -85,28 +86,91 @@ namespace Faker
         }
         public int RandomEvenInt(int lower = int.MinValue, int upper = int.MaxValue)
         {
-            int halfRangeInt = this.RandomInt(lower / 2, upper / 2);
-            return 2 * halfRangeInt;
-        }
-        public int RandomOddInt(int lower = int.MinValue, int upper = int.MaxValue)
-        {
-            //TODO: REPAIR, DOESNT WORK for -100,-20 produces -19!
+            if ((lower == upper))
+            {
+                if (lower %2==0)
+                {
+                    return lower;
+                }
+                throw new ArgumentException();
+            }
             if (lower > upper)
             {
                 int tmp = lower;
                 lower = upper;
                 upper = tmp;
             }
-            if (lower % 2 == 0)
+            int halfLower = lower / 2;
+            int halfUpper = upper / 2;
+            if((lower%2!=0) && (lower > 0))
             {
-                lower++;
+                //lower=21    (21/2)*2 = 20 - result of int division gets rounded down - we would get number out of the interval
+                // we have to round up (add one)
+                halfLower++;
             }
-            if (upper % 2 == 0)
+            if ((upper % 2 != 0) && upper < 0)
             {
+                //upper=-21   (-21/2)*2=-21 - result of int division gets rounded up when its negative - we would get number out of the interval
+                //we have to round down (subtract one)
+                halfUpper--;
+            }
+            int halfRangeInt = this.RandomInt(halfLower,halfUpper);
+            //bijection between all number from half sized interval and even numbers from original interval
+            return 2 * halfRangeInt;
+        }
+        public int RandomOddInt(int lower = int.MinValue, int upper = int.MaxValue)
+        {
+            if((lower == upper))
+            {
+                if(lower % 2 != 0)
+                {
+                    return lower;
+                }
+                throw new ArgumentException("There is no odd number in the interval you specified.");
+            }
+            if (lower > upper)
+            {
+                int tmp = lower;
+                lower = upper;
+                upper = tmp;
+            }
+            //both odd
+            if (lower % 2 != 0 && upper % 2 != 0)
+            {
+                //there is one more odd number than there is even numbers in the interval
+                //shift lower to add one more even number to interval to gain bijection between odd and even numbers
+                lower--;
+                int even = this.RandomEvenInt(lower, upper);
+                //map even number to closest higher odd number
+                return even + 1;
+            }
+            if(lower % 2 == 0 && upper % 2 == 0)
+            {
+                //there is one less odd number than there is even numbers in the interval
+                //shift upper so that we get rid of one extra even number
                 upper--;
+                int even = this.RandomEvenInt(lower, upper);
+                //map even number to closest higher odd number
+                return even + 1;
             }
-            int halfRangeInt = this.RandomInt(lower / 2, upper / 2);
-            return (2 * halfRangeInt) + 1;
+            if(lower % 2 == 0 && upper % 2 != 0)
+            {
+                //same number of odd and even
+                int even = this.RandomEvenInt(lower, upper);
+                //interval starts with even - shift up (+1)
+                return even + 1;
+            }
+            if (lower % 2 != 0 && upper % 2 == 0)
+            {
+                //same number of odd and even
+                int even = this.RandomEvenInt(lower, upper);
+                //interval ends with even - shift down (-1)
+                return even - 1;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }
