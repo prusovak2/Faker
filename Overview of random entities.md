@@ -44,6 +44,7 @@ RandomGenerator
 	}
 	RandomCollection
 	RandomList
+	//Enumerable
 	RandomBool
 	RandomDate
     {
