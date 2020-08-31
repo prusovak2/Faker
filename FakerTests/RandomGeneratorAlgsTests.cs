@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Faker;
 using System;
+using System.Threading;
 
 namespace FakerTests
 {
@@ -44,7 +45,37 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator(42);
             Assert.AreEqual(42ul, r.Seed);
         }
-        
+        [TestMethod]
+        public void WeysCounterThreadTest()
+        {
+            Job j1 = new Job(1);
+            Job j2 = new Job(2);
+            Thread t1 = new Thread(j1.run);
+            Thread t2 = new Thread(j2.run);
+            t1.Start();
+            t2.Start();
+            Assert.Fail();
+        }
+
+    }
+    class Job
+    {
+        internal int id;
+        public Job(int i)
+        {
+            id = i;
+        }
+        public void run()
+        {
+            Console.WriteLine("thread {0} creates random", this.id);
+            RandomGenerator r = new RandomGenerator();
+            Console.WriteLine("thread {0} counter value {1}",this.id, Splitmix64.WeylSequenceSeedCounter);
+            for (int i = 0; i < 30; i++)
+            {
+                Console.WriteLine("{0} thread {1} generates random number {2}",i, this.id, r.RandomDouble());
+            }
+
+        }
     }
 }
 

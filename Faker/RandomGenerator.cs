@@ -5,7 +5,7 @@ namespace Faker
 {
     public partial class RandomGenerator
     {
-        private IRandomGeneratorAlg RandomGeneratorAlg { get; set; }
+        internal IRandomGeneratorAlg RandomGeneratorAlg { get; set; }
         public RandomGenerator()
         {
             this.RandomGeneratorAlg = new Xoshiro256starstar();

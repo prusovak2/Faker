@@ -28,11 +28,11 @@ namespace Faker
         /// <summary>
         /// internal state necessary for generating pseudo-random numbers 
         /// </summary>
-        private ulong[] State = new ulong[4];
+        internal ulong[] State = new ulong[4];
         /// <summary>
         /// uses given seed or new seed based on the current time and the Weyl's sequence to generate a pseudo-random initial state for xorshift algorithm
         /// </summary>
-        private Splitmix64 StateRandomGenerator;
+        internal Splitmix64 StateRandomGenerator;
         /// <summary>
         /// Initialize seed by a current time <br/>
         /// due to use of Weyl's sequence, seeds of two RandomGenerators created soon after each other should differ
@@ -60,7 +60,7 @@ namespace Faker
             }
         }
 
-        private static ulong Roll64(ulong toRoll, int rollAmount)
+        internal static ulong Roll64(ulong toRoll, int rollAmount)
         {
             return (toRoll << rollAmount) | (toRoll >> (64 - rollAmount));
         }
@@ -93,9 +93,11 @@ namespace Faker
     /// </summary>
     internal class Splitmix64 : IRandomGeneratorAlg
     {
-        private static ulong WeylSequenceSeedCounter = 0;
+        internal static ulong WeylSequenceSeedCounter { get; private set; } = 0;
+
+        internal static readonly object WeylsCounterLock = new object();
         public ulong Seed { get; }
-        private ulong State { get; set; }
+        internal ulong State { get; set; }
         /// <summary>
         /// Initialize seed by a given value
         /// </summary>
@@ -115,7 +117,10 @@ namespace Faker
             //should produce a Weyl's sequence in WeylSequenceSeedCounter and so values of a counter should resemble a uniform distribution
             //to avoid producing the same seed for a two PRNGs seeded soon after each other
             //TODO: figure out, whether it is a good idea
-            Splitmix64.WeylSequenceSeedCounter += 0xb5ad4eceda1ce2a9; 
+            lock (WeylsCounterLock)
+            {
+                Splitmix64.WeylSequenceSeedCounter += 0xb5ad4eceda1ce2a9;
+            }
             ulong ticks = IRandomGeneratorAlg.getCurrentUnixTime();
             ulong counter = Splitmix64.WeylSequenceSeedCounter;
             ulong seed = ticks ^ counter;
