@@ -108,6 +108,10 @@ namespace Faker
             int index = this.RandomInt(0, consonants.Length - 1);
             return consonants[index];
         }
+        /// <summary>
+        /// returns a random char representing a hexadecimal digit 
+        /// </summary>
+        /// <returns></returns>
         public char RandomHexadecimalDigit()
         {
             char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -226,12 +230,25 @@ namespace Faker
             char[] chars = this.RandomList<char>(this.RandomAlphanumericChar, length, precise).ToArray();
             return new string(chars);
         }
+        /// <summary>
+        /// returns a string hexadecimal interpretation of random number from interval [lower,upper]
+        /// </summary>
+        /// <param name="lower"></param>
+        /// <param name="upper"></param>
+        /// <returns></returns>
         public string RandomHexadecimalString(ulong lower, ulong upper)
         {
             ulong randomLong = this.RandomUlong(lower, upper);
             string hexString = randomLong.ToString("X");
             return hexString;
         }
+        /// <summary>
+        /// returns a string representation of a hexadecimal number, that has numDigits digits (when precise is true)<br/>
+        /// otherwise numDigits is used as upper bound for a random number of hexadecimal digits
+        /// </summary>
+        /// <param name="numDigits"></param>
+        /// <param name="precise"></param>
+        /// <returns></returns>
         public string RandomHexadecimalString(int numDigits, bool precise)
         {
             char[] chars = this.RandomCollection<char>(this.RandomHexadecimalDigit, numDigits, precise).ToArray();
