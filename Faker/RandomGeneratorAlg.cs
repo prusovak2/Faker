@@ -117,12 +117,13 @@ namespace Faker
             //should produce a Weyl's sequence in WeylSequenceSeedCounter and so values of a counter should resemble a uniform distribution
             //to avoid producing the same seed for a two PRNGs seeded soon after each other
             //TODO: figure out, whether it is a good idea
+            ulong ticks = IRandomGeneratorAlg.getCurrentUnixTime();
+            ulong counter;
             lock (WeylsCounterLock)
             {
                 Splitmix64.WeylSequenceSeedCounter += 0xb5ad4eceda1ce2a9;
+                counter = Splitmix64.WeylSequenceSeedCounter;
             }
-            ulong ticks = IRandomGeneratorAlg.getCurrentUnixTime();
-            ulong counter = Splitmix64.WeylSequenceSeedCounter;
             ulong seed = ticks ^ counter;
             this.Seed = seed;
             this.State = seed;

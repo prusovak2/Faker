@@ -54,13 +54,19 @@ namespace FakerTests
             Thread t2 = new Thread(j2.run);
             t1.Start();
             t2.Start();
-            Assert.Fail();
+            t1.Join();
+            t2.Join();
+            for (int i = 0; i < 30; i++)
+            {
+                Assert.AreNotEqual(j1.nums[i], j2.nums[i]);
+            }
         }
 
     }
     class Job
     {
         internal int id;
+        public double[] nums = new double[30];
         public Job(int i)
         {
             id = i;
@@ -72,7 +78,9 @@ namespace FakerTests
             Console.WriteLine("thread {0} counter value {1}",this.id, Splitmix64.WeylSequenceSeedCounter);
             for (int i = 0; i < 30; i++)
             {
-                Console.WriteLine("{0} thread {1} generates random number {2}",i, this.id, r.RandomDouble());
+                double random = r.RandomDouble();
+                this.nums[i] = random;
+                Console.WriteLine("{0} thread {1} generates random number {2}",i, this.id, random);
             }
 
         }
