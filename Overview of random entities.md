@@ -1,0 +1,85 @@
+# Overview of random entities
+
+```pascal
+RandomGenerator
+{
+	RandomNumber
+	{
+		Double
+        Float
+        Decimal
+        Int
+        Uint
+        Short
+        Ushort
+        Sbyte
+        Byte
+        Long
+        Ulong
+        EvenInt
+        OddInt
+        Guid
+	}
+	RandomChar
+	{
+		Char
+		Digit
+		LowerCaseLetter
+		UpperCaseLetter
+		Letter
+		Alphanumeric
+		Ascii
+		Vowel
+		Consonant
+		HexadecimalDigit
+	}
+	RandomString
+	{
+		String
+		LowerCase
+		UpperCase
+		Letters
+		Aplhanumeric
+		Hexadecimal
+	}
+	RandomCollection
+	RandomList
+	RandomBool
+	RandomDate
+    {
+    	DateTime
+    	//WeekDay
+    	//Month
+    	//Future
+    	//Past
+    	//Soon
+    	//...
+    }
+    RandomName
+    {
+    	//Some name related stuff	
+    }
+    RandomAddress
+    {
+    	//Some address related stuff
+    }
+    Network
+    {
+    	//ulr
+    	//email
+    	//ip4/ip6
+    }
+    //PhoneNumber
+    Lorem
+    {
+    	//word
+		//paragraph
+		//lines
+    }
+    ExistingWords
+    {
+    	//verb,noun, adjective
+    }
+}
+```
+
