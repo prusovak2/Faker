@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Faker;
 using System.Reflection;
-
+using System.Linq;
 
 namespace FakerTests
 {
@@ -280,30 +280,131 @@ namespace FakerTests
                 Console.WriteLine();
             }
         }
-        /* [TestMethod]
-         public void RandomEnumerableParamlessTest()
-         {
-             RandomGenerator r = new RandomGenerator();
-             IEnumerable<char> c = r.RandomEnumerable(r.RandomLowerCaseLetter);
-             int counter = 0;
-             foreach (var item in c)
-             {
-                 Console.WriteLine(item);
-                 Assert.IsInstanceOfType(item, typeof(Char));
-                 Assert.IsTrue(char.IsLower(item));
-                 counter++;
-                 if (counter == 30)
-                     break;
+        [TestMethod]
+        public void RandomEnumerableParamlessTest()
+        {
+            int count = 30;
+            RandomGenerator r = new RandomGenerator();
+            IEnumerable<char> c = r.RandomEnumerable(r.Char.LowerCaseLetter, count, true);
+            int counter = 0;
+            foreach (var item in c)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(Char));
+                Assert.IsTrue(char.IsLower(item));
+                counter++;
+            }
+            Assert.AreEqual(count, counter);
+            char[] chars = c.ToArray();
 
-             }
-             IList<DateTime> c2 = r.RandomList(r.RandomDateTime, 30);
-             Console.WriteLine(c.Count);
-             foreach (var item in c2)
-             {
-                 Console.WriteLine(item);
-                 Assert.IsInstanceOfType(item, typeof(DateTime));
-             }
-         }*/
+            counter = 0;
+            IEnumerable<DateTime> c2 = r.RandomEnumerable(r.Random.DateTime, count, false);
+            foreach (var item in c2)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(DateTime));
+                counter++;
+            }
+            Assert.IsTrue(counter <= count);
+        }
+        [TestMethod]
+        public void RandomEnumerableParams()
+        {
+            int count = 30;
+            RandomGenerator r = new RandomGenerator();
+            IEnumerable<byte> c = r.RandomEnumerable(r.Random.Byte, (byte)5, byte.MaxValue, count);
+            int counter = 0;
+            foreach (var item in c)
+            {
+                Console.WriteLine("{0}: {1}",counter,item);
+                Assert.IsInstanceOfType(item, typeof(byte));
+                Assert.IsTrue(item >= 5 && item <= byte.MaxValue);
+                counter++;
+            }
+            Assert.AreEqual(count, counter);
+            counter = 0;
+            IEnumerable<double> c2 = r.RandomEnumerable(r.Random.Double, 5d, Double.MaxValue, count, false);
+            foreach (var item in c2)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(double));
+                Assert.IsTrue(item >= 5 && item < double.MaxValue);
+                counter++;
+            }
+            Assert.IsTrue(counter <= count);
+        }
+        [TestMethod]
+        public void RandomEnumerableDefaultFuncTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            int count = 30;
+            IEnumerable<ushort> c = r.RandomEnumerable<ushort>(count);
+            Console.WriteLine("ushort");
+            int counter = 0;
+            foreach (var item in c)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(ushort));
+                counter++;
+            }
+            Assert.AreEqual(count, counter);
+
+            IEnumerable<DateTime> c2 = r.RandomEnumerable<DateTime>(30, false);
+            Console.WriteLine("DateTime");
+            counter = 0;
+            foreach (var item in c2)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(DateTime));
+                counter++;
+            }
+            Assert.IsTrue(counter <= count);
+
+            Assert.ThrowsException<FakerException>(() => { ICollection<ValueClass> c3 = r.RandomCollection<ValueClass>(30); });
+
+            IEnumerable<char> c3 = r.RandomEnumerable<char>(30, false);
+            Console.WriteLine("char");
+            counter = 0;
+            foreach (var item in c3)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(char));
+                counter++;
+            }
+            Assert.IsTrue(counter <= count);
+        }
+        [TestMethod]
+        public void RandomEnumOfCollectionsTest()
+        {
+            int outerCount = 20;
+            int counter = 0;
+            RandomGenerator r = new RandomGenerator();
+            IEnumerable<string> c = r.RandomEnumerable(r.String.AlphaNumericString, outerCount, true, 30, false);
+            foreach (var item in c)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(string));
+                Assert.IsTrue(item.Length <= 30);
+                counter++;
+            }
+            Assert.AreEqual(outerCount, counter);
+
+            IEnumerable<IEnumerable<sbyte>> c2 = r.RandomEnumerable(r.RandomEnumerable<sbyte>, outerCount, false, 30, true);
+            foreach (var item in c2)
+            {
+                int innerCounter = 0;
+                foreach (var b in item)
+                {
+                    Console.Write("{0}, ", b);
+                    Assert.IsInstanceOfType(b, typeof(sbyte));
+                    innerCounter++;
+                }
+                Assert.IsInstanceOfType(item, typeof(IEnumerable<sbyte>));
+                Assert.AreEqual(30, innerCounter);
+                Console.WriteLine();
+            }
+            Assert.IsTrue(counter <= outerCount);
+        }
     }
 }
 

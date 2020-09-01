@@ -219,6 +219,93 @@ namespace Faker
             }
             return result;
         }
+        /// <summary>
+        /// returns enumerable of TMembers produced by Func<TMember> randomFunc <br/>
+        /// when precise is true, count is used as a size of returned collection <br/>
+        /// otherwise a random number less or equal to count is generated and used as a count
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="randomFunc"></param>
+        /// <param name="count">count of members in returned enumerable</param>
+        /// <param name="precise"></param>
+        /// <returns></returns>
+        public IEnumerable<TMember> RandomEnumerable<TMember>(Func<TMember> randomFunc, int count, bool precise = true)
+        {
+            int countToUse = this.CountToUse(count, precise);
+            for (int i = 0; i < countToUse; i++)
+            {
+                TMember next = randomFunc();
+                yield return next;
+            }
+        }
+        /// <summary>
+        /// returns an enumerable of TMembers produced by Func<TMember, TMember, TMembe> randomFunc <br/>
+        /// when precise is true, count is used as a size of returned collection <br/>
+        /// otherwise a random number less or equal to count is generated and used as a count
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="randomFunc"></param>
+        /// <param name="lower">lower bound passed to random function</param>
+        /// <param name="upper">upper bound passed to random function</param>
+        /// <param name="count">count of members in returned enumerable</param>
+        /// <param name="precise"></param>
+        /// <returns></returns>
+        public IEnumerable<TMember> RandomEnumerable<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
+        {
+            int countToUse = this.CountToUse(count, precise);
+            for (int i = 0; i < countToUse; i++)
+            {
+                TMember next = randomFunc(lower, upper);
+                yield return next;
+            }
+        }
+        /// <summary>
+        /// returns an enumerable of random members produced by a default random function for TMember type <br/>
+        /// when precise is true, count is used as a size of returned collection <br/>
+        /// otherwise a random number less or equal to count is generated and used as a count
+        /// </summary>
+        /// <exception cref="FakerException">Throws a FakerException, when there is no default random function for TMember type</exception>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="count"></param>
+        /// <param name="precise"></param>
+        /// <returns></returns>
+        public IEnumerable<TMember> RandomEnumerable<TMember>(int count, bool precise = true)
+        {
+            Type type = typeof(TMember);
+            Func<object> randomFunc = this.GetDefaultRandomFuncForType(type);
+            if (randomFunc is null)
+            {
+                throw new FakerException($"{typeof(TMember)} type does not have a default random function.");
+            }
+            int countToUse = this.CountToUse(count, precise);
+            for (int i = 0; i < countToUse; i++)
+            {
+                TMember next = (TMember)randomFunc();
+                yield return next;
+            }
+        }
+        /// <summary>
+        /// returns enumerable of TMembers produced by Func<int, bool, TMember> randomFunc<br/>
+        /// this overload is meant to be used to create random enumerable of random collections (for instance enumerable of random strings)<br/>
+        /// count and precise affect outer list, countInnerCollection and preciseInnerCollection affect members of this list
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="randomFunc"></param>
+        /// <param name="count">count of items in returned enumerable</param>
+        /// <param name="precise">is count precise or upper bound for random count</param>
+        /// <param name="countInnerCollection">count of items in inner collections</param>
+        /// <param name="preciseInnerCollection">is countInnerCollection precise or upper bound for random count</param>
+        /// <returns></returns>
+        public IEnumerable<TMember> RandomEnumerable<TMember>(Func<int, bool, TMember> randomFunc, int count, bool precise, int countInnerCollection, bool preciseInnerCollection)
+        {
+            int countToUse = this.CountToUse(count, precise);
+            for (int i = 0; i < countToUse; i++)
+            {
+                TMember next = (TMember)randomFunc(countInnerCollection, preciseInnerCollection);
+                yield return next;
+            }
+        }
+
         //TODO: Random enumerable?
         /*  public IEnumerable<TMember> RandomEnumerable<TMember>(Func<TMember> randomFunc)
           {
