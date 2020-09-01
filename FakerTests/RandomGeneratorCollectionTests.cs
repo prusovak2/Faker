@@ -15,7 +15,7 @@ namespace FakerTests
         public void RandomCollectionParams()
         {
             RandomGenerator r = new RandomGenerator();
-            ICollection<byte> c = r.RandomCollection(r.Random.Byte, (byte)5, byte.MaxValue, 30);
+            ICollection<byte> c = r.GenericCollection(r.Random.Byte, (byte)5, byte.MaxValue, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c)
             {
@@ -23,7 +23,7 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(byte));
                 Assert.IsTrue(item >= 5 && item <= byte.MaxValue);
             }
-            ICollection<double> c2 = r.RandomCollection(r.Random.Double, 5d, Double.MaxValue, 30);
+            ICollection<double> c2 = r.GenericCollection(r.Random.Double, 5d, Double.MaxValue, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c2)
             {
@@ -36,14 +36,14 @@ namespace FakerTests
         public void RandomCollectionDefaultFuncTest()
         {
             RandomGenerator r = new RandomGenerator();
-            ICollection<ushort> c = r.RandomCollection<ushort>(30);
+            ICollection<ushort> c = r.GenericCollection<ushort>(30);
             Console.WriteLine("ushort");
             foreach (var item in c)
             {
                 Console.WriteLine(item);
                 Assert.IsInstanceOfType(item, typeof(ushort));
             }
-            ICollection<DateTime> c2 = r.RandomCollection<DateTime>(30);
+            ICollection<DateTime> c2 = r.GenericCollection<DateTime>(30);
             Console.WriteLine("DateTime");
             foreach (var item in c2)
             {
@@ -51,9 +51,9 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(DateTime));
             }
 
-            Assert.ThrowsException<FakerException>(() => { ICollection<ValueClass> c3 = r.RandomCollection<ValueClass>(30); });
+            Assert.ThrowsException<FakerException>(() => { ICollection<ValueClass> c3 = r.GenericCollection<ValueClass>(30); });
 
-            ICollection<Char> c3 = r.RandomCollection<Char>(30);
+            ICollection<Char> c3 = r.GenericCollection<Char>(30);
             Console.WriteLine("char");
             foreach (var item in c3)
             {
@@ -65,14 +65,14 @@ namespace FakerTests
         public void RandomListDefaultFuncTest()
         {
             RandomGenerator r = new RandomGenerator();
-            IList<ushort> c = r.RandomList<ushort>(30);
+            IList<ushort> c = r.GenericList<ushort>(30);
             Console.WriteLine("ushort");
             foreach (var item in c)
             {
                 Console.WriteLine(item);
                 Assert.IsInstanceOfType(item, typeof(ushort));
             }
-            IList<DateTime> c2 = r.RandomList<DateTime>(30);
+            IList<DateTime> c2 = r.GenericList<DateTime>(30);
             Console.WriteLine("DateTime");
             foreach (var item in c2)
             {
@@ -80,9 +80,9 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(DateTime));
             }
 
-            Assert.ThrowsException<FakerException>(() => { IList<ValueClass> c3 = r.RandomList<ValueClass>(30); });
+            Assert.ThrowsException<FakerException>(() => { IList<ValueClass> c3 = r.GenericList<ValueClass>(30); });
 
-            IList<Char> c3 = r.RandomList<Char>(30);
+            IList<Char> c3 = r.GenericList<Char>(30);
             Console.WriteLine("char");
             foreach (var item in c3)
             {
@@ -94,7 +94,7 @@ namespace FakerTests
         public void RandomCollectionParamlessTest()
         {
             RandomGenerator r = new RandomGenerator();
-            ICollection<char> c = r.RandomCollection(r.Char.LowerCaseLetter, 30);
+            ICollection<char> c = r.GenericCollection(r.Char.LowerCaseLetter, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c)
             {
@@ -102,7 +102,7 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(Char));
                 Assert.IsTrue(char.IsLower(item));
             }
-            ICollection<DateTime> c2 = r.RandomCollection(r.Random.DateTime, 30);
+            ICollection<DateTime> c2 = r.GenericCollection(r.Random.DateTime, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c2)
             {
@@ -115,7 +115,7 @@ namespace FakerTests
         {
             RandomGenerator r = new RandomGenerator();
             Console.WriteLine("default func");
-            ICollection<float> c= r.RandomCollection<float>(100, false);
+            ICollection<float> c= r.GenericCollection<float>(100, false);
             Console.WriteLine(c.Count);
             Assert.IsTrue(c.Count <= 100);
             foreach (var item in c)
@@ -125,7 +125,7 @@ namespace FakerTests
             }
 
             Console.WriteLine("paramless");
-            ICollection<char> c2 = r.RandomCollection(r.Char.AlphaNumeric, 100, false);
+            ICollection<char> c2 = r.GenericCollection(r.Char.AlphaNumeric, 100, false);
             Console.WriteLine(c2.Count);
             Assert.IsTrue(c2.Count <= 100);
             foreach (var item in c2)
@@ -136,7 +136,7 @@ namespace FakerTests
             }
 
             Console.WriteLine("with params");
-            ICollection<decimal> c3 = r.RandomCollection(r.Random.Decimal,200m, 100000m,100,false);
+            ICollection<decimal> c3 = r.GenericCollection(r.Random.Decimal,200m, 100000m,100,false);
             Console.WriteLine(c3.Count);
             Assert.IsTrue(c3.Count <= 100);
             foreach (var item in c3)
@@ -152,7 +152,7 @@ namespace FakerTests
         {
             RandomGenerator r = new RandomGenerator();
             Console.WriteLine("default func");
-            IList<float> c = r.RandomList<float>(100, false);
+            IList<float> c = r.GenericList<float>(100, false);
             Console.WriteLine(c.Count);
             Assert.IsTrue(c.Count <= 100);
             foreach (var item in c)
@@ -162,7 +162,7 @@ namespace FakerTests
             }
 
             Console.WriteLine("paramless");
-            IList<char> c2 = r.RandomList(r.Char.AlphaNumeric, 100, false);
+            IList<char> c2 = r.GenericList(r.Char.AlphaNumeric, 100, false);
             Console.WriteLine(c2.Count);
             Assert.IsTrue(c2.Count <= 100);
             foreach (var item in c2)
@@ -173,7 +173,7 @@ namespace FakerTests
             }
 
             Console.WriteLine("with params");
-            IList<decimal> c3 = r.RandomList(r.Random.Decimal, 200m, 100000m, 100, false);
+            IList<decimal> c3 = r.GenericList(r.Random.Decimal, 200m, 100000m, 100, false);
             Console.WriteLine(c3.Count);
             Assert.IsTrue(c3.Count <= 100);
             foreach (var item in c3)
@@ -187,7 +187,7 @@ namespace FakerTests
         public void RandomListParamlessTest()
         {
             RandomGenerator r = new RandomGenerator();
-            IList<char> c = r.RandomList(r.Char.LowerCaseLetter, 30);
+            IList<char> c = r.GenericList(r.Char.LowerCaseLetter, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c)
             {
@@ -195,7 +195,7 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(Char));
                 Assert.IsTrue(char.IsLower(item));
             }
-            IList<DateTime> c2 = r.RandomList(r.Random.DateTime, 30);
+            IList<DateTime> c2 = r.GenericList(r.Random.DateTime, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c2)
             {
@@ -207,7 +207,7 @@ namespace FakerTests
         public void RandomListParams()
         {
             RandomGenerator r = new RandomGenerator();
-            IList<byte> c = r.RandomList(r.Random.Byte, (byte)5, byte.MaxValue, 30);
+            IList<byte> c = r.GenericList(r.Random.Byte, (byte)5, byte.MaxValue, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c)
             {
@@ -215,7 +215,7 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(byte));
                 Assert.IsTrue(item >= 5 && item <= byte.MaxValue);
             }
-            IList<double> c2 = r.RandomList(r.Random.Double, 5d, Double.MaxValue, 30);
+            IList<double> c2 = r.GenericList(r.Random.Double, 5d, Double.MaxValue, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c2)
             {
@@ -228,7 +228,7 @@ namespace FakerTests
         public void RandomCollectionOfCollectionsTest()
         {
             RandomGenerator r = new RandomGenerator();
-            ICollection<string> c = r.RandomCollection(r.String.AlphaNumericString, 20, true, 30, false);
+            ICollection<string> c = r.GenericCollection(r.String.AlphaNumericString, 20, true, 30, false);
             Console.WriteLine(c.Count);
             Assert.AreEqual(20, c.Count);
             foreach (var item in c)
@@ -237,7 +237,7 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(string));
                 Assert.IsTrue(item.Length <= 30);
             }
-            ICollection<ICollection<sbyte>> c2 = r.RandomCollection(r.RandomCollection<sbyte>, 20, false, 30, true);
+            ICollection<ICollection<sbyte>> c2 = r.GenericCollection(r.GenericCollection<sbyte>, 20, false, 30, true);
             Console.WriteLine(c2.Count);
             Assert.IsTrue( c2.Count<=20);
             foreach (var item in c2)
@@ -256,7 +256,7 @@ namespace FakerTests
         public void RandomListOfCollectionsTest()
         {
             RandomGenerator r = new RandomGenerator();
-            IList<string> c = r.RandomList(r.String.AlphaNumericString, 20, true, 30, false);
+            IList<string> c = r.GenericList(r.String.AlphaNumericString, 20, true, 30, false);
             Console.WriteLine(c.Count);
             Assert.AreEqual(20, c.Count);
             foreach (var item in c)
@@ -265,7 +265,7 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(string));
                 Assert.IsTrue(item.Length <= 30);
             }
-            IList<ICollection<sbyte>> c2 = r.RandomList(r.RandomCollection<sbyte>, 20, false, 30, true);
+            IList<ICollection<sbyte>> c2 = r.GenericList(r.GenericCollection<sbyte>, 20, false, 30, true);
             Console.WriteLine(c2.Count);
             Assert.IsTrue(c2.Count <= 20);
             foreach (var item in c2)
@@ -285,7 +285,7 @@ namespace FakerTests
         {
             int count = 30;
             RandomGenerator r = new RandomGenerator();
-            IEnumerable<char> c = r.RandomEnumerable(r.Char.LowerCaseLetter, count, true);
+            IEnumerable<char> c = r.GenericEnumerable(r.Char.LowerCaseLetter, count, true);
             int counter = 0;
             foreach (var item in c)
             {
@@ -298,7 +298,7 @@ namespace FakerTests
             char[] chars = c.ToArray();
 
             counter = 0;
-            IEnumerable<DateTime> c2 = r.RandomEnumerable(r.Random.DateTime, count, false);
+            IEnumerable<DateTime> c2 = r.GenericEnumerable(r.Random.DateTime, count, false);
             foreach (var item in c2)
             {
                 Console.WriteLine("{0}: {1}", counter, item);
@@ -312,7 +312,7 @@ namespace FakerTests
         {
             int count = 30;
             RandomGenerator r = new RandomGenerator();
-            IEnumerable<byte> c = r.RandomEnumerable(r.Random.Byte, (byte)5, byte.MaxValue, count);
+            IEnumerable<byte> c = r.GenericEnumerable(r.Random.Byte, (byte)5, byte.MaxValue, count);
             int counter = 0;
             foreach (var item in c)
             {
@@ -323,7 +323,7 @@ namespace FakerTests
             }
             Assert.AreEqual(count, counter);
             counter = 0;
-            IEnumerable<double> c2 = r.RandomEnumerable(r.Random.Double, 5d, Double.MaxValue, count, false);
+            IEnumerable<double> c2 = r.GenericEnumerable(r.Random.Double, 5d, Double.MaxValue, count, false);
             foreach (var item in c2)
             {
                 Console.WriteLine("{0}: {1}", counter, item);
@@ -338,7 +338,7 @@ namespace FakerTests
         {
             RandomGenerator r = new RandomGenerator();
             int count = 30;
-            IEnumerable<ushort> c = r.RandomEnumerable<ushort>(count);
+            IEnumerable<ushort> c = r.GenericEnumerable<ushort>(count);
             Console.WriteLine("ushort");
             int counter = 0;
             foreach (var item in c)
@@ -349,7 +349,7 @@ namespace FakerTests
             }
             Assert.AreEqual(count, counter);
 
-            IEnumerable<DateTime> c2 = r.RandomEnumerable<DateTime>(30, false);
+            IEnumerable<DateTime> c2 = r.GenericEnumerable<DateTime>(30, false);
             Console.WriteLine("DateTime");
             counter = 0;
             foreach (var item in c2)
@@ -360,9 +360,9 @@ namespace FakerTests
             }
             Assert.IsTrue(counter <= count);
 
-            Assert.ThrowsException<FakerException>(() => { ICollection<ValueClass> c3 = r.RandomCollection<ValueClass>(30); });
+            Assert.ThrowsException<FakerException>(() => { ICollection<ValueClass> c3 = r.GenericCollection<ValueClass>(30); });
 
-            IEnumerable<char> c3 = r.RandomEnumerable<char>(30, false);
+            IEnumerable<char> c3 = r.GenericEnumerable<char>(30, false);
             Console.WriteLine("char");
             counter = 0;
             foreach (var item in c3)
@@ -379,7 +379,7 @@ namespace FakerTests
             int outerCount = 20;
             int counter = 0;
             RandomGenerator r = new RandomGenerator();
-            IEnumerable<string> c = r.RandomEnumerable(r.String.AlphaNumericString, outerCount, true, 30, false);
+            IEnumerable<string> c = r.GenericEnumerable(r.String.AlphaNumericString, outerCount, true, 30, false);
             foreach (var item in c)
             {
                 Console.WriteLine("{0}: {1}", counter, item);
@@ -389,7 +389,7 @@ namespace FakerTests
             }
             Assert.AreEqual(outerCount, counter);
 
-            IEnumerable<IEnumerable<sbyte>> c2 = r.RandomEnumerable(r.RandomEnumerable<sbyte>, outerCount, false, 30, true);
+            IEnumerable<IEnumerable<sbyte>> c2 = r.GenericEnumerable(r.GenericEnumerable<sbyte>, outerCount, false, 30, true);
             foreach (var item in c2)
             {
                 int innerCounter = 0;
@@ -411,7 +411,7 @@ namespace FakerTests
         {
             int count = 30;
             RandomGenerator r = new RandomGenerator();
-            IEnumerable<char> c = r.RandomEnumerable(r.Char.LowerCaseLetter);
+            IEnumerable<char> c = r.InfiniteGenericEnumerable(r.Char.LowerCaseLetter);
             int counter = 0;
             foreach (var item in c)
             {
@@ -427,7 +427,7 @@ namespace FakerTests
             Assert.AreEqual(count, counter);
 
             counter = 0;
-            IEnumerable<DateTime> c2 = r.RandomEnumerable(r.Random.DateTime);
+            IEnumerable<DateTime> c2 = r.InfiniteGenericEnumerable(r.Random.DateTime);
             foreach (var item in c2)
             {
                 Console.WriteLine("{0}: {1}", counter, item);
@@ -445,7 +445,7 @@ namespace FakerTests
         {
             int count = 30;
             RandomGenerator r = new RandomGenerator();
-            IEnumerable<byte> c = r.RandomEnumerable(r.Random.Byte, (byte)5, byte.MaxValue);
+            IEnumerable<byte> c = r.InfiniteGenericEnumerable(r.Random.Byte, (byte)5, byte.MaxValue);
             int counter = 0;
             foreach (var item in c)
             {
@@ -460,7 +460,7 @@ namespace FakerTests
             }
             Assert.AreEqual(count, counter);
             counter = 0;
-            IEnumerable<double> c2 = r.RandomEnumerable(r.Random.Double, 5d, Double.MaxValue);
+            IEnumerable<double> c2 = r.InfiniteGenericEnumerable(r.Random.Double, 5d, Double.MaxValue);
             foreach (var item in c2)
             {
                 Console.WriteLine("{0}: {1}", counter, item);
@@ -479,7 +479,7 @@ namespace FakerTests
         {
             RandomGenerator r = new RandomGenerator();
             int count = 30;
-            IEnumerable<ushort> c = r.RandomEnumerable<ushort>();
+            IEnumerable<ushort> c = r.InfiniteGenericEnumerable<ushort>();
             Console.WriteLine("ushort");
             int counter = 0;
             foreach (var item in c)
@@ -494,7 +494,7 @@ namespace FakerTests
             }
             Assert.AreEqual(count, counter);
 
-            IEnumerable<DateTime> c2 = r.RandomEnumerable<DateTime>();
+            IEnumerable<DateTime> c2 = r.InfiniteGenericEnumerable<DateTime>();
             Console.WriteLine("DateTime");
             counter = 0;
             foreach (var item in c2)
@@ -509,9 +509,9 @@ namespace FakerTests
             }
             Assert.IsTrue(counter <= count);
 
-            Assert.ThrowsException<FakerException>(() => { ICollection<ValueClass> c3 = r.RandomCollection<ValueClass>(30); });
+            Assert.ThrowsException<FakerException>(() => { ICollection<ValueClass> c3 = r.GenericCollection<ValueClass>(30); });
 
-            IEnumerable<char> c3 = r.RandomEnumerable<char>();
+            IEnumerable<char> c3 = r.InfiniteGenericEnumerable<char>();
             Console.WriteLine("char");
             counter = 0;
             foreach (var item in c3)

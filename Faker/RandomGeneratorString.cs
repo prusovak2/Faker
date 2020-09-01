@@ -25,7 +25,7 @@ namespace Faker
             public string String()
             {
                 //parameterless overload necessary as default random function for string
-                char[] chars = this.RG.RandomList<char>(255).ToArray();
+                char[] chars = this.RG.GenericList<char>(255).ToArray();
                 return new string(chars);
             }
             /// <summary>
@@ -37,7 +37,7 @@ namespace Faker
             /// <returns></returns>
             public string String(int length, bool precise = true)
             {
-                char[] chars = this.RG.RandomList<char>(length, precise).ToArray();
+                char[] chars = this.RG.GenericList<char>(length, precise).ToArray();
                 return new string(chars);
             }
             /// <summary>
@@ -46,7 +46,7 @@ namespace Faker
             /// <returns></returns>
             public string LowerCaseString()
             {
-                char[] chars = this.RG.RandomList<char>(this.RG.Char.LowerCaseLetter, 255, true).ToArray();
+                char[] chars = this.RG.GenericList<char>(this.RG.Char.LowerCaseLetter, 255, true).ToArray();
                 return new string(chars);
             }
             /// <summary>
@@ -59,7 +59,7 @@ namespace Faker
             /// <returns></returns>
             public string LowerCaseString(int length, bool precise)
             {
-                char[] chars = this.RG.RandomList<char>(this.RG.Char.LowerCaseLetter, length, precise).ToArray();
+                char[] chars = this.RG.GenericList<char>(this.RG.Char.LowerCaseLetter, length, precise).ToArray();
                 return new string(chars);
             }
             /// <summary>
@@ -68,7 +68,7 @@ namespace Faker
             /// <returns></returns>
             public string UpperCaseLetters()
             {
-                char[] chars = this.RG.RandomList<char>(this.RG.Char.UpperCaseLetter, 255, true).ToArray();
+                char[] chars = this.RG.GenericList<char>(this.RG.Char.UpperCaseLetter, 255, true).ToArray();
                 return new string(chars);
             }
             /// <summary>
@@ -81,7 +81,7 @@ namespace Faker
             /// <returns></returns>
             public string UpperCaseLetters(int length, bool precise)
             {
-                char[] chars = this.RG.RandomList<char>(this.RG.Char.UpperCaseLetter, length, precise).ToArray();
+                char[] chars = this.RG.GenericList<char>(this.RG.Char.UpperCaseLetter, length, precise).ToArray();
                 return new string(chars);
             }
             /// <summary>
@@ -90,7 +90,7 @@ namespace Faker
             /// <returns></returns>
             public string Letters()
             {
-                char[] chars = this.RG.RandomList<char>(this.RG.Char.Letter, 255, true).ToArray();
+                char[] chars = this.RG.GenericList<char>(this.RG.Char.Letter, 255, true).ToArray();
                 return new string(chars);
             }
             /// <summary>
@@ -103,7 +103,7 @@ namespace Faker
             /// <returns></returns>
             public string Letters(int length, bool precise)
             {
-                char[] chars = this.RG.RandomList<char>(this.RG.Char.Letter, length, precise).ToArray();
+                char[] chars = this.RG.GenericList<char>(this.RG.Char.Letter, length, precise).ToArray();
                 return new string(chars);
             }
             /// <summary>
@@ -112,7 +112,7 @@ namespace Faker
             /// <returns></returns>
             public string AlphaNumericString() //TODO: rename to AlphaNumeric
             {
-                char[] chars = this.RG.RandomList<char>(this.RG.Char.AlphaNumeric, 255, true).ToArray();
+                char[] chars = this.RG.GenericList<char>(this.RG.Char.AlphaNumeric, 255, true).ToArray();
                 return new string(chars);
             }
             /// <summary>
@@ -125,7 +125,7 @@ namespace Faker
             /// <returns></returns>
             public string AlphaNumericString(int length, bool precise)
             {
-                char[] chars = this.RG.RandomList<char>(this.RG.Char.AlphaNumeric, length, precise).ToArray();
+                char[] chars = this.RG.GenericList<char>(this.RG.Char.AlphaNumeric, length, precise).ToArray();
                 return new string(chars);
             }
             /// <summary>
@@ -149,7 +149,7 @@ namespace Faker
             /// <returns></returns>
             public string HexadecimalString(int numDigits, bool precise)
             {
-                char[] chars = this.RG.RandomCollection<char>(this.RG.Char.HexadecimalDigit, numDigits, precise).ToArray();
+                char[] chars = this.RG.GenericCollection<char>(this.RG.Char.HexadecimalDigit, numDigits, precise).ToArray();
                 return new string(chars);
             }
         }
