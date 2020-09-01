@@ -67,16 +67,16 @@
  * Char
  * String
 
-
  RandomCollection<TMember>
+
  RandomList<TMember>
 
   
+
   
+
   
-  
-  
-  
+
      	//Enumerable
      	RandomDate
          {
