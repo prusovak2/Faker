@@ -291,14 +291,14 @@ namespace Faker
         /// </summary>
         /// <typeparam name="TMember"></typeparam>
         /// <param name="randomFunc"></param>
-        /// <param name="count">count of items in returned enumerable</param>
-        /// <param name="precise">is count precise or upper bound for random count</param>
+        /// <param name="countOuter">count of items in returned enumerable</param>
+        /// <param name="preciseOuter">is count precise or upper bound for random count</param>
         /// <param name="countInnerCollection">count of items in inner collections</param>
         /// <param name="preciseInnerCollection">is countInnerCollection precise or upper bound for random count</param>
         /// <returns></returns>
-        public IEnumerable<TMember> GenericEnumerable<TMember>(Func<int, bool, TMember> randomFunc, int count, bool precise, int countInnerCollection, bool preciseInnerCollection)
+        public IEnumerable<TMember> GenericEnumerable<TMember>(Func<int, bool, TMember> randomFunc, int countOuter, bool preciseOuter, int countInnerCollection, bool preciseInnerCollection)
         {
-            int countToUse = this.CountToUse(count, precise);
+            int countToUse = this.CountToUse(countOuter, preciseOuter);
             for (int i = 0; i < countToUse; i++)
             {
                 TMember next = (TMember)randomFunc(countInnerCollection, preciseInnerCollection);
@@ -351,6 +351,24 @@ namespace Faker
             while(true)
             {
                 TMember next = (TMember)randomFunc();
+                yield return next;
+            }
+        }
+        /// <summary>
+        /// returns enumerable of TMembers produced by Func<int, bool, TMember> randomFunc<br/>
+        /// this overload is meant to be used to create random enumerable of random collections (for instance enumerable of random strings)<br/>
+        /// count and precise affect outer list, countInnerCollection and preciseInnerCollection affect members of this list
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="randomFunc"></param>
+        /// <param name="countInnerCollection">count of items in inner collections</param>
+        /// <param name="preciseInnerCollection">is countInnerCollection precise or upper bound for random count</param>
+        /// <returns></returns>
+        public IEnumerable<TMember> InfiniteGenericEnumerable<TMember>(Func<int, bool, TMember> randomFunc, int countInnerCollection, bool preciseInnerCollection)
+        {
+            while(true)
+            {
+                TMember next = (TMember)randomFunc(countInnerCollection, preciseInnerCollection);
                 yield return next;
             }
         }

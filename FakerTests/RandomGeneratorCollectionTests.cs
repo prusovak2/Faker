@@ -526,6 +526,48 @@ namespace FakerTests
             }
             Assert.IsTrue(counter <= count);
         }
+        [TestMethod]
+        public void RandomInfiniteEnumOfCollectionsTest()
+        {
+            int outerCount = 20;
+            int counter = 0;
+            RandomGenerator r = new RandomGenerator();
+            IEnumerable<string> c = r.InfiniteGenericEnumerable(r.String.AlphaNumericString, 30, false);
+            foreach (var item in c)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(string));
+                Assert.IsTrue(item.Length <= 30);
+                counter++;
+                if (counter == outerCount)
+                {
+                    break;
+                }
+            }
+            Assert.AreEqual(outerCount, counter);
+
+            counter = 0;
+            IEnumerable<IEnumerable<sbyte>> c2 = r.InfiniteGenericEnumerable(r.GenericEnumerable<sbyte>, 30, true);
+            foreach (var item in c2)
+            {
+                int innerCounter = 0;
+                foreach (var b in item)
+                {
+                    Console.Write("{0}, ", b);
+                    Assert.IsInstanceOfType(b, typeof(sbyte));
+                    innerCounter++;
+                }
+                Assert.IsInstanceOfType(item, typeof(IEnumerable<sbyte>));
+                Assert.AreEqual(30, innerCounter);
+                Console.WriteLine();
+                counter++;
+                if (counter == outerCount)
+                {
+                    break;
+                }
+            }
+            Assert.IsTrue(counter <= outerCount);
+        }
     }
 }
 
