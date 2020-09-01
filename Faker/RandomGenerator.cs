@@ -21,6 +21,10 @@ namespace Faker
         /// all C# basic types (int, double, decimal, sbyte...) DateTime, Guid, Bool, odd and even numbers...
         /// </summary>
         public RandomBasicTypes Random { get; }
+        /// <summary>
+        /// enumerables of basic types
+        /// </summary>
+        public RandomEnumerable Enumerable { get; }
 
         public RandomGenerator()
         {
@@ -28,6 +32,7 @@ namespace Faker
             this.Char = new RandomChar(this);
             this.String = new RandomString(this);
             this.Random = new RandomBasicTypes(this);
+            this.Enumerable = new RandomEnumerable(this);
         }
         public RandomGenerator(ulong seed)
         {
