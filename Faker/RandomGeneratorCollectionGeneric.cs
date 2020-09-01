@@ -37,7 +37,7 @@ namespace Faker
         /// <param name="count">count of members in returned collection</param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public ICollection<TMember> RandomCollection<TMember>(Func<TMember> randomFunc, int count, bool precise = true)
+        public ICollection<TMember> GenericCollection<TMember>(Func<TMember> randomFunc, int count, bool precise = true)
         {
             ICollection<TMember> result = new Collection<TMember>();
 
@@ -61,7 +61,7 @@ namespace Faker
         /// <param name="count">count of members in returned collection</param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public ICollection<TMember> RandomCollection<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
+        public ICollection<TMember> GenericCollection<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
         {
             ICollection<TMember> result = new Collection<TMember>();
             int countToUse = this.CountToUse(count, precise);
@@ -82,7 +82,7 @@ namespace Faker
         /// <param name="count"></param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public ICollection<TMember> RandomCollection<TMember>(int count, bool precise = true)
+        public ICollection<TMember> GenericCollection<TMember>(int count, bool precise = true)
         {
             Type type = typeof(TMember);
             Func<object> randomFunc = this.GetDefaultRandomFuncForType(type);
@@ -111,7 +111,7 @@ namespace Faker
         /// <param name="countInnerCollection">length of inner collections</param>
         /// <param name="preciseInnerCollection">is countInnerCollection precise or upper bound for random count</param>
         /// <returns></returns>
-        public ICollection<TMember>RandomCollection<TMember>(Func<int, bool, TMember> randomFunc,int count, bool precise, int countInnerCollection, bool preciseInnerCollection)
+        public ICollection<TMember>GenericCollection<TMember>(Func<int, bool, TMember> randomFunc,int count, bool precise, int countInnerCollection, bool preciseInnerCollection)
         {
             ICollection<TMember> result = new Collection<TMember>();
             int countToUse = this.CountToUse(count, precise);
@@ -132,7 +132,7 @@ namespace Faker
         /// <param name="count"></param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public IList<TMember> RandomList<TMember>(int count, bool precise = false)
+        public IList<TMember> GenericList<TMember>(int count, bool precise = false)
         {
             Type type = typeof(TMember);
             Func<object> randomFunc = this.GetDefaultRandomFuncForType(type);
@@ -160,7 +160,7 @@ namespace Faker
         /// <param name="count"></param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public IList<TMember> RandomList<TMember>(Func<TMember> randomFunc, int count, bool precise = true)
+        public IList<TMember> GenericList<TMember>(Func<TMember> randomFunc, int count, bool precise = true)
         {
             IList<TMember> result = new List<TMember>();
 
@@ -185,7 +185,7 @@ namespace Faker
         /// <param name="count"></param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public IList<TMember> RandomList<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
+        public IList<TMember> GenericList<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
         {
             IList<TMember> result = new List<TMember>();
             int countToUse = this.CountToUse(count, precise);
@@ -208,7 +208,7 @@ namespace Faker
         /// <param name="countInnerCollection">length of inner collections</param>
         /// <param name="preciseInnerCollection">is countInnerCollection precise or upper bound for random count</param>
         /// <returns></returns>
-        public IList<TMember> RandomList<TMember>(Func<int, bool, TMember> randomFunc, int count, bool precise, int countInnerCollection, bool preciseInnerCollection)
+        public IList<TMember> GenericList<TMember>(Func<int, bool, TMember> randomFunc, int count, bool precise, int countInnerCollection, bool preciseInnerCollection)
         {
             IList<TMember> result = new List<TMember>();
             int countToUse = this.CountToUse(count, precise);
@@ -229,7 +229,7 @@ namespace Faker
         /// <param name="count">count of members in returned enumerable</param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public IEnumerable<TMember> RandomEnumerable<TMember>(Func<TMember> randomFunc, int count, bool precise = true)
+        public IEnumerable<TMember> GenericEnumerable<TMember>(Func<TMember> randomFunc, int count, bool precise = true)
         {
             int countToUse = this.CountToUse(count, precise);
             for (int i = 0; i < countToUse; i++)
@@ -250,7 +250,7 @@ namespace Faker
         /// <param name="count">count of members in returned enumerable</param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public IEnumerable<TMember> RandomEnumerable<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
+        public IEnumerable<TMember> GenericEnumerable<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
         {
             int countToUse = this.CountToUse(count, precise);
             for (int i = 0; i < countToUse; i++)
@@ -269,7 +269,7 @@ namespace Faker
         /// <param name="count"></param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public IEnumerable<TMember> RandomEnumerable<TMember>(int count, bool precise = true)
+        public IEnumerable<TMember> GenericEnumerable<TMember>(int count, bool precise = true)
         {
             Type type = typeof(TMember);
             Func<object> randomFunc = this.GetDefaultRandomFuncForType(type);
@@ -296,7 +296,7 @@ namespace Faker
         /// <param name="countInnerCollection">count of items in inner collections</param>
         /// <param name="preciseInnerCollection">is countInnerCollection precise or upper bound for random count</param>
         /// <returns></returns>
-        public IEnumerable<TMember> RandomEnumerable<TMember>(Func<int, bool, TMember> randomFunc, int count, bool precise, int countInnerCollection, bool preciseInnerCollection)
+        public IEnumerable<TMember> GenericEnumerable<TMember>(Func<int, bool, TMember> randomFunc, int count, bool precise, int countInnerCollection, bool preciseInnerCollection)
         {
             int countToUse = this.CountToUse(count, precise);
             for (int i = 0; i < countToUse; i++)
@@ -305,8 +305,13 @@ namespace Faker
                 yield return next;
             }
         }
-
-        public IEnumerable<TMember> RandomEnumerable<TMember>(Func<TMember> randomFunc)
+        /// <summary>
+        /// returns INFINITE enumerable of TMembers produced by Func<int, bool, TMember> randomFunc<br/>
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="randomFunc"></param>
+        /// <returns></returns>
+        public IEnumerable<TMember> InfiniteGenericEnumerable<TMember>(Func<TMember> randomFunc)
         {
             while(true)
             {
@@ -314,7 +319,15 @@ namespace Faker
                 yield return next;
             }
         }
-        public IEnumerable<TMember> RandomEnumerable<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper)
+        /// <summary>
+        /// returns an INFINITE enumerable of TMembers produced by Func<TMember, TMember, TMembe> randomFunc <br/>
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="randomFunc"></param>
+        /// <param name="lower"></param>
+        /// <param name="upper"></param>
+        /// <returns></returns>
+        public IEnumerable<TMember> InfiniteGenericEnumerable<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper)
         {
             while(true)
             {
@@ -322,7 +335,12 @@ namespace Faker
                 yield return next;
             }
         }
-        public IEnumerable<TMember> RandomEnumerable<TMember>()
+        /// <summary>
+        /// returns an INFINITE enumerable of random members produced by a default random function for TMember type <br/>
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <returns></returns>
+        public IEnumerable<TMember> InfiniteGenericEnumerable<TMember>()
         {
             Type type = typeof(TMember);
             Func<object> randomFunc = this.GetDefaultRandomFuncForType(type);
