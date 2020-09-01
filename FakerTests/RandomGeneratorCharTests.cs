@@ -20,6 +20,9 @@ namespace FakerTests
                 char c = r.Char.Char();
                 Assert.IsInstanceOfType(c, typeof(Char));
                 Console.WriteLine(c);
+                char c2 = r.Random.Char();
+                Assert.IsInstanceOfType(c2, typeof(Char));
+                Console.WriteLine(c2);
             }
         }
         [TestMethod]
@@ -308,6 +311,12 @@ namespace FakerTests
                 string s = r.String.String();
                 Console.WriteLine(s);
                 foreach (var item in s)
+                {
+                    Assert.IsInstanceOfType(item, typeof(char));
+                }
+                string s2 = r.Random.String();
+                Console.WriteLine(s2);
+                foreach (var item in s2)
                 {
                     Assert.IsInstanceOfType(item, typeof(char));
                 }
