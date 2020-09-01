@@ -24,6 +24,7 @@
  * String
 
 ####Char.
+
 * Char
 * Digit
 * LowerCaseLetter
@@ -37,6 +38,7 @@
 * WhiteSpace
 
 ####String.
+
 * String
 * LowerCase
 * UpperCase
@@ -44,7 +46,8 @@
 * Aplhanumeric
 * Hexadecimal
 
-####Enumerable
+####Enumerable.
+
  * Double
  * Float
  * Decimal
@@ -63,12 +66,18 @@
  * DateTime
  * Char
  * String
- 
- 
+
+
 * RandomCollection<TMember>
+
 * RandomList<TMember>
- 
-     	
+
+  
+  
+  
+  
+  
+  
      	//Enumerable
      	RandomDate
          {
