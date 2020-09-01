@@ -405,6 +405,127 @@ namespace FakerTests
             }
             Assert.IsTrue(counter <= outerCount);
         }
+
+        [TestMethod]
+        public void RandomEnumerableEndlessParamlessTest()
+        {
+            int count = 30;
+            RandomGenerator r = new RandomGenerator();
+            IEnumerable<char> c = r.RandomEnumerable(r.Char.LowerCaseLetter);
+            int counter = 0;
+            foreach (var item in c)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(Char));
+                Assert.IsTrue(char.IsLower(item));
+                counter++;
+                if (counter == count)
+                {
+                    break;
+                }
+            }
+            Assert.AreEqual(count, counter);
+
+            counter = 0;
+            IEnumerable<DateTime> c2 = r.RandomEnumerable(r.Random.DateTime);
+            foreach (var item in c2)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(DateTime));
+                counter++;
+                if (counter == count)
+                {
+                    break;
+                }
+            }
+            Assert.AreEqual(count, counter);
+        }
+        [TestMethod]
+        public void RandomEnumerableEndlessParams()
+        {
+            int count = 30;
+            RandomGenerator r = new RandomGenerator();
+            IEnumerable<byte> c = r.RandomEnumerable(r.Random.Byte, (byte)5, byte.MaxValue);
+            int counter = 0;
+            foreach (var item in c)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(byte));
+                Assert.IsTrue(item >= 5 && item <= byte.MaxValue);
+                counter++;
+                if (counter == count)
+                {
+                    break;
+                }
+            }
+            Assert.AreEqual(count, counter);
+            counter = 0;
+            IEnumerable<double> c2 = r.RandomEnumerable(r.Random.Double, 5d, Double.MaxValue);
+            foreach (var item in c2)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(double));
+                Assert.IsTrue(item >= 5 && item < double.MaxValue);
+                counter++;
+                if (counter == count)
+                {
+                    break;
+                }
+            }
+            Assert.AreEqual(count, counter);
+        }
+        [TestMethod]
+        public void RandomEnumerableEndlessDefaultFuncTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            int count = 30;
+            IEnumerable<ushort> c = r.RandomEnumerable<ushort>();
+            Console.WriteLine("ushort");
+            int counter = 0;
+            foreach (var item in c)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(ushort));
+                counter++;
+                if (counter == count)
+                {
+                    break;
+                }
+            }
+            Assert.AreEqual(count, counter);
+
+            IEnumerable<DateTime> c2 = r.RandomEnumerable<DateTime>();
+            Console.WriteLine("DateTime");
+            counter = 0;
+            foreach (var item in c2)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(DateTime));
+                counter++;
+                if (counter == count)
+                {
+                    break;
+                }
+            }
+            Assert.IsTrue(counter <= count);
+
+            Assert.ThrowsException<FakerException>(() => { ICollection<ValueClass> c3 = r.RandomCollection<ValueClass>(30); });
+
+            IEnumerable<char> c3 = r.RandomEnumerable<char>();
+            Console.WriteLine("char");
+            counter = 0;
+            foreach (var item in c3)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(char));
+                counter++;
+                if (counter == count)
+                {
+                    break;
+                }
+            }
+            Assert.IsTrue(counter <= count);
+        }
     }
 }
 

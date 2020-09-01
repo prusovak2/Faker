@@ -306,31 +306,35 @@ namespace Faker
             }
         }
 
-        //TODO: Random enumerable?
-        /*  public IEnumerable<TMember> RandomEnumerable<TMember>(Func<TMember> randomFunc)
-          {
-              RandomEnumerableClass < TMember > Enumerable = new RandomEnumerableClass<TMember>(randomFunc);
-              return Enumerable;
-          }
-          private class RandomEnumerableClass<TMemeber> : IEnumerable<TMemeber>
-          {
-              internal Func<TMemeber> randomFunc;
-              public RandomEnumerableClass(Func<TMemeber> func)
-              {
-                  this.randomFunc = func;
-              }
-              public IEnumerator<TMemeber> GetEnumerator()
-              {
-                  while (true)
-                  {
-                      yield return this.randomFunc();
-                  }
-              }
-
-              IEnumerator IEnumerable.GetEnumerator()
-              {
-                  throw new NotImplementedException();
-              }
-          }*/
+        public IEnumerable<TMember> RandomEnumerable<TMember>(Func<TMember> randomFunc)
+        {
+            while(true)
+            {
+                TMember next = randomFunc();
+                yield return next;
+            }
+        }
+        public IEnumerable<TMember> RandomEnumerable<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper)
+        {
+            while(true)
+            {
+                TMember next = randomFunc(lower, upper);
+                yield return next;
+            }
+        }
+        public IEnumerable<TMember> RandomEnumerable<TMember>()
+        {
+            Type type = typeof(TMember);
+            Func<object> randomFunc = this.GetDefaultRandomFuncForType(type);
+            if (randomFunc is null)
+            {
+                throw new FakerException($"{typeof(TMember)} type does not have a default random function.");
+            }
+            while(true)
+            {
+                TMember next = (TMember)randomFunc();
+                yield return next;
+            }
+        }
     }
 }
