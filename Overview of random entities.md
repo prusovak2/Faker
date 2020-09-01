@@ -23,7 +23,7 @@
  * Char
  * String
 
-####Char.
+#### Char.
 
 * Char
 * Digit
@@ -37,7 +37,7 @@
 * HexadecimalDigit
 * WhiteSpace
 
-####String.
+#### String.
 
 * String
 * LowerCase
@@ -46,7 +46,7 @@
 * Aplhanumeric
 * Hexadecimal
 
-####Enumerable.
+#### Enumerable.
 
  * Double
  * Float
@@ -68,9 +68,8 @@
  * String
 
 
-* RandomCollection<TMember>
-
-* RandomList<TMember>
+ RandomCollection<TMember>
+ RandomList<TMember>
 
   
   
