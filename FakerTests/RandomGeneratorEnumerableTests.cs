@@ -859,7 +859,7 @@ namespace FakerTests
             IEnumerable<string> e = r.Enumerable.String();
             foreach (var item in e)
             {
-                Console.WriteLine("{0}: {1}", counter, item);
+                //Console.WriteLine("{0}: {1}", counter, item);
                 Assert.IsInstanceOfType(item, typeof(string));
                 Assert.AreEqual(255, item.Length);
                 counter++;
@@ -870,19 +870,8 @@ namespace FakerTests
             }
             Console.WriteLine();
 
-            //finite, range inner precise 20
-            counter = 0;
-            e = r.Enumerable.String(count, true, 20);
-            foreach (var item in e)
-            {
-                Console.WriteLine("{0}: {1}", counter, item);
-                Assert.IsInstanceOfType(item, typeof(string));
-                Assert.AreEqual(255, item.Length);
-                counter++;
-            }
-            Assert.AreEqual(count, counter);
-            Console.WriteLine();
-
+           
+/*
             //finite, inner not precise
             counter = 0;
             e = r.Enumerable.String(count, true, 30, false);
@@ -905,8 +894,46 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(string));
                 counter++;
             }
+            Assert.IsTrue(count >= counter);*/
+        }
+        [TestMethod]
+        public void StringEnumerableTest2()
+        {
+            RandomGenerator r = new RandomGenerator();
+            int count = 30;
+            int counter = 0;
+            IEnumerable<string> e;
+            //finite, range inner precise 20
+            e = r.Enumerable.String(count, true, 20);
+            foreach (var item in e)
+            {
+                Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(string));
+                Assert.AreEqual(20, item.Length);
+                counter++;
+            }
+            Assert.AreEqual(count, counter);
+            Console.WriteLine();
+        }
+        [TestMethod]
+        public void StringEnumerableTest3()
+        {
+            RandomGenerator r = new RandomGenerator();
+            int count = 30;
+            int counter = 0;
+            IEnumerable<string> e;
+            //finite not precise
+            counter = 0;
+            e = r.Enumerable.String(count, false);
+            foreach (var item in e)
+            {
+                //Console.WriteLine("{0}: {1}", counter, item);
+                Assert.IsInstanceOfType(item, typeof(string));
+                counter++;
+            }
             Assert.IsTrue(count >= counter);
         }
     }
+
 }
 
