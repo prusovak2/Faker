@@ -67,9 +67,11 @@
  * Char
  * String
 
- RandomCollection<TMember>
+##### RandomCollection<TMember>
 
- RandomList<TMember>
+##### RandomList<TMember>
+
+##### RandomEnumerable<TMember>
 
   
 
