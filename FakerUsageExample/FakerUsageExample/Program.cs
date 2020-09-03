@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Faker;
 
@@ -33,12 +34,25 @@ namespace FakerUsageExample
                 Storage s = storageFaker.Generate();
                 Console.WriteLine(s);
             }*/
-            SimplePersonFaker simplePersonFaker = new SimplePersonFaker();
+
+            /*SimplePersonFaker simplePersonFaker = new SimplePersonFaker();
             for (int i = 0; i < 3; i++)
             {
                 Person p = simplePersonFaker.Generate();
                 Console.WriteLine(p);
+            }*/
+            RandomGenerator rg = new RandomGenerator(); 
+            DateTime date = rg.Random.DateTime(new DateTime(2000, 1, 1), new DateTime(2020, 1, 1));
+            Console.WriteLine(date);
+            IEnumerable<sbyte>  sbytes = rg.Enumerable.Sbyte(42);
+            foreach (var item in sbytes)
+            {
+                Console.WriteLine(item);
             }
+            decimal d = rg.Random.Decimal();
+            Console.WriteLine(d);
+
+
         }
     }
     public class Person
