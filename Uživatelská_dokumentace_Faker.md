@@ -2,9 +2,9 @@
 
 ## Uživatelská dokumentace
 
-`Faker` je generátor pseudonáhodného obsahu objektů v C#. Lze ho využít k vyplnění instancí uživatelem definovaných tříd daty, která jsou pseudonáhodná, ale relevantní v uživatelem specifikovaném kontextu. Umožňuje uživateli nakonfigurovat, jakým způsobem mají být instance jeho třídy vyplňovány a následně generovat (případně velké) množství takovýchto instancí. `Faker` lze využít například ke generování testovacích dat či dat pro benchmarks.
+`Faker` je generátor pseudonáhodného obsahu objektů v C#. Lze ho využít k vyplnění instancí uživatelem definovaných tříd daty, která jsou pseudonáhodná, ale relevantní v uživatelem specifikovaném kontextu. Umožňuje uživateli nakonfigurovat, jakým způsobem mají být instance jeho třídy vyplňovány a následně generovat (případně velké) množství takovýchto instancí. `Faker` lze využít například ke generování testovacích dat či dat pro vytváření benchmarks.
 
- ### Příklady použití
+ ### Návod k použití
 
 #### `RuleFor`, `Generate`, `Populate`
 
@@ -217,6 +217,8 @@ DateTime date = rg.Random.DateTime(new DateTime(2000, 1, 1), new DateTime(2020, 
 IEnumerable<sbyte>  sbytes = rg.Enumerable.Sbyte(42);
 decimal d = rg.Random.Decimal();
 ```
+
+Pokud chce uživatel duplikovat stejnou posloupnost náhodných hodnot (například za účelem zopakovaní případu, kdy v jeho programu došlo k výjimce), může zjistit seed `RandomGeneratoru`, který tuto posloupnost vygeneroval (položka `Seed`). Tento seed pak lze předat konstruktoru `RandomGeneratoru` a vytvořit tak novou instanci, která bude produkovat stejné posloupnosti náhodných hodnot. 
 
 #### Přehled podporovaných náhodných entit
 
