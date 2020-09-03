@@ -205,5 +205,90 @@ Je možné, aby vícero `Fakerů` sdílelo jednu instanci `RandomGeneratoru` (co
 
 ### `RandomGenerator`
 
+Třída `RandomGenerator` obsahuje řadu metod, generujících náhodné hodnoty různých typů. Mnoho z těchto metod disponuje overloady, které umožňují například učit, z jakého intervalu chceme náhodnou číselnou hodnotu vybrat, či jak dlouhou kolekci náhodných hodnot chceme vygenerovat a zda má být předaná velikost použita přesně či jako horní mez velikosti kolekce. Více viz dokumentační komentáře ve zdrojovém kódu.
 
+Každá instance třídy `BaseFaker` (či odvozené třídy), disponuje referencí na instanci `RandomGeneratoru`, která jí poskytuje náhodné hodnoty pro vyplnění položek objektů.
 
+`RandomGenerator` lze však používat i nezávisle na `BaseFaker`.
+
+```csharp
+RandomGenerator rg = new RandomGenerator(); 
+DateTime date = rg.Random.DateTime(new DateTime(2000, 1, 1), new DateTime(2020, 1, 1));
+IEnumerable<sbyte>  sbytes = rg.Enumerable.Sbyte(42);
+decimal d = rg.Random.Decimal();
+```
+
+#### Přehled podporovaných náhodných entit
+
+#### RandomGenerator.
+
+##### Random.
+
+ * Double
+ * Float
+ * Decimal
+ * Int
+ * Uint
+ * Short
+ * Ushort
+ * Sbyte
+ * Byte
+ * Long
+ * Ulong
+ * EvenInt
+ * OddInt
+ * Bool
+ * Guid
+ * DateTime
+ * Char
+ * String
+
+##### Char.
+
+* Char
+* Digit
+* LowerCaseLetter
+* UpperCaseLetter
+* Letter
+* Alphanumeric
+* Ascii
+* Vowel
+* Consonant
+* HexadecimalDigit
+* WhiteSpace
+
+##### String.
+
+* String
+* LowerCaseLetters
+* UpperCaseLetters
+* Letters
+* Aplhanumeric
+* Hexadecimal
+
+##### Enumerable.
+
+ * Double
+ * Float
+ * Decimal
+ * Int
+ * Uint
+ * Short
+ * Ushort
+ * Sbyte
+ * Byte
+ * Long
+ * Ulong
+ * EvenInt
+ * OddInt
+ * Bool
+ * Guid
+ * DateTime
+ * Char
+ * String
+
+###### RandomCollection<TMember>
+
+###### RandomList<TMember>
+
+###### RandomEnumerable<TMember>
