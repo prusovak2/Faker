@@ -541,5 +541,16 @@ namespace FakerTests
                 Console.WriteLine("dec:{0}", val);
             }
         }
+        [TestMethod]
+        public void RandomWhitespaceTest()
+        {
+            RandomGenerator r = new RandomGenerator();
+            for (int i = 0; i < 30; i++)
+            {
+                char white = r.Char.AsciiWhitespace();
+                Console.WriteLine("{0} {1}", (int)white,white);
+                Assert.IsTrue(char.IsWhiteSpace(white));
+            }
+        }
     }
 }

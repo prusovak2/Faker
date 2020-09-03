@@ -128,7 +128,18 @@ namespace Faker
                 int index = this.RG.Random.Int(0, hexDigits.Length - 1);
                 return hexDigits[index];
             }
-            //TODO: white/ non white random char?
+            /// <summary>
+            /// returns a random ASCII whitespace char <br/>
+            /// as ASCII whitespaces are regarded space(32), horizontal tab(9), line feed(10), vertical tab(11), form feed(12), carriage return(13)
+            /// </summary>
+            /// <returns></returns>
+            public char AsciiWhitespace()
+            {
+                //https://stackoverflow.com/questions/18169006/all-the-whitespace-characters-is-it-language-independent list of ASCII whitespaces
+                int[] whiteSpaces = { 32, 9, 10, 11, 12, 13 };
+                int index = this.RG.Random.Int(0, whiteSpaces.Length - 1);
+                return (char)whiteSpaces[index];
+            }
 
         }
        
