@@ -57,7 +57,7 @@ namespace Faker
             /// <param name="length"></param>
             /// <param name="precise"></param>
             /// <returns></returns>
-            public string LowerCaseLetters(int length, bool precise)
+            public string LowerCaseLetters(int length, bool precise=true)
             {
                 char[] chars = this.RG.GenericList<char>(this.RG.Char.LowerCaseLetter, length, precise).ToArray();
                 return new string(chars);
@@ -79,7 +79,7 @@ namespace Faker
             /// <param name="length"></param>
             /// <param name="precise"></param>
             /// <returns></returns>
-            public string UpperCaseLetters(int length, bool precise)
+            public string UpperCaseLetters(int length, bool precise=true)
             {
                 char[] chars = this.RG.GenericList<char>(this.RG.Char.UpperCaseLetter, length, precise).ToArray();
                 return new string(chars);
@@ -101,7 +101,7 @@ namespace Faker
             /// <param name="length"></param>
             /// <param name="precise"></param>
             /// <returns></returns>
-            public string Letters(int length, bool precise)
+            public string Letters(int length, bool precise= true)
             {
                 char[] chars = this.RG.GenericList<char>(this.RG.Char.Letter, length, precise).ToArray();
                 return new string(chars);
@@ -123,7 +123,7 @@ namespace Faker
             /// <param name="length"></param>
             /// <param name="precise"></param>
             /// <returns></returns>
-            public string AlphaNumeric(int length, bool precise)
+            public string AlphaNumeric(int length, bool precise=true)
             {
                 char[] chars = this.RG.GenericList<char>(this.RG.Char.AlphaNumeric, length, precise).ToArray();
                 return new string(chars);
@@ -147,7 +147,7 @@ namespace Faker
             /// <param name="numDigits"></param>
             /// <param name="precise"></param>
             /// <returns></returns>
-            public string HexadecimalString(int numDigits, bool precise)
+            public string HexadecimalString(int numDigits, bool precise= true)
             {
                 char[] chars = this.RG.GenericCollection<char>(this.RG.Char.HexadecimalDigit, numDigits, precise).ToArray();
                 return new string(chars);

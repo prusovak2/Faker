@@ -75,7 +75,7 @@ namespace FakerTests
         public ValueClassFakerParams()
         {
             this.CtorUsageFlag = InnerFakerConstructorUsage.GivenParameters;
-            this.CtorParametrs = new object[] { 73 };
+            this.CtorParameters = new object[] { 73 };
             RuleFor(e => e.Value, f => 10);
         }
     }
@@ -84,7 +84,7 @@ namespace FakerTests
         public ValueClassFakerFlawedParams()
         {
             this.CtorUsageFlag = InnerFakerConstructorUsage.GivenParameters;
-            this.CtorParametrs = new object[] { "flawed param" };
+            this.CtorParameters = new object[] { "flawed param" };
             RuleFor(e => e.Value, f => 10);
         }
     }
@@ -195,7 +195,7 @@ namespace FakerTests
             RuleFor(e => e.SomeString, f => "ABRAKA");
             this.FillEmptyMembers = unfilled;
             this.CtorUsageFlag = ctorFlag;
-            this.CtorParametrs = parameters;
+            this.CtorParameters = parameters;
         }
     }
     public class AwesomeFaker : BaseFaker<AwesomeClass>

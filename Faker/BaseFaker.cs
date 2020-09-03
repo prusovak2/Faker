@@ -7,6 +7,14 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
+/*
+    Faker
+    Generator of pseudo random contend of C# objects
+    Katerina Prusova, sophomore MFF UK
+    summer term 2019/2020
+    Jazyk C# a platforma .NET (NPRG035), Pokročilé programování pro .NET I (NPRG038)
+*/
+
 namespace Faker
 {
     internal interface IFaker
@@ -21,15 +29,17 @@ namespace Faker
         public RandomGenerator Random { get; }
         /// <summary>
         /// ctor to be used to create an instance of TClass when faker is used as inner faker <br/>
-        /// (and Generate method is called automatically)
+        /// (and Generate method is called automatically) <br/>
+        /// default is InnerFakerConstructorUsage.Parameterless
         /// </summary>
         public InnerFakerConstructorUsage CtorUsageFlag { get; protected set; } = InnerFakerConstructorUsage.Parameterless;
         /// <summary>
-        /// Parameters for TClass constructor used when CtorUsageFlag = InnerFakerConstructorUsage.GivenParameters
+        /// Parameters for TClass constructor used when CtorUsageFlag = InnerFakerConstructorUsage.GivenParameters 
         /// </summary>
-        public object[] CtorParametrs { get; set; } = new object[] { };
+        public object[] CtorParameters { get; set; } = new object[] { };
         /// <summary>
-        /// How should the members with no RuleFor or InnerFaker set for them be treated
+        /// How should the members with no RuleFor or InnerFaker set for them be treated <br/>
+        /// default is UnfilledMembers.LeaveBlank
         /// </summary>
         public UnfilledMembers FillEmptyMembers { get; protected set; } = UnfilledMembers.LeaveBlank;
         /// <summary>
@@ -80,7 +90,7 @@ namespace Faker
             MemberInfo memberInfo = this.GetMemberFromExpression(selector);
             if (this.InnerFakers.ContainsKey(memberInfo))
             {
-                throw new FakerException("You stated a RuleFor a member that already has a InnerFaker set for it.");
+                throw new FakerException("You have stated a RuleFor a member that already has a InnerFaker set for it.");
             }
             try
             {
@@ -105,7 +115,7 @@ namespace Faker
             MemberInfo memberInfo = this.GetMemberFromExpression(selector);
             if (this.Rules.ContainsKey(memberInfo))
             {
-                throw new FakerException("You tried to SetFaker for a member that already has a Rule for it.");
+                throw new FakerException("You have tried to SetFaker for a member that already has a Rule for it.");
             }
             try
             {
@@ -114,7 +124,7 @@ namespace Faker
             }
             catch (ArgumentException)
             {
-                throw new FakerException("You tried to set multiple InnerFakers for the same member.");
+                throw new FakerException("You have tried to set multiple InnerFakers for the same member.");
             }
         }
         /// <summary>
@@ -128,7 +138,7 @@ namespace Faker
                 case InnerFakerConstructorUsage.Parameterless:
                     return this.Generate();
                 case InnerFakerConstructorUsage.GivenParameters:
-                    return this.Generate(this.CtorParametrs);
+                    return this.Generate(this.CtorParameters);
                 case InnerFakerConstructorUsage.PopulateExistingInstance:
                     if(instance is null)
                     {
