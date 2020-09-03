@@ -203,6 +203,10 @@ namespace Faker
         /// <returns>The same instance filled with a random content based on rules</returns>
         public TClass Populate(TClass instance)
         {
+            if(instance is null)
+            {
+                throw new FakerException($"Argument of Populate must be existing instance of {typeof(TClass)} type");
+            }
             // Use rules
             foreach (var rule in this.Rules)
             {
