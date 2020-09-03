@@ -28,8 +28,6 @@ namespace Faker
             /// <returns></returns>
             public double Double(double lower = 0d, double upper = 1d)
             {
-                //TODO: are all corner cases solved?
-
                 //to make a generating of doubles from [0,1) interval as fast as possible
                 if (lower == 0d && upper == 1d)
                 {
@@ -94,8 +92,6 @@ namespace Faker
             /// <returns></returns>
             public float Float(float lower = 0f, float upper = 1f)
             {
-                //TODO: are all corner cases solved?
-
                 //to make a generating of floats from [0,1) interval as fast as possible
                 if (lower == 0f && upper == 1f)
                 {
@@ -163,7 +159,6 @@ namespace Faker
             /// <returns></returns>
             public decimal Decimal(decimal lower = 0m, decimal upper = 1m)
             {
-                //TODO: are all corner cases solved?
                 //to make a generating of doubles from [0,1) interval as fast as possible
                 if (lower == 0m && upper == 1m)
                 {
@@ -181,7 +176,6 @@ namespace Faker
                     lower = upper;
                     upper = tmp;
                 }
-                //TODO: Adjust this for decimals
                 //when interval is too large to store its size in ddecimal, divide it into two interval of a half size
                 if (RangeTooLarge)
                 {

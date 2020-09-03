@@ -353,7 +353,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.String.LowerCaseString();
+                string s = r.String.LowerCaseLetters();
                 Console.WriteLine(s);
                 foreach (var item in s)
                 {
@@ -368,7 +368,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.String.LowerCaseString(10, false);
+                string s = r.String.LowerCaseLetters(10, false);
                 Assert.IsTrue(s.Length <= 10);
                 Console.WriteLine(s);
                 foreach (var item in s)
@@ -379,7 +379,7 @@ namespace FakerTests
             }
             for (int i = 0; i < 30; i++)
             {
-                string s = r.String.LowerCaseString(10, true);
+                string s = r.String.LowerCaseLetters(10, true);
                 Assert.IsTrue(s.Length == 10);
                 Console.WriteLine(s);
                 foreach (var item in s)
@@ -479,7 +479,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.String.AlphaNumericString();
+                string s = r.String.AlphaNumeric();
                 Console.WriteLine(s);
                 foreach (var item in s)
                 {
@@ -494,7 +494,7 @@ namespace FakerTests
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
-                string s = r.String.AlphaNumericString(10, false);
+                string s = r.String.AlphaNumeric(10, false);
                 Assert.IsTrue(s.Length <= 10);
                 Console.WriteLine(s);
                 foreach (var item in s)
@@ -505,7 +505,7 @@ namespace FakerTests
             }
             for (int i = 0; i < 30; i++)
             {
-                string s = r.String.AlphaNumericString(10, true);
+                string s = r.String.AlphaNumeric(10, true);
                 Assert.IsTrue(s.Length == 10);
                 Console.WriteLine(s);
                 foreach (var item in s)

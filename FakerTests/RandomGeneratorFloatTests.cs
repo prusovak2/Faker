@@ -319,18 +319,7 @@ namespace FakerTests
                 Assert.IsTrue(rd2 <= 1 && rd2 >= 0);
             }
         }
-        [TestMethod]
-        public void RandomIntTest()
-        {
-            //NO ASSERT!!!
-            RandomGenerator r = new RandomGenerator();
-            for (int i = 0; i < 30; i++)
-            {
-                //decimal ri = r.RandomDecimal();
-                //Console.WriteLine(ri);
-            }
-        }
-        [TestMethod]
+        /*[TestMethod]
         public void Test()
         {
             RandomGenerator r = new RandomGenerator();
@@ -341,6 +330,6 @@ namespace FakerTests
                 Console.WriteLine(item);
             }
             
-        }
+        }*/
     }
 }

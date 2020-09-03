@@ -44,7 +44,7 @@ namespace Faker
             /// generates a random string 255 characters long consisting of lowercase letters
             /// </summary>
             /// <returns></returns>
-            public string LowerCaseString()
+            public string LowerCaseLetters()
             {
                 char[] chars = this.RG.GenericList<char>(this.RG.Char.LowerCaseLetter, 255, true).ToArray();
                 return new string(chars);
@@ -57,7 +57,7 @@ namespace Faker
             /// <param name="length"></param>
             /// <param name="precise"></param>
             /// <returns></returns>
-            public string LowerCaseString(int length, bool precise)
+            public string LowerCaseLetters(int length, bool precise)
             {
                 char[] chars = this.RG.GenericList<char>(this.RG.Char.LowerCaseLetter, length, precise).ToArray();
                 return new string(chars);
@@ -110,7 +110,7 @@ namespace Faker
             /// generates a random string 255 characters long consisting of alphanumeric characters
             /// </summary>
             /// <returns></returns>
-            public string AlphaNumericString() //TODO: rename to AlphaNumeric
+            public string AlphaNumeric() 
             {
                 char[] chars = this.RG.GenericList<char>(this.RG.Char.AlphaNumeric, 255, true).ToArray();
                 return new string(chars);
@@ -123,7 +123,7 @@ namespace Faker
             /// <param name="length"></param>
             /// <param name="precise"></param>
             /// <returns></returns>
-            public string AlphaNumericString(int length, bool precise)
+            public string AlphaNumeric(int length, bool precise)
             {
                 char[] chars = this.RG.GenericList<char>(this.RG.Char.AlphaNumeric, length, precise).ToArray();
                 return new string(chars);

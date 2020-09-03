@@ -228,7 +228,7 @@ namespace FakerTests
         public void RandomCollectionOfCollectionsTest()
         {
             RandomGenerator r = new RandomGenerator();
-            ICollection<string> c = r.GenericCollection(r.String.AlphaNumericString, 20, true, 30, false);
+            ICollection<string> c = r.GenericCollection(r.String.AlphaNumeric, 20, true, 30, false);
             Console.WriteLine(c.Count);
             Assert.AreEqual(20, c.Count);
             foreach (var item in c)
@@ -256,7 +256,7 @@ namespace FakerTests
         public void RandomListOfCollectionsTest()
         {
             RandomGenerator r = new RandomGenerator();
-            IList<string> c = r.GenericList(r.String.AlphaNumericString, 20, true, 30, false);
+            IList<string> c = r.GenericList(r.String.AlphaNumeric, 20, true, 30, false);
             Console.WriteLine(c.Count);
             Assert.AreEqual(20, c.Count);
             foreach (var item in c)
@@ -379,7 +379,7 @@ namespace FakerTests
             int outerCount = 20;
             int counter = 0;
             RandomGenerator r = new RandomGenerator();
-            IEnumerable<string> c = r.GenericEnumerable(r.String.AlphaNumericString, outerCount, true, 30, false);
+            IEnumerable<string> c = r.GenericEnumerable(r.String.AlphaNumeric, outerCount, true, 30, false);
             foreach (var item in c)
             {
                 Console.WriteLine("{0}: {1}", counter, item);
@@ -532,7 +532,7 @@ namespace FakerTests
             int outerCount = 20;
             int counter = 0;
             RandomGenerator r = new RandomGenerator();
-            IEnumerable<string> c = r.InfiniteGenericEnumerable(r.String.AlphaNumericString, 30, false);
+            IEnumerable<string> c = r.InfiniteGenericEnumerable(r.String.AlphaNumeric, 30, false);
             foreach (var item in c)
             {
                 Console.WriteLine("{0}: {1}", counter, item);
