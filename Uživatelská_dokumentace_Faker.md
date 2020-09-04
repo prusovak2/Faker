@@ -15,7 +15,7 @@ Předpokládejme například následující uživatelem definovanou třídu.
 ```csharp
 public class Person
 {
-	public Guid Id { get; set; }
+    public Guid Id { get; set; }
     public int Age { get; set; }
     public string Name { get; set; }
     public bool IsAwesome { get; set; }
