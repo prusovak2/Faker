@@ -9,49 +9,16 @@ namespace FakerUsageExample
     {
         static void Main(string[] args)
         {
-            
-            RandomGenerator r = new RandomGenerator();
-            /*for (int i = 0; i < 30; i++)
-            {
-                string s = r.String.Letters(20);
-                Console.WriteLine(s);
-            }*/
-
-            /* BasicPersonFaker basicPersonFaker = new BasicPersonFaker();
-             for (int i = 0; i < 20; i++)
-             {
-                 Person p = basicPersonFaker.Generate();
-                 Console.WriteLine(p);
-             }
-             Console.WriteLine();
-             Person AnotherPerson = new Person();
-             basicPersonFaker.Populate(AnotherPerson);
-             Console.WriteLine(AnotherPerson);*/
-
-            /*StorageFaker storageFaker = new StorageFaker();
-            for (int i = 0; i < 5; i++)
-            {
-                Storage s = storageFaker.Generate();
-                Console.WriteLine(s);
-            }*/
-
-            /*SimplePersonFaker simplePersonFaker = new SimplePersonFaker();
-            for (int i = 0; i < 3; i++)
-            {
-                Person p = simplePersonFaker.Generate();
-                Console.WriteLine(p);
-            }*/
-            RandomGenerator rg = new RandomGenerator(); 
-            DateTime date = rg.Random.DateTime(new DateTime(2000, 1, 1), new DateTime(2020, 1, 1));
-            Console.WriteLine(date);
-            IEnumerable<sbyte>  sbytes = rg.Enumerable.Sbyte(42);
-            foreach (var item in sbytes)
-            {
-                Console.WriteLine(item);
-            }
-            decimal d = rg.Random.Decimal();
-            Console.WriteLine(d);
-
+            Examples.BasicPersonFakerExample();
+            Examples.RandomGeneratorBasicExample();
+            Examples.SimplePersonFakerExample();
+            Examples.StorageFakerExample();
+            Examples.IntOverloadsExample();
+            Examples.RandomEnumerableExample();
+            Examples.StringExample();
+           
+           
+           
 
         }
     }
