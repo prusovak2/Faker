@@ -22,19 +22,19 @@ Tvůrci algoritmu `Xoshiro256**` uvádějí, že rozumné kvality náhodnosti do
 
 Tato třída disponuje veškerými metodami pro generování náhodných entit, co jsou v projektu dostupné. Implementace těchto metod jsou rozděleny do vnořených tříd `RandomString`, `RandomChar`, `RandomBasicTypes` a `RandomEnumerable`. Tento návrh má uživateli zprostředkovat příjemnější práci s náhodným generátorem, kdy za užití tečkové notace nejprve zvolí kategorii metod, následně díky IntelliSence uvidí, jaké metody se v této konkrétní kategorii nachází.
 
-![IntelliSenceExample](D:\MFF\LS_2020\cSharp\Faker\IntellisenceExample.png)
+![IntelliSenceExample](https://github.com/prusovak2/Faker/blob/master/IntellisenceExample.png)
 
 #### `RandomEnumerable`
 
 Třída `RandomGenerator.RandomEnumerable` poskytuje metody, jež vrací `RandomEnumerable` od všech typů, co jsou v uživatelské části dokumentace uvedeny jako základní. Tyto metody pouze vytváří příjemnější API a interně volají metody `RandomGenerator.GenericEnumerable<TMemeber>` či `RandomGenerator.InfiniteGenericEnumerable<TMember>`. Generické varianty `RandomEnumerable` metod jsou velice silným nástrojem, který umožňuje vytvořit `Enumerable` libovolného typu, dokud pro ten typ existuje (randomizační) funkce s odpovídajícím formátem parametrů, co je využita k produkování hodnot v `Enumerable`. 
 
 ```csharp
-public IEnumerable<TMember> GenericEnumerable<TMember>(Func<int, bool, 			TMember> randomFunc, int countOuter, bool preciseOuter, int 				countInnerCollection, bool preciseInnerCollection)
+public IEnumerable<TMember> GenericEnumerable<TMember>(Func<int, bool,TMember> randomFunc, int countOuter, bool preciseOuter, int countInnerCollection, bool preciseInnerCollection)
         {
             int countToUse = this.CountToUse(countOuter, preciseOuter);
             for (int i = 0; i < countToUse; i++)
             {
-                TMember next = (TMember)randomFunc(countInnerCollection, 										preciseInnerCollection);
+                TMember next = (TMember)randomFunc(countInnerCollection, preciseInnerCollection);
                 yield return next;
             }
         }
@@ -47,6 +47,15 @@ Ač jsou generické varianty v současném okamžiku součástí veřejného API
 Pro typy, které jsou v uživatelské dokumentaci uvedeny jako základní, poskytuje třída `RandomGenerator` defaultní metody pro generování náhodných hodnot těchto typů. Delegáty na defaultní metody vrací metoda `RandomGenerator.GetDefaultRandomFuncForType`. Defaultní metody jsou vždy bezparametrické. Pro číselné typy vrací hodnoty z celého rozsahu reprezentovatelného daným typem (např. pro `int` tedy hodnoty z intervalu [`int.MinValue`, `int.MaxValue`]). Defaultní metoda pro `string`vrací řetězec o 255 náhodných znacích. 
 
 Defaultní metody pro jednotlivé typy jsou důležité, neboť právě ty jsou volány z `BaseFaker.Generate`, když je nastaven flag `FillEmptyMembers=UnfilledMembers.DefaultRandomFunc`. Dále jsou také volány z overloadů generických metod pro náhodné `Enumerables`, které neberou jako parametr delegáta na randomizační funkci.
+
+### Přehled použitých technologií
+
+- generické metody a typy
+- delegáty a lambda funkce
+- reflection
+- extension metody
+- implicitní parametry metod a rozsáhlé využití přetěžování metod
+- vnořené třídy
 
 ### Možná rozšíření
 
