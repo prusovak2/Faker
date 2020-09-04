@@ -69,7 +69,7 @@ Console.WriteLine($"Letters: {randomString}");
 randomString = random.String.AlphaNumeric(20);
 Console.WriteLine($"Alphanumeric: {randomString}");
 randomString = random.String.HexadecimalString(1,100);
-Console.WriteLine($"Hexadecimal: 0x{randomString}");
+Console.WriteLine($"Hexadecimal: {randomString}");
 ```
 
 
