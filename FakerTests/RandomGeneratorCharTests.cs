@@ -536,7 +536,7 @@ namespace FakerTests
             {
                 string hex = r.String.HexadecimalString(5, false);
                 Console.WriteLine("hex:{0}", hex);
-                Assert.IsTrue(hex.Length <= 5);
+                Assert.IsTrue(hex.Length <= 7);
                 ulong val = Convert.ToUInt64(hex, 16);
                 Console.WriteLine("dec:{0}", val);
             }

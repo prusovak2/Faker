@@ -150,7 +150,7 @@ namespace Faker
             public string HexadecimalString(int numDigits, bool precise= true)
             {
                 char[] chars = this.RG.GenericCollection<char>(this.RG.Char.HexadecimalDigit, numDigits, precise).ToArray();
-                return new string(chars);
+                return "0x"+ new string(chars);
             }
         }
     }
