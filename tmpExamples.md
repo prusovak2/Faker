@@ -72,8 +72,13 @@ randomString = random.String.HexadecimalString(1,100);
 Console.WriteLine($"Hexadecimal: 0x{randomString}");
 ```
 
+
+
 ```csharp
-Letters: DXCICGIbvCZVUUCWrJgpKEZGVtdMFcavjSXzyaMfVihMRruMsjLbVbDJInxoZWHTUojiNrNbOHDKPvxGYaFyXxiCUAxdVKgogYATDpSNzIMnKoIJKOJtkjePTuZcfooahHKUlmZMOuWyiTWSdMgiBuGPeNURQwYQGuWeFFyXBvtiTGIUbDGOQoYKkOPWNNiaVsXKUIwnZhxPcCXJlmEEBmkQtaaiFFvPDcMAFSihDyADCZmuaCaUuEoSWSTfwiv
+Letters: DXCICGIbvCZVUUCWrJgpKEZGVtdMFcavjSXzyaMfVihMRruMsjLbVbDJInxoZWHTUojiNrNbOHDKPv
+    xGYaFyXxiCUAxdVKgogYATDpSNzIMnKoIJKOJtkjePTuZcfooahHKUlmZMOuWyiTWSdMgiBuGPeNU
+    RQwYQGuWeFFyXBvtiTGIUbDGOQoYKkOPWNNiaVsXKUIwnZhxPcCXJlmEEBmkQtaaiFFvPDcMAFSih
+    DyADCZmuaCaUuEoSWSTfwiv
 Alphanumeric: QYNyql3i0W5TYCwkpMwk
 Hexadecimal: 0x5B
 ```
