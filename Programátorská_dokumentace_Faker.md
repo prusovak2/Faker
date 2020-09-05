@@ -54,7 +54,7 @@ Defaultní metody pro jednotlivé typy jsou důležité, neboť právě ty jsou 
 - delegáty a lambda funkce
 - reflection
 - extension metody
-- implicitní parametry metod a rozsáhlé využití přetěžování metod
+- rozsáhlé využití implicitních parametrů, přetěžování metod
 - vnořené třídy
 
 ### Možná rozšíření
