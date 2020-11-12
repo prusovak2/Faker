@@ -1,6 +1,6 @@
 # Features to implement
 
-##  Rich API, huge variety of random entities to generate - just ideas
+###  Rich API, huge variety of random entities to generate - just ideas
 
 - [ ] `RandomPerson` (Id, FirstName, LastName,Title, Gender, Email, PhoneNumber, DateOfBitrh, Address, Company...) - method generating the whole predefined Person object at once, for other common real world entities as well - for instance Company, Address... Taken from **[1]**.  
 
@@ -430,4 +430,4 @@ Taken from **[1]**.
 
 [6] https://github.com/eranpeer/FakeIt
 
-https://github.com/bchavez/Bogus/issues
+https://github.com/bchavez/Bogus/issues - bogus issues - source of an inspiration
