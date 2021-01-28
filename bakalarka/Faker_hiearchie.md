@@ -308,7 +308,7 @@ Implementace pomocí: `Pick(param T[] name)`.
 
 I don't think that **[1]** supports this feature.
 
-##### `Pick(IEnumerable/ICollection/IList)` 
+##### `Pick(IEnumerable???/ICollection/IList)` 
 
 **Náhodně vybere jednu hodnotu z kolekce.**
 
@@ -336,11 +336,11 @@ public class PersonFaker : BaseFaker<Person>
 {
     public PersonFaker()
     {
-         RuleFor(p => p.Gender, random => random.Person.Gender()).
-         When(p => p.Gender == Genders.female).
-         RuleFor(p => p.Name, random => random.Person.FemaleName()).
-         When(p => p.Gender == Genders.male).
-         RuleFor(p => p.Name,random => random.Person.MaleName() );
+         RuleFor(p => p.Gender, random => random.Person.Gender())
+         	.When(p => p.Gender == Genders.female)
+         	.RuleFor(p => p.Name, random => random.Person.FemaleName())
+         	.When(p => p.Gender == Genders.male)
+         	.RuleFor(p => p.Name,random => random.Person.MaleName() );
         //else?
     }
 }
@@ -642,6 +642,19 @@ public class SomeFaker : BaseFaker<SomeClass>
 To enable to set as a Rule (by `RuleFor` method) for filling particular member (from within a `Generate` method) also methods implemented on some other (for instance user defined) type apart from methods implemented on `RandomGenerator`. 
 
 I don't think that **[1]** supports this feature.
+
+**Neimplementovat**, nedavá příliš smysl, chovaní se dá substituovat buď voláním `Populate()`  instanci již předvyplněnou příslušnými daty a s `Ignore()` nastaveným tak, aby se předvyplněné položky nepřepsaly, či voláním statických metod z `RuleFor()`:
+
+```cs
+public class SomeFaker : BaseFaker<SomeClass>
+{
+    public SomeFaker()
+    {
+        RuleFor(s => s.someValue, rg =>rg.Random.Int(upper:42));
+        RuleFor(s => s.anotherValue, _ => UsersStaticClass.AwesomeStaticMethod());
+    }
+}
+```
 
 ### Attribute affecting what is a default random function for a member
 
