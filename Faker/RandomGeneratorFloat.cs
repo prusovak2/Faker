@@ -20,7 +20,7 @@ namespace Faker
                 return result;
             }
             /// <summary>
-            /// generates random double from inteval [lower, upper) <br/>
+            /// generates random double from interval [lower, upper) <br/>
             /// when lower/upper bound is not specified, 0/1 is used 
             /// </summary>
             /// <param name="lower"></param>
