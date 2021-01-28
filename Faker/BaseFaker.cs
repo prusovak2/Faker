@@ -266,7 +266,7 @@ namespace Faker
                 Type propertyType = propertyInfo.PropertyType;
                 var instanceInProperty =  propertyInfo.GetValue(instance);
                 // null is valid value of instanceInProperty when innerFaker does not have CtorUsageFlag set to PopulateExistingInstance
-                // whether instanceInProperty is not null is checked if IFaker.Generate, when necessary
+                // whether instanceInProperty is not null is checked in IFaker.Generate, when necessary
                 var o = innerFaker.Generate(instanceInProperty);
                 var innerClass = Convert.ChangeType(o, propertyType);
                 propertyInfo.SetValue(instance, innerClass);
@@ -371,7 +371,7 @@ namespace Faker
             return memberInfos;
         }
         /// <summary>
-        /// which ctor should be used to create instances of TClass when faker is used as inner faker
+        /// which ctor should be used to create instasnces of TClass when faker is used as inner faker
         /// </summary>
         public enum InnerFakerConstructorUsage
         {
