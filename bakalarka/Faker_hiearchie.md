@@ -284,6 +284,14 @@ Umožnit uživateli navolit si formát generovaných hexadecimáních stringů a
 
 Lower case / upper case hexadecimal digits? Přidat `0x` prefix? 
 
+#### Solve boarders problem for foating point types
+
+- [ ]  
+
+**Priorita: 1**
+
+[0,1) default range, when lower specified and greater than 1 and upper not specified, borders gonna get swapped, 1 is gonna become lower border and lower boarder specified by user is gonna be treated as upper border. BUG! Solve somehow.
+
 
 ###  `Pick()` 
 
@@ -482,7 +490,7 @@ public class SimplePersonFaker : BaseFaker<Person>
 ```
 
 ```csharp
-public class DatabaseRecordFaker : BaseFaker<DatabseRecord>
+public class DatabaseRecordFaker : BaseFaker<DatabaseRecord>
 {
     public DatabaseRecordFaker()
     {
