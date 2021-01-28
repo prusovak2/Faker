@@ -388,5 +388,4 @@ namespace Faker
             DefaultRandomFunc
         }
     }
-
 }
