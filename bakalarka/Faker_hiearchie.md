@@ -424,6 +424,12 @@ public class SimplePersonFaker : BaseFaker<Person>
 public class EvenSimplerPersonFaker : AutoFaker<Person> { }
 ```
 
+### Odd and even variants for all integral types
+
+- [ ] 
+
+**Priorita: 3**
+
 ### StrickMode 
 
 **Vynutí stanoven pravidel pro všechny veřejné položky.**
@@ -845,6 +851,11 @@ I don't think that **[1]** supports this feature.
 - [ ] Publisher?
 - [ ] PublishedWhen?
 - [ ] PublishedWhere?
+
+### To delete?
+
+* `ICollection` verze `RandomGeneratorCollectionsGenerics` - pouzit `Ilist` verze s pretypovanim?
+* `Decimal EpsilonEquals` extension that does not check whether the range is too large 
 
 
 
