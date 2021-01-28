@@ -271,7 +271,7 @@ Metody `SetFaker` a `RuleFor` jsou typově bezpečné v tom smyslu, že nelze p�
 
 #### Nullable  varianty základních typů s konfigurovatelnou pravděpodobností výskytu null
 
-- [ ] 
+- [x] 
 
 **Priorita: 1**
 
@@ -291,6 +291,12 @@ Lower case / upper case hexadecimal digits? Přidat `0x` prefix?
 **Priorita: 1**
 
 [0,1) default range, when lower specified and greater than 1 and upper not specified, borders gonna get swapped, 1 is gonna become lower border and lower boarder specified by user is gonna be treated as upper border. BUG! Solve somehow.
+
+### Ilist of basic Random types
+
+- [ ] 
+
+ **Priorita: 2**
 
 
 ###  `Pick()` 
