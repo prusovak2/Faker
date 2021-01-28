@@ -9,7 +9,7 @@ namespace Faker
         
         public partial class RandomBasicTypes
         {
-            //the rest of the implementation of this class is to be found in files RandomGeneratorInteger and RandomGeneratotFloat
+            //the rest of the implementation of this class is to be found in files RandomGeneratorInteger, RandomGeneratorNullable and RandomGeneratotFloat
 
             /// <summary>
             /// reference to instance of Random generator that has reference to this instance of RandomString
