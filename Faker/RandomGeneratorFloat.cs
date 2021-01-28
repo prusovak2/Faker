@@ -8,6 +8,8 @@ namespace Faker
     {
         public partial class RandomBasicTypes
         {
+            //the rest of the implementation of this class is to be found in files RandomGeneratorInteger, RandomGeneratorNullable and RandomGeneratotOtherBasic
+
             /// <summary>
             /// generates a random double from interval [0,1)
             /// </summary>

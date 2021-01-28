@@ -88,7 +88,7 @@ namespace Faker
                 return randomDateTime;
             }
             /// <summary>
-            /// returns random DateTime from [DateTime.MinValue,DateTime.Maxvalue] interval
+            /// returns random DateTime from [DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks] interval
             /// </summary>
             /// <returns></returns>
             public DateTime DateTime()
