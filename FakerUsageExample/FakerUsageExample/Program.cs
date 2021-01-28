@@ -9,6 +9,7 @@ namespace FakerUsageExample
     {
         static void Main(string[] args)
         {
+            Attempt(col.blue, col.green, col.red);
             Examples.BasicPersonFakerExample();
             Examples.RandomGeneratorBasicExample();
             Examples.SimplePersonFakerExample();
@@ -17,9 +18,14 @@ namespace FakerUsageExample
             Examples.RandomEnumerableExample();
             Examples.StringExample();
            
-           
-           
+        }
 
+        static void Attempt(params col[] p)
+        {
+            foreach (var item in p)
+            {
+                Console.WriteLine(item);
+            }
         }
     }
     public class Person
@@ -113,6 +119,27 @@ namespace FakerUsageExample
             SetFaker(s => s.Value, new ValueClassFakerShared(this.Random));
             RuleFor(s => s.Property, rg => rg.Random.Int(upper: 42));
             RuleFor(s => s.Field, rg => rg.Random.Double());
+        }
+    }
+    enum col
+    {
+        red,
+        blue,
+        green
+    }
+    class ProviderTest : IValueProvider
+    {
+        int Provide()
+        {
+            return 42;
+        }
+    }
+    public class ProvideFaker : BaseFaker<ValueClass>
+    {
+        public ProvideFaker()
+        {
+            //ProvideVal(val => val.Number, p => p.Provide());
+            //RuleFor(val => val.Number, _ => Animation.statickapolozka)
         }
     }
 }
