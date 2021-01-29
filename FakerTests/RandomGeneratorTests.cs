@@ -58,7 +58,7 @@ namespace FakerTests
         }
 
         [TestMethod]
-        public void PickIListextensionsTest()
+        public void PickIListExtensionsTest()
         {
             RandomGenerator rg = new RandomGenerator();
             List<Guid> guids = (List<Guid>)rg.List.Guid(50);
@@ -77,7 +77,52 @@ namespace FakerTests
                 Assert.IsTrue(floats.Contains(picked));
             }
         }
-           
+        [TestMethod]
+        public void PickIcollectionTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            int lower = 0;
+            int upper = 100;
+            int count = 50;
+            ICollection<int> col = rg.List.Int(count, lower, upper);
+            for (int i = 0; i < 1000; i++)
+            {
+                int picked = rg.Pick(col);
+                Console.WriteLine(picked);
+                Assert.IsTrue(col.Contains(picked));
+            }
+
+            DateTime lower2 = new DateTime(2010, 1, 1);
+            DateTime upper2 = new DateTime(2020, 3, 3);
+            ICollection<DateTime> col2 = rg.List.DateTime(count, lower2, upper2);
+            for (int i = 0; i < 1000; i++)
+            {
+                DateTime picked = rg.Pick(col2);
+                Console.WriteLine(picked);
+                Assert.IsTrue(col2.Contains(picked));
+            }
+        }
+        [TestMethod]
+        public void PickICollectionExtensionTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            ICollection<Guid> guids = rg.List.Guid(50);
+            for (int i = 0; i < 100; i++)
+            {
+                Guid picked = guids.Pick();
+                Console.WriteLine(picked);
+                Assert.IsTrue(guids.Contains(picked));
+            }
+
+            ICollection<float> floats = rg.List.Float(50);
+            for (int i = 0; i < 100; i++)
+            {
+                float picked = floats.Pick(rg);
+                Console.WriteLine(picked);
+                Assert.IsTrue(floats.Contains(picked));
+            }
+        }
+
 
         [TestMethod]
         public void DefaultFuncDictTest()

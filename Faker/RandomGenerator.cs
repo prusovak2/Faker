@@ -122,5 +122,20 @@ namespace Faker
         {
             return Pick((IList<Titem>)pickFrom);
         }
+
+        public Titem Pick<Titem>(ICollection<Titem> pickFrom)
+        {
+            int randomIndex = this.Random.Int(0, pickFrom.Count - 1);
+            int counter = 0;
+            foreach (Titem item in pickFrom)
+            {
+                if (counter == randomIndex)
+                {
+                    return item;
+                }
+                counter++;
+            }
+            throw new NotImplementedException("Unexpected");
+        }
     }
 }
