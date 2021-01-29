@@ -9,7 +9,7 @@ namespace Faker
         public partial class RandomEnumerable
         {
             /// <summary>
-            /// reference to instance of Random generator that has reference to this instance of RandomChar
+            /// reference to instance of Random generator that has reference to this instance of RandomEnumerable
             /// </summary>
             internal RandomGenerator RG { get; }
             public RandomEnumerable(RandomGenerator rg)

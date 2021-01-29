@@ -25,6 +25,10 @@ namespace Faker
         /// enumerables of basic types
         /// </summary>
         public RandomEnumerable Enumerable { get; }
+        /// <summary>
+        /// lists of basic types
+        /// </summary>
+        public RandomList List { get; }
 
         public RandomGenerator()
         {
@@ -33,6 +37,7 @@ namespace Faker
             this.String = new RandomString(this);
             this.Random = new RandomBasicTypes(this);
             this.Enumerable = new RandomEnumerable(this);
+            this.List = new RandomList(this);
         }
         public RandomGenerator(ulong seed)
         {
@@ -40,6 +45,8 @@ namespace Faker
             this.Char = new RandomChar(this);
             this.String = new RandomString(this);
             this.Random = new RandomBasicTypes(this);
+            this.Enumerable = new RandomEnumerable(this);
+            this.List = new RandomList(this);
         }
         public ulong Seed => this.RandomGeneratorAlg.Seed;
         /// <summary>
