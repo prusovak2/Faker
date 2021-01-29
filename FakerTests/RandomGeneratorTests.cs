@@ -10,6 +10,19 @@ namespace FakerTests
     [TestClass]
     public class RandomGeneratorTests
     {
+        public class SomeClass
+        {
+            public int somePrime { get; set; }
+        }
+        public class SomeFaker : BaseFaker<SomeClass>
+        {
+            public SomeFaker()
+            {
+                RuleFor(c => c.somePrime, rg => rg.Pick(2, 3, 5, 7, 13, 17, 73));
+            }
+        }
+
+
         [TestMethod]
         public void PickIListTest()
         {
@@ -39,6 +52,17 @@ namespace FakerTests
         [TestMethod]
         public void PickParamsTest()
         {
+            List<int> primes = new List<int> { 2, 3, 5, 7, 13, 17, 73 };
+            SomeClass s;
+            SomeFaker faker = new SomeFaker();
+            for (int i = 0; i < 50; i++)
+            {
+                s = faker.Generate();
+                Console.WriteLine(s.somePrime);
+                Assert.IsTrue(primes.Contains(s.somePrime));
+            }
+
+
             RandomGenerator rg = new RandomGenerator();
             List<int> items = new List<int> { 55, 43, 43, 74, 121, 13, 17, 666, 1000001010, 8, 4 };
             for (int i = 0; i < 100; i++)
@@ -64,7 +88,7 @@ namespace FakerTests
             List<Guid> guids = (List<Guid>)rg.List.Guid(50);
             for (int i = 0; i < 100; i++)
             {
-                Guid picked = guids.Pick();
+                Guid picked = guids.PickRandom();
                 Console.WriteLine(picked);
                 Assert.IsTrue(guids.Contains(picked));
             }
@@ -72,7 +96,7 @@ namespace FakerTests
             List<float> floats = (List<float>)rg.List.Float(50);
             for (int i = 0; i < 100; i++)
             {
-                float picked = floats.Pick(rg);
+                float picked = floats.PickRandom(rg);
                 Console.WriteLine(picked);
                 Assert.IsTrue(floats.Contains(picked));
             }
@@ -109,7 +133,7 @@ namespace FakerTests
             ICollection<Guid> guids = rg.List.Guid(50);
             for (int i = 0; i < 100; i++)
             {
-                Guid picked = guids.Pick();
+                Guid picked = guids.PickRandom();
                 Console.WriteLine(picked);
                 Assert.IsTrue(guids.Contains(picked));
             }
@@ -117,7 +141,7 @@ namespace FakerTests
             ICollection<float> floats = rg.List.Float(50);
             for (int i = 0; i < 100; i++)
             {
-                float picked = floats.Pick(rg);
+                float picked = floats.PickRandom(rg);
                 Console.WriteLine(picked);
                 Assert.IsTrue(floats.Contains(picked));
             }

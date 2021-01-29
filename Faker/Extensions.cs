@@ -204,7 +204,7 @@ namespace Faker
         /// <param name="pickFrom"></param>
         /// <param name="random"></param>
         /// <returns></returns>
-        public static Titem Pick<Titem>(this IList<Titem> pickFrom, RandomGenerator random)
+        public static Titem PickRandom<Titem>(this IList<Titem> pickFrom, RandomGenerator random)
         {
             return random.Pick(pickFrom);
         }
@@ -215,7 +215,7 @@ namespace Faker
         /// <typeparam name="Titem"></typeparam>
         /// <param name="pickFrom"></param>
         /// <returns></returns>
-        public static Titem Pick<Titem>(this IList<Titem> pickFrom)
+        public static Titem PickRandom<Titem>(this IList<Titem> pickFrom)
         {
             RandomGenerator random = new RandomGenerator();
             return random.Pick(pickFrom);
@@ -232,7 +232,7 @@ namespace Faker
         /// <param name="pickFrom"></param>
         /// <param name="random"></param>
         /// <returns></returns>
-        public static Titem Pick<Titem>(this ICollection<Titem> pickFrom, RandomGenerator random)
+        public static Titem PickRandom<Titem>(this ICollection<Titem> pickFrom, RandomGenerator random)
         {
             return random.Pick(pickFrom);
         }
@@ -244,7 +244,7 @@ namespace Faker
         /// <typeparam name="Titem"></typeparam>
         /// <param name="pickFrom"></param>
         /// <returns></returns>
-        public static Titem Pick<Titem>(this ICollection<Titem> pickFrom)
+        public static Titem PickRandom<Titem>(this ICollection<Titem> pickFrom)
         {
             RandomGenerator random = new RandomGenerator();
             return random.Pick(pickFrom);

@@ -284,7 +284,7 @@ Umožnit uživateli navolit si formát generovaných hexadecimáních stringů a
 
 Lower case / upper case hexadecimal digits? Přidat `0x` prefix? 
 
-#### Solve boarders problem for foating point types
+#### Solve boarders problem for floating point types
 
 - [ ]  
 
@@ -294,7 +294,7 @@ Lower case / upper case hexadecimal digits? Přidat `0x` prefix?
 
 ### Ilist of basic Random types
 
-- [ ] 
+- [x] 
 
  **Priorita: 2**
 
@@ -303,7 +303,7 @@ Lower case / upper case hexadecimal digits? Přidat `0x` prefix?
 
 **Náhodně vybere jednu z hodnot předaných jako parametry.**
 
-- [ ] 
+- [x] 
 
  **Priorita: 2**
 ```csharp
@@ -318,11 +318,11 @@ public class SomeFaker : BaseFaker<SomeClass>
 
 Jednoduché použití, nevyžaduje, aby uživatel definoval enumerable.
 
-Implementace pomocí: `Pick(param T[] name)`. 
+Implementace pomocí: `Pick(params T[] name)`. 
 
 I don't think that **[1]** supports this feature.
 
-##### `Pick(IEnumerable???/ICollection/IList)` 
+##### `Pick(ICollection/IList)` 
 
 **Náhodně vybere jednu hodnotu z kolekce.**
 
@@ -333,7 +333,7 @@ var playerToShoot = rg.Pick(setOfPlayersInRange);
 
 Kolekci bude pravděpodobně třeba předat jako parametr konstruktoru fakeru pro uživatelem definovanou třídu.
 
-Nebo `extension` metoda `IEnumerable.PickRandom()` se stejnou funkcionalitou.
+Navic `extension` metoda `IList.PickRandom()` (`ICollection.PickRandom()`) se stejnou funkcionalitou.
 
 ### `When()` (podmíněné generování)
 
