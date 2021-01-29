@@ -213,7 +213,7 @@ namespace Faker
             }
 
             /// <summary>
-            /// returns random nullable DateTime from [DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks] interval  <br/>
+            /// returns random nullable DateTime from [DateTime.MinValue, DateTime.MaxValue] interval  <br/>
             /// probability that null is generated is passed as the first param <br/>
             /// nullProbability param must belong to [0,1] interval 
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
