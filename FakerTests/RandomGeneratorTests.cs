@@ -11,6 +11,75 @@ namespace FakerTests
     public class RandomGeneratorTests
     {
         [TestMethod]
+        public void PickIListTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            int lower = 0;
+            int upper = 100;
+            int count = 50;
+            IList<int> list = rg.List.Int(count, lower, upper);
+            for (int i = 0; i < 1000; i++)
+            {
+                int picked = rg.Pick(list);
+                Console.WriteLine(picked);
+                Assert.IsTrue(list.Contains(picked));
+            }
+
+            DateTime lower2 = new DateTime(2010, 1, 1);
+            DateTime upper2 = new DateTime(2020, 3, 3);
+            IList<DateTime> list2 = rg.List.DateTime(count, lower2, upper2);
+            for (int i = 0; i < 1000; i++)
+            {
+                DateTime picked = rg.Pick(list2);
+                Console.WriteLine(picked);
+                Assert.IsTrue(list2.Contains(picked));
+            }
+        }
+
+        [TestMethod]
+        public void PickParamsTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            List<int> items = new List<int> { 55, 43, 43, 74, 121, 13, 17, 666, 1000001010, 8, 4 };
+            for (int i = 0; i < 100; i++)
+            {
+                int picked = rg.Pick(55, 43, 43, 74, 121, 13, 17, 666, 1000001010, 8, 4);
+                Console.WriteLine(picked);
+                Assert.IsTrue(items.Contains(picked));
+            }
+
+            List<char> items2 = new List<char> { 'a', 'b', 'r', 'a', 'k', 'a', 'd', 'a', 'b', 'r', 'a'};
+            for (int i = 0; i < 100; i++)
+            {
+                char picked = rg.Pick('a', 'b', 'r', 'a', 'k', 'a', 'd', 'a', 'b', 'r', 'a');
+                Console.WriteLine(picked);
+                Assert.IsTrue(items2.Contains(picked));
+            }
+        }
+
+        [TestMethod]
+        public void PickIListextensionsTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            List<Guid> guids = (List<Guid>)rg.List.Guid(50);
+            for (int i = 0; i < 100; i++)
+            {
+                Guid picked = guids.Pick();
+                Console.WriteLine(picked);
+                Assert.IsTrue(guids.Contains(picked));
+            }
+
+            List<float> floats = (List<float>)rg.List.Float(50);
+            for (int i = 0; i < 100; i++)
+            {
+                float picked = floats.Pick(rg);
+                Console.WriteLine(picked);
+                Assert.IsTrue(floats.Contains(picked));
+            }
+        }
+           
+
+        [TestMethod]
         public void DefaultFuncDictTest()
         {
             RandomGenerator r = new RandomGenerator();

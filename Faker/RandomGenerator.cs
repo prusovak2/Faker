@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Faker
@@ -109,6 +110,17 @@ namespace Faker
                     return null;
                  
             }
+        }
+
+        public Titem Pick<Titem>(IList<Titem> pickFrom)
+        {
+            int randomIndex = this.Random.Int(0, pickFrom.Count-1);
+            return pickFrom[randomIndex];
+        }
+
+        public Titem Pick<Titem>(params Titem[] pickFrom)
+        {
+            return Pick((IList<Titem>)pickFrom);
         }
     }
 }

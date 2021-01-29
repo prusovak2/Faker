@@ -194,4 +194,18 @@ namespace Faker
         }
     }
 
+    public static class IListExtensions
+    {
+        public static Titem Pick<Titem>(this IList<Titem> pickFrom, RandomGenerator random)
+        {
+            return random.Pick(pickFrom);
+        }
+
+        public static Titem Pick<Titem>(this IList<Titem> pickFrom)
+        {
+            RandomGenerator random = new RandomGenerator();
+            return random.Pick(pickFrom);
+        }
+    }
+
 }
