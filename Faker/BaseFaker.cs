@@ -45,11 +45,17 @@ namespace Faker
         /// <summary>
         /// Generate call on a faker calls Generate on all its innerFakers 
         /// </summary>
-        internal IDictionary<MemberInfo, IFaker> InnerFakers { get; } = new Dictionary<MemberInfo, IFaker>(); 
+        internal IDictionary<MemberInfo, IFaker> InnerFakers { get; } = new Dictionary<MemberInfo, IFaker>();
         /// <summary>
         /// rules used to generate pseudo-random content
         /// </summary>
         internal IDictionary<MemberInfo, Func<object>> Rules { get; } = new Dictionary<MemberInfo, Func<object>>();
+        /// <summary>
+        /// set of members whose content should not be filled by a default random function when UnfilledMember.DefaultRandomFunc is set <br/>
+        /// members get inserted here by calling Ignore(member) in Fakers ctor <br/>
+        /// once member is IgnoredStrictly, it cannot have a RuleFor or InnnerFaker set for it in the same instance of the Faker
+        /// </summary>
+        internal HashSet<MemberInfo> IgnoredStrictly { get; } = new HashSet<MemberInfo>();
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically
         /// </summary>
@@ -90,7 +96,11 @@ namespace Faker
             MemberInfo memberInfo = this.GetMemberFromExpression(selector);
             if (this.InnerFakers.ContainsKey(memberInfo))
             {
-                throw new FakerException("You have stated a RuleFor a member that already has a InnerFaker set for it.");
+                throw new FakerException("You cannot state a RuleFor a member that already has a InnerFaker set for it.");
+            }
+            if (this.IgnoredStrictly.Contains(memberInfo))
+            {
+                throw new FakerException("You cannot state a RuleFor a member that was already marked as strictly Ignored by calling Ignore method.");
             }
             try
             {
@@ -99,8 +109,25 @@ namespace Faker
             }
             catch (ArgumentException)
             {
-                throw new FakerException("You have stated multiple rules for the same member.");
+                throw new FakerException("You cannot state multiple rules for the same member.");
             }
+        }
+
+        public void Ignore<TMember>(Expression<Func<TClass, TMember>> selector)
+        {
+            MemberInfo memberInfo = this.GetMemberFromExpression(selector);
+            if (this.Rules.ContainsKey(memberInfo))
+            {
+                throw new FakerException("You cannot mark a member as strictly Ignored by Ignore method when it already has an RuleFor set for it");
+            }
+            if (this.InnerFakers.ContainsKey(memberInfo))
+            {
+                throw new FakerException("You cannot mark a member as strictly Ignored by Ignore method when it already has an InnerFaker set for it");
+            }
+            //does not throw exception when member info is already present in the HashSet, returns false
+            //Ignored method called multiple times with the same member as the parameter won't change the semantics of the program
+            //no need to throw the FakerException here
+            this.IgnoredStrictly.Add(memberInfo);
         }
         /// <summary>
         /// sets InnerFaker for a member of TInnerClass type
@@ -115,7 +142,11 @@ namespace Faker
             MemberInfo memberInfo = this.GetMemberFromExpression(selector);
             if (this.Rules.ContainsKey(memberInfo))
             {
-                throw new FakerException("You have tried to SetFaker for a member that already has a Rule for it.");
+                throw new FakerException("You cannot set an InnerFaker for a member that already has a Rule for it.");
+            }
+            if (this.IgnoredStrictly.Contains(memberInfo))
+            {
+                throw new FakerException("You cannot set an InnerFaker for a member that was already marked as strictly Ignored by calling Ignore method.");
             }
             try
             {
@@ -124,7 +155,7 @@ namespace Faker
             }
             catch (ArgumentException)
             {
-                throw new FakerException("You have tried to set multiple InnerFakers for the same member.");
+                throw new FakerException("You cannot set multiple InnerFakers for the same member.");
             }
         }
         /// <summary>
