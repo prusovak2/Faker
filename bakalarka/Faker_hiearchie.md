@@ -409,6 +409,12 @@ Markovovské texty *(4/5)* *Generování náhodného textu napodobujícího text
 
 **[1]** supports this in some way.
 
+### Přidat dokumentační komentáře k argumentům metod
+
+- [ ] 
+
+**Priorita: 3**
+
 ### Generování náhodných čísel s jinou pravděpodobnostní distribucí než rovnoměrným rozložením.
 
 - [ ] 
