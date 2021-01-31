@@ -130,28 +130,112 @@ namespace Faker
             }
             /// <summary>
             /// returns a string hexadecimal interpretation of random number from interval [lower,upper]
+            /// format param determines whether it is lower or upper case and whether prefix is 0x, 0X or none
             /// </summary>
             /// <param name="lower"></param>
             /// <param name="upper"></param>
+            /// <param name="format"> determines whether digits are lower or upper case and whether prefix is 0x, 0X or none</param>
             /// <returns></returns>
-            public string HexadecimalString(ulong lower, ulong upper)
+            public string HexadecimalString(ulong lower, ulong upper, HexadecimalFormat format = HexadecimalFormat.Upper0x)
             {
                 ulong randomLong = this.RG.Random.Ulong(lower, upper);
-                string hexString = randomLong.ToString("X");
-                return hexString;
+                string prefixlessHexString;
+                switch (format)
+                {
+                    case HexadecimalFormat.Upper0x:
+                    case HexadecimalFormat.Upper0X:
+                    case HexadecimalFormat.UpperPrefixless:
+                        {
+                            prefixlessHexString = randomLong.ToString("X");
+                            break;
+                        }
+                    case HexadecimalFormat.Lower0x:
+                    case HexadecimalFormat.Lower0X:
+                    case HexadecimalFormat.LowerPrefixless:
+                        {
+                            prefixlessHexString = randomLong.ToString("x");
+                            break;
+                        }
+                    default:
+                        throw new NotImplementedException("Unexpected");
+
+                }
+                return AddPrexix(prefixlessHexString, format);
+
             }
             /// <summary>
             /// returns a string representation of a hexadecimal number, that has numDigits digits (when precise is true)<br/>
             /// otherwise numDigits is used as upper bound for a random number of hexadecimal digits
+            /// format param determines whether it is lower or upper case and whether prefix is 0x, 0X or none
             /// </summary>
             /// <param name="numDigits"></param>
             /// <param name="precise"></param>
+            /// <param name="format"> determines whether digits are lower or upper case and whether prefix is 0x, 0X or none</param>
             /// <returns></returns>
-            public string HexadecimalString(int numDigits, bool precise= true)
+            public string HexadecimalString(int numDigits, bool precise= true, HexadecimalFormat format = HexadecimalFormat.Upper0x)
             {
-                char[] chars = this.RG.GenericCollection<char>(this.RG.Char.HexadecimalDigit, numDigits, precise).ToArray();
-                return "0x"+ new string(chars);
+                char[] prefixlessHexChars;
+                switch (format)
+                {
+                    case HexadecimalFormat.Upper0x:
+                    case HexadecimalFormat.Upper0X:
+                    case HexadecimalFormat.UpperPrefixless:
+                        {
+                            prefixlessHexChars = this.RG.GenericCollection<char>(this.RG.Char.HexadecimalDigitUpper, numDigits, precise).ToArray();
+                            break;
+                        }
+                    case HexadecimalFormat.Lower0x:
+                    case HexadecimalFormat.Lower0X:
+                    case HexadecimalFormat.LowerPrefixless:
+                        {
+                            prefixlessHexChars = this.RG.GenericCollection<char>(this.RG.Char.HexadecimalDigitLower, numDigits, precise).ToArray();
+                            break;
+                        }
+                    default:
+                        throw new NotImplementedException("Unexpected");
+
+                }
+                return AddPrexix(prefixlessHexChars.ToString(), format);
             }
+            /// <summary>
+            /// adds 0x or 0X prefix or nothing in front of given string according to given HexadecimalFormat  
+            /// </summary>
+            /// <param name="prefixlessHexString"></param>
+            /// <param name="format"></param>
+            /// <returns></returns>
+            internal string AddPrexix(string prefixlessHexString, HexadecimalFormat format)
+            {
+                switch (format)
+                {
+                    case HexadecimalFormat.UpperPrefixless:
+                    case HexadecimalFormat.LowerPrefixless:
+                        {
+                            return prefixlessHexString;
+                        }
+                    case HexadecimalFormat.Upper0x:
+                    case HexadecimalFormat.Lower0x:
+                        {
+                            return "0x" + prefixlessHexString;
+                        }
+                    case HexadecimalFormat.Upper0X:
+                    case HexadecimalFormat.Lower0X:
+                        {
+                            return "0X" + prefixlessHexString;
+                        }
+                    default:
+                        throw new NotImplementedException("Unexpected");
+                }
+            }
+            public enum HexadecimalFormat
+            {
+                Lower0x,
+                Upper0x,
+                Lower0X,
+                Upper0X,
+                LowerPrefixless,
+                UpperPrefixless
+            }
+
         }
     }
 }
