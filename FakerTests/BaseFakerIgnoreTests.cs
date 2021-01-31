@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Faker;
 
 namespace FakerTests
-{
+{ 
     public class IgnoredPerson
     {
         public string Name;
@@ -59,6 +59,76 @@ namespace FakerTests
         }
     }
 
+    public class Value
+    {
+        public short value;
+    }
+
+    public class ContainsValue
+    {
+        public int Int;
+        public Value Val { get; set; }
+    }
+
+    public class ValueFaker : BaseFaker<Value> { }
+
+    public class FlawedFakerIgnoreRuleFor : BaseFaker<ContainsValue>
+    {
+        public FlawedFakerIgnoreRuleFor()
+        {
+            Ignore(l => l.Int);
+            RuleFor(l => l.Int, _ => 73);
+        }
+    }
+    public class FlawedFakerRuleForIgnore : BaseFaker<ContainsValue>
+    {
+        public FlawedFakerRuleForIgnore()
+        {
+            RuleFor(l => l.Int, _ => 73);
+            Ignore(l => l.Int);
+        }
+    }
+    public class FlawedFakerIgnoreSetFaker : BaseFaker<ContainsValue>
+    {
+        public FlawedFakerIgnoreSetFaker()
+        {
+            Ignore(cv => cv.Val);
+            SetFaker(cv => cv.Val, new ValueFaker());
+        }
+    }
+    public class FlawedFakerSetFakerIgnore : BaseFaker<ContainsValue>
+    {
+        public FlawedFakerSetFakerIgnore()
+        {
+            SetFaker(cv => cv.Val, new ValueFaker());
+            Ignore(cv => cv.Val);
+        }
+    }
+    public class FlawedFakerSetFakerRuleFor: BaseFaker<ContainsValue>
+    {
+        public FlawedFakerSetFakerRuleFor()
+        {
+            SetFaker(cv => cv.Val, new ValueFaker());
+            RuleFor(cv => cv.Val, _ => new Value());
+        }
+    }
+    public class FlawedFakerRuleForSetFaker : BaseFaker<ContainsValue>
+    {
+        public FlawedFakerRuleForSetFaker()
+        {
+            RuleFor(cv => cv.Val, _ => new Value());
+            SetFaker(cv => cv.Val, new ValueFaker());
+        }
+    }
+    public class IgnoreIgnoreFaker : BaseFaker<ContainsValue>
+    {
+        public IgnoreIgnoreFaker()
+        {
+            Ignore(cv => cv.Val);
+            Ignore(cv => cv.Val);
+        }
+    }
+
     [TestClass]
     public class BaseFakerIgnoreTests
     {
@@ -74,11 +144,11 @@ namespace FakerTests
             }
         }
 
-        static void CheckDic<T>(Dictionary<T, int> dic,int unwantedValue)
+        static void CheckDic<T>(Dictionary<T, int> dic, int unwantedValue)
         {
             foreach (var item in dic)
             {
-                if(dic[item.Key]== unwantedValue)
+                if (dic[item.Key] == unwantedValue)
                 {
                     Assert.Fail();
                 }
@@ -106,6 +176,7 @@ namespace FakerTests
             }
             Assert.AreNotEqual(numIterations, counter73);
         }
+
         [TestMethod]
         public void IgnoreLotOfMembersTest()
         {
@@ -132,8 +203,8 @@ namespace FakerTests
 
                 Console.WriteLine(lom);
 
-                Assert.AreEqual( "IGNORED", lom.IgnoredString);
-                Assert.AreEqual(42,lom.IgnoredInt);
+                Assert.AreEqual("IGNORED", lom.IgnoredString);
+                Assert.AreEqual(42, lom.IgnoredInt);
             }
             CheckDic(intCounts, numIterations);
             CheckDic(byteCounts, numIterations);
@@ -142,6 +213,23 @@ namespace FakerTests
             CheckDic(doubleCounts, numIterations);
             CheckDic(guidCounts, numIterations);
         }
+
+        [TestMethod]
+        public void IgnoreExceptionsTest()
+        {
+            Assert.ThrowsException<FakerException>(() => { FlawedFakerRuleForIgnore f = new FlawedFakerRuleForIgnore(); });
+            Assert.ThrowsException<FakerException>(() => { FlawedFakerIgnoreRuleFor f = new FlawedFakerIgnoreRuleFor(); });
+
+            Assert.ThrowsException<FakerException>(() => { FlawedFakerSetFakerIgnore f = new FlawedFakerSetFakerIgnore(); });
+            Assert.ThrowsException<FakerException>(() => { FlawedFakerIgnoreSetFaker f = new FlawedFakerIgnoreSetFaker(); });
+
+            Assert.ThrowsException<FakerException>(() => { FlawedFakerRuleForSetFaker f = new FlawedFakerRuleForSetFaker(); });
+            Assert.ThrowsException<FakerException>(() => { FlawedFakerSetFakerRuleFor f = new FlawedFakerSetFakerRuleFor(); });
+
+            //should not throw the exception
+            IgnoreIgnoreFaker i = new IgnoreIgnoreFaker();
+        }
     }
 }
+
 
