@@ -112,7 +112,12 @@ namespace Faker
                 throw new FakerException("You cannot state multiple rules for the same member.");
             }
         }
-
+        /// <summary>
+        /// Sets member as strictly Ignored - this member won't be filled by default random function when <br/>
+        /// FillEmptyMembers is set to UnfilledMembers.DefaultRandomFunc.
+        /// </summary>
+        /// <typeparam name="TMember">Type of member to be ignored</typeparam>
+        /// <param name="selector"></param>
         public void Ignore<TMember>(Expression<Func<TClass, TMember>> selector)
         {
             MemberInfo memberInfo = this.GetMemberFromExpression(selector);
