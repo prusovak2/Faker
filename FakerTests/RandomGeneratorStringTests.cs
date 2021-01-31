@@ -12,21 +12,16 @@ namespace FakerTests
         [TestMethod]
         public void RandomStringTest()
         {
+           //NO ASSERT!!
             RandomGenerator r = new RandomGenerator();
             for (int i = 0; i < 30; i++)
             {
                 string s = r.String.String();
                 Console.WriteLine(s);
-                foreach (var item in s)
-                {
-                    Assert.IsInstanceOfType(item, typeof(char));
-                }
+                
                 string s2 = r.Random.String();
                 Console.WriteLine(s2);
-                foreach (var item in s2)
-                {
-                    Assert.IsInstanceOfType(item, typeof(char));
-                }
+                
             }
         }
         [TestMethod]
