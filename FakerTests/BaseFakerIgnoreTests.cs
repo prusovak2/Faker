@@ -21,6 +21,16 @@ namespace FakerTests
             return TestUtils.InstanceToString(this);
         }
     }
+    public class IgnoredPersonFakerNoDefaultFill : BaseFaker<IgnoredPerson>
+    {
+        public IgnoredPersonFakerNoDefaultFill()
+        {
+            RuleFor(p => p.Name, _ => "ABRAKA_FAKE");
+            Ignore(p => p.ProprertyThatShouldNotBeFaked);
+        }
+
+    }
+
     public class IgnoredPersonFaker : BaseFaker<IgnoredPerson>
     {
         public IgnoredPersonFaker()
@@ -229,6 +239,23 @@ namespace FakerTests
             //should not throw the exception
             IgnoreIgnoreFaker i = new IgnoreIgnoreFaker();
         }
+
+        [TestMethod]
+        public void NoDefaultFilIgnoreTest()
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                IgnoredPerson person = new IgnoredPerson();
+                IgnoredPersonFakerNoDefaultFill faker = new IgnoredPersonFakerNoDefaultFill();
+                faker.Populate(person);
+                Console.WriteLine(person);
+                Assert.AreEqual("ABRAKA_FAKE", person.Name);
+                Assert.AreEqual(73, person.FakeThisByte);
+                Assert.AreEqual(42, person.ProprertyThatShouldNotBeFaked);
+                Assert.AreEqual("NO FAKE", person.FieldThatShouldNotBeFaked);
+            }
+        }
+
     }
 }
 
