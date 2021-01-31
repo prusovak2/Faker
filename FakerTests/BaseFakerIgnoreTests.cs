@@ -255,7 +255,6 @@ namespace FakerTests
                 Assert.AreEqual("NO FAKE", person.FieldThatShouldNotBeFaked);
             }
         }
-
     }
 }
 

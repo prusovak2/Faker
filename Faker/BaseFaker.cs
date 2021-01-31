@@ -403,7 +403,7 @@ namespace Faker
             return memberInfos;
         }
         /// <summary>
-        /// which ctor should be used to create instasnces of TClass when faker is used as inner faker
+        /// which ctor should be used to create instances of TClass when faker is used as inner faker
         /// </summary>
         public enum InnerFakerConstructorUsage
         {
