@@ -119,15 +119,30 @@ namespace Faker
                 return consonants[index];
             }
             /// <summary>
-            /// returns a random char representing a hexadecimal digit 
+            /// returns a random char representing a hexadecimal digit <br/>
+            /// letters in lower case
             /// </summary>
             /// <returns></returns>
-            public char HexadecimalDigit()
+            public char HexadecimalDigitLower()
             {
-                char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-                int index = this.RG.Random.Int(0, hexDigits.Length - 1);
-                return hexDigits[index];
+                char[] hexDigitsLower =  { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+
+                int index = this.RG.Random.Int(0, hexDigitsLower.Length - 1);
+                return hexDigitsLower[index];
             }
+            /// <summary>
+            /// returns a random char representing a hexadecimal digit <br/>
+            /// letters in upper case
+            /// </summary>
+            /// <returns></returns>
+            public char HexadecimalDigitUpper()
+            {
+                char[] hexDigitsUpper = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
+                int index = this.RG.Random.Int(0, hexDigitsUpper.Length - 1);
+                return hexDigitsUpper[index];
+            }
+
             /// <summary>
             /// returns a random ASCII whitespace char <br/>
             /// as ASCII whitespaces are regarded space(32), horizontal tab(9), line feed(10), vertical tab(11), form feed(12), carriage return(13)
