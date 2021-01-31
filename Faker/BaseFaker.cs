@@ -352,7 +352,7 @@ namespace Faker
         /// <param name="instance"></param>
         internal void RandomlyFillRemainingMembers(TClass instance)
         {
-            HashSet<MemberInfo> membersToFill = this.GetSetOfMembersWithNoRuleOrFaker();
+            HashSet<MemberInfo> membersToFill = this.GetSetOfMembersToBeFilledByDefaultRandFunc();
             foreach (var member in membersToFill)
             {
                 if(member is PropertyInfo propertyInfo)
@@ -389,7 +389,7 @@ namespace Faker
         /// returns HashSet of all fields and properties of TClass that does not have RuleFor or InnerFaker set in this Faker
         /// </summary>
         /// <returns></returns>
-        internal HashSet<MemberInfo> GetSetOfMembersWithNoRuleOrFaker()
+        internal HashSet<MemberInfo> GetSetOfMembersToBeFilledByDefaultRandFunc()
         {
             Type type = typeof(TClass);
             HashSet < MemberInfo > memberInfos = type.GetMembers().Where(memberInfo => (memberInfo is PropertyInfo || memberInfo is FieldInfo)).ToHashSet();
@@ -398,6 +398,7 @@ namespace Faker
             HashSet<MemberInfo> HasSetFaker = this.InnerFakers.Keys.ToHashSet();
             memberInfos.ExceptWith(HasRulefor);
             memberInfos.ExceptWith(HasSetFaker);
+            memberInfos.ExceptWith(this.IgnoredStrictly);
 
             return memberInfos;
         }

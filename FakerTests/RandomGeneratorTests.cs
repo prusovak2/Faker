@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Faker;
-using System.Xml.Serialization;
 
 namespace FakerTests
 {

@@ -276,7 +276,7 @@ Metody `SetFaker` a `RuleFor` jsou typově bezpečné v tom smyslu, že nelze p�
 **Priorita: 1**
 
 ####  Hexadecimal number formater
-- [ ] 
+- [x] 
 
 **Priorita: 1**
 
@@ -397,6 +397,14 @@ public class GalaxyResidentFaker : BaseFaker<GalaxyResidentClass>
 
 I don't think that **[1]** supports this feature.
 
+### Nastavit defaultní randomizační fce pro Nullable typy
+
+Doplnit `public Func<object> GetDefaultRandomFuncForType(object o)`  a `TypeExtensions.GetSampleInstance(this Type type)`o nullable typy.
+
+- [ ] 
+
+**Priorita: 2**
+
 ### Lorem Ipsum v různých jazycích
 
 - [ ] 
@@ -419,6 +427,8 @@ Markovovské texty *(4/5)* *Generování náhodného textu napodobujícího text
 
 - [ ] 
 
+**Priorita: 3**
+
 ### `AutoFaker<T>` typ
 
 **Jednodušší syntax pro vytváření fakerů, které vyplňují položky defaultními randomizačními metodami (bez explicitního specifikování `RuleFor` či`SetFaker`).**
@@ -429,7 +439,7 @@ Markovovské texty *(4/5)* *Generování náhodného textu napodobujícího text
 
 `AutoFaker<T>`  je třída poděděné od `BaseFaker<T>`, která má flag `faker.FillEmptyMembers` nastavený automaticky na `UnfilledMembers.DefaultRandomFunc`. Implementačně velmi jednoduché rozšíření API, které zjednoduší a zpříjemní použití fakerů. Díky AutoFakeru lze nadefinovat plně funkční faker na jednom řádku.
 
-Rozmyslet si: jaké další flags souvisí s imlpicitním vyplňováním pomocí defaultních randomizačních funkcí a jak by měly být nastaveny.
+Rozmyslet si: jaké další flags souvisí s implicitním vyplňováním pomocí defaultních randomizačních funkcí a jak by měly být nastaveny.
 
 ```csharp
 // without AutoFaker<T> type

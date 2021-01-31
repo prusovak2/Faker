@@ -318,7 +318,7 @@ namespace FakerTests
             }
             Console.WriteLine();
             StorageFakerParamless s = new StorageFakerParamless();
-            HashSet<MemberInfo> memberInfos = s.GetSetOfMembersWithNoRuleOrFaker();
+            HashSet<MemberInfo> memberInfos = s.GetSetOfMembersToBeFilledByDefaultRandFunc();
 
             foreach (var item in memberInfos)
             {
