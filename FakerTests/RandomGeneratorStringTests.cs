@@ -355,19 +355,127 @@ namespace FakerTests
         }
 
         [TestMethod]
-        public void RandomHexStringTest()
+        public void RandomHexStringUpperTest()
         {
+            int numDigits = 5;
             RandomGenerator r = new RandomGenerator();
-            for (int i = 0; i < 40; i++)
+
+            //upper 0x
+            Console.WriteLine("         upper 0x");
+            for (int i = 0; i < 30; i++)
             {
-                string hex = r.String.HexadecimalString(5, false);
+                string hex = r.String.HexadecimalString(numDigits, false);
                 Console.WriteLine("hex:{0}", hex);
-                Assert.IsTrue(hex.Length <= 7);
+                Assert.IsTrue(hex.Length <= numDigits+2);
+
+                Assert.IsTrue('0' == hex[0]);
+                Assert.IsTrue('x' == hex[1]);
+                for (int j = 2; j < hex.Length; j++)
+                {
+                    Assert.IsTrue(char.IsUpper(hex[j]) || char.IsDigit(hex[j]));
+                }
+
+                ulong val = Convert.ToUInt64(hex, 16);
+                Console.WriteLine("dec:{0}", val);
+            }
+
+            //upper 0X
+            Console.WriteLine("         upper 0X");
+            for (int i = 0; i < 30; i++)
+            {
+                string hex = r.String.HexadecimalString(numDigits, true, RandomGenerator.RandomString.HexadecimalFormat.Upper0X);
+                Console.WriteLine("hex:{0}", hex);
+                Assert.IsTrue(hex.Length == numDigits + 2);
+
+                Assert.IsTrue('0' == hex[0]);
+                Assert.IsTrue('X' == hex[1]);
+                for (int j = 2; j < hex.Length; j++)
+                {
+                    Assert.IsTrue(char.IsUpper(hex[j]) || char.IsDigit(hex[j]));
+                }
+
+                ulong val = Convert.ToUInt64(hex, 16);
+                Console.WriteLine("dec:{0}", val);
+            }
+
+            //upper prefixless
+            Console.WriteLine("         upper prefixless");
+            for (int i = 0; i < 30; i++)
+            {
+                string hex = r.String.HexadecimalString(numDigits, false, RandomGenerator.RandomString.HexadecimalFormat.UpperPrefixless);
+                Console.WriteLine("hex:{0}", hex);
+                Assert.IsTrue(hex.Length <= numDigits);
+
+                for (int j = 0; j < hex.Length; j++)
+                {
+                    Assert.IsTrue(char.IsUpper(hex[j]) || char.IsDigit(hex[j]));
+                }
+
                 ulong val = Convert.ToUInt64(hex, 16);
                 Console.WriteLine("dec:{0}", val);
             }
         }
-        
-      
+
+        [TestMethod]
+        public void RandomHexStringLowerTest()
+        {
+            int numDigits = 5;
+            RandomGenerator r = new RandomGenerator();
+
+            //lower 0x
+            Console.WriteLine("         lower 0x");
+            for (int i = 0; i < 30; i++)
+            {
+                string hex = r.String.HexadecimalString(numDigits, false, RandomGenerator.RandomString.HexadecimalFormat.Lower0x);
+                Console.WriteLine("hex:{0}", hex);
+                Assert.IsTrue(hex.Length <= numDigits + 2);
+
+                Assert.IsTrue('0' == hex[0]);
+                Assert.IsTrue('x' == hex[1]);
+                for (int j = 2; j < hex.Length; j++)
+                {
+                    Assert.IsTrue(char.IsLower(hex[j]) || char.IsDigit(hex[j]));
+                }
+
+                ulong val = Convert.ToUInt64(hex, 16);
+                Console.WriteLine("dec:{0}", val);
+            }
+
+            //lower 0X
+            Console.WriteLine("         lower 0X");
+            for (int i = 0; i < 30; i++)
+            {
+                string hex = r.String.HexadecimalString(numDigits, true, RandomGenerator.RandomString.HexadecimalFormat.Lower0X);
+                Console.WriteLine("hex:{0}", hex);
+                Assert.IsTrue(hex.Length == numDigits + 2);
+
+                Assert.IsTrue('0' == hex[0]);
+                Assert.IsTrue('X' == hex[1]);
+                for (int j = 2; j < hex.Length; j++)
+                {
+                    Assert.IsTrue(char.IsLower(hex[j]) || char.IsDigit(hex[j]));
+                }
+
+                ulong val = Convert.ToUInt64(hex, 16);
+                Console.WriteLine("dec:{0}", val);
+            }
+
+            //lower prefixless
+            Console.WriteLine("         lower prefixless");
+            for (int i = 0; i < 30; i++)
+            {
+                string hex = r.String.HexadecimalString(numDigits, false, RandomGenerator.RandomString.HexadecimalFormat.LowerPrefixless);
+                Console.WriteLine("hex:{0}", hex);
+                Assert.IsTrue(hex.Length <= numDigits);
+
+                for (int j = 0; j < hex.Length; j++)
+                {
+                    Assert.IsTrue(char.IsLower(hex[j]) || char.IsDigit(hex[j]));
+                }
+
+                ulong val = Convert.ToUInt64(hex, 16);
+                Console.WriteLine("dec:{0}", val);
+            }
+        }
     }
 }

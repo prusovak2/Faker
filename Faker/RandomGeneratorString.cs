@@ -116,8 +116,8 @@ namespace Faker
                 return new string(chars);
             }
             /// <summary>
-            /// generates a random string consisting of alphanumeric characters<br/>
-            /// when precise is true, length is used as length of string<br/>
+            /// generates a random string consisting of alphanumeric characters <br/>
+            /// when precise is true, length is used as length of string <br/>
             /// otherwise a random int less or equal to length is generated and used as length of string
             /// </summary>
             /// <param name="length"></param>
@@ -129,11 +129,11 @@ namespace Faker
                 return new string(chars);
             }
             /// <summary>
-            /// returns a string hexadecimal interpretation of random number from interval [lower,upper]
+            /// returns a string hexadecimal interpretation of random number from interval [lower,upper] <br/>
             /// format param determines whether it is lower or upper case and whether prefix is 0x, 0X or none
             /// </summary>
-            /// <param name="lower"></param>
-            /// <param name="upper"></param>
+            /// <param name="lower">lower bound for a numeric value represented by s returned string</param>
+            /// <param name="upper">upper bound for a numeric value represented by s returned string</param>
             /// <param name="format"> determines whether digits are lower or upper case and whether prefix is 0x, 0X or none</param>
             /// <returns></returns>
             public string HexadecimalString(ulong lower, ulong upper, HexadecimalFormat format = HexadecimalFormat.Upper0x)
@@ -165,14 +165,14 @@ namespace Faker
             }
             /// <summary>
             /// returns a string representation of a hexadecimal number, that has numDigits digits (when precise is true)<br/>
-            /// otherwise numDigits is used as upper bound for a random number of hexadecimal digits
+            /// otherwise numDigits is used as upper bound for a random number of hexadecimal digits <br/>
             /// format param determines whether it is lower or upper case and whether prefix is 0x, 0X or none
             /// </summary>
-            /// <param name="numDigits"></param>
-            /// <param name="precise"></param>
+            /// <param name="numDigits">maximal number of hexadecimal digits in return string</param>
+            /// <param name="precise">is numDigit used precisely or used as the upper bound for number of digits in returned string</param>
             /// <param name="format"> determines whether digits are lower or upper case and whether prefix is 0x, 0X or none</param>
             /// <returns></returns>
-            public string HexadecimalString(int numDigits, bool precise= true, HexadecimalFormat format = HexadecimalFormat.Upper0x)
+            public string HexadecimalString(int numDigits, bool precise = true, HexadecimalFormat format = HexadecimalFormat.Upper0x)
             {
                 char[] prefixlessHexChars;
                 switch (format)
@@ -195,7 +195,7 @@ namespace Faker
                         throw new NotImplementedException("Unexpected");
 
                 }
-                return AddPrexix(prefixlessHexChars.ToString(), format);
+                return AddPrexix( new string(prefixlessHexChars) , format);
             }
             /// <summary>
             /// adds 0x or 0X prefix or nothing in front of given string according to given HexadecimalFormat  
