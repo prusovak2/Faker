@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Faker;
+using static FakerTests.TestUtils;
 
 namespace FakerTests
 { 
@@ -71,7 +72,12 @@ namespace FakerTests
 
     public class Value
     {
-        public short value;
+        public short value = 42;
+
+        public override string ToString()
+        {
+            return InstanceToString(this);
+        }
     }
 
     public class ContainsValue
@@ -139,32 +145,95 @@ namespace FakerTests
         }
     }
 
+    /*############################### IGNORE ATTRIBUTE CLASSES ############################ */
+    public class WithIgnoreAttr
+    {
+        [FakerIgnore]
+        public int IgnoredIntField = 42;
+
+        public byte ByteField;
+
+        [FakerIgnore]
+        public string IgnoredStringProp { get; set; } = "IGNORED";
+
+        public ulong UlongProp { get; set; }
+
+        public override string ToString()
+        {
+            return InstanceToString(this);
+        }
+    }
+
+    public class WithIgnoreAttrFaker : BaseFaker<WithIgnoreAttr>
+    {
+        public WithIgnoreAttrFaker()
+        {
+            this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+        }
+    }
+    public class ContainsValueATTR
+    {   
+        [FakerIgnore]
+        public int IgnoredInt;
+        [FakerIgnore]
+        public Value IgnoredVal { get; set; }
+
+        public override string ToString()
+        {
+            return InstanceToString(this);
+        }
+    }
+
+    public class ValueFakerNonEmpty : BaseFaker<Value>
+    {
+        public ValueFakerNonEmpty()
+        {
+            RuleFor(x => x.value, _ => 73);
+        }
+    }
+    
+    public class RuleForSetFakerForIgnoreATTRfaker : BaseFaker<ContainsValueATTR>
+    {
+        public RuleForSetFakerForIgnoreATTRfaker()
+        {
+            RuleFor(x => x.IgnoredInt, _ => 73);
+            SetFaker(x => x.IgnoredVal, new ValueFakerNonEmpty());
+        }
+    }
+
+
+    public class LotOfMembersATTR
+    {
+        public int Int;
+        public byte Byte;
+        public short Short { get; set; }
+        public DateTime DateTime { get; set; }
+        public double Double;
+        public Guid Guid;
+        [FakerIgnore]
+        public string IgnoredString { get; set; } = "IGNORED";
+        [FakerIgnore]
+        public int IgnoredInt = 42;
+
+        public override string ToString()
+        {
+            return TestUtils.InstanceToString(this);
+        }
+    }
+
+    public class LotOfMembersATTRFaker : BaseFaker<LotOfMembers>
+    {
+        public LotOfMembersATTRFaker()
+        {
+            FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+        }
+    }
+
+
+
     [TestClass]
     public class BaseFakerIgnoreTests
     {
-        static void IncInDic<T>(Dictionary<T, int> dic, T member)
-        {
-            if (dic.ContainsKey(member))
-            {
-                dic[member]++;
-            }
-            else
-            {
-                dic.Add(member, 1);
-            }
-        }
-
-        static void CheckDic<T>(Dictionary<T, int> dic, int unwantedValue)
-        {
-            foreach (var item in dic)
-            {
-                if (dic[item.Key] == unwantedValue)
-                {
-                    Assert.Fail();
-                }
-            }
-        }
-
         [TestMethod]
         public void IgnoredBasicTest()
         {
@@ -254,6 +323,84 @@ namespace FakerTests
                 Assert.AreEqual(42, person.ProprertyThatShouldNotBeFaked);
                 Assert.AreEqual("NO FAKE", person.FieldThatShouldNotBeFaked);
             }
+        }
+
+        [TestMethod]
+        public void IgnoreAttributeBasicTest()
+        {
+            int numIterations = 20;
+            Dictionary<byte, int> byteCounts = new Dictionary<byte, int>();
+            Dictionary<ulong, int> ulongCounts = new Dictionary<ulong, int>();
+
+            for (int i = 0; i < numIterations; i++)
+            {
+                WithIgnoreAttr wia = new WithIgnoreAttr();
+                WithIgnoreAttrFaker faker = new WithIgnoreAttrFaker();
+                wia = faker.Generate();
+
+                IncInDic(byteCounts, wia.ByteField);
+                IncInDic(ulongCounts, wia.UlongProp);
+
+                Console.WriteLine(wia);
+
+                Assert.AreEqual("IGNORED", wia.IgnoredStringProp);
+                Assert.AreEqual(42, wia.IgnoredIntField);
+            }
+            CheckDic(byteCounts, numIterations);
+            CheckDic(ulongCounts, numIterations);
+        }
+        [TestMethod]
+        public void RuleForSetFakerForIgnoreAttrTest()
+        {
+            int numIterations = 30;
+
+            for (int i = 0; i < numIterations; i++)
+            {
+                ContainsValueATTR cva = new ContainsValueATTR();
+                RuleForSetFakerForIgnoreATTRfaker faker = new RuleForSetFakerForIgnoreATTRfaker();
+                cva = faker.Generate();
+
+                Console.WriteLine(cva);
+
+                Assert.AreEqual(73, cva.IgnoredInt);
+                Assert.AreEqual(73, cva.IgnoredVal.value);
+            }
+        }
+        [TestMethod]
+        public void IgnoreLotOfMembersATTRTest()
+        {
+            int numIterations = 20;
+            Dictionary<int, int> intCounts = new Dictionary<int, int>();
+            Dictionary<byte, int> byteCounts = new Dictionary<byte, int>();
+            Dictionary<short, int> shortCounts = new Dictionary<short, int>();
+            Dictionary<DateTime, int> dateTimeCounts = new Dictionary<DateTime, int>();
+            Dictionary<double, int> doubleCounts = new Dictionary<double, int>();
+            Dictionary<Guid, int> guidCounts = new Dictionary<Guid, int>();
+
+            for (int i = 0; i < numIterations; i++)
+            {
+                LotOfMembers lom;
+                LotOfMembersFaker faker = new LotOfMembersFaker();
+                lom = faker.Generate();
+
+                IncInDic(intCounts, lom.Int);
+                IncInDic(byteCounts, lom.Byte);
+                IncInDic(shortCounts, lom.Short);
+                IncInDic(dateTimeCounts, lom.DateTime);
+                IncInDic(doubleCounts, lom.Double);
+                IncInDic(guidCounts, lom.Guid);
+
+                Console.WriteLine(lom);
+
+                Assert.AreEqual("IGNORED", lom.IgnoredString);
+                Assert.AreEqual(42, lom.IgnoredInt);
+            }
+            CheckDic(intCounts, numIterations);
+            CheckDic(byteCounts, numIterations);
+            CheckDic(shortCounts, numIterations);
+            CheckDic(dateTimeCounts, numIterations);
+            CheckDic(doubleCounts, numIterations);
+            CheckDic(guidCounts, numIterations);
         }
     }
 }

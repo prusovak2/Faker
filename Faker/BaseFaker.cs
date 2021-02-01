@@ -56,12 +56,15 @@ namespace Faker
         /// once member is IgnoredStrictly, it cannot have a RuleFor or InnnerFaker set for it in the same instance of the Faker
         /// </summary>
         internal HashSet<MemberInfo> IgnoredStrictly { get; } = new HashSet<MemberInfo>();
+
+        internal HashSet<MemberInfo> Ignored { get; private set; } = new HashSet<MemberInfo>();
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically
         /// </summary>
         public BaseFaker()
         {
             this.Random = new RandomGenerator();
+            ScanIgnoreAttriutes();
         }
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of RandomGenerator with a given seed
@@ -70,6 +73,7 @@ namespace Faker
         public BaseFaker(ulong seed)
         {
             this.Random = new RandomGenerator(seed);
+            ScanIgnoreAttriutes();
         }
         /// <summary>
         /// new instance of BaseFaker that uses existing instance of RandomGenerator <br/>
@@ -80,6 +84,7 @@ namespace Faker
         public BaseFaker(RandomGenerator randomGenerator)
         {
             this.Random = randomGenerator;
+            ScanIgnoreAttriutes();
         }
         /// <summary>
         /// Adds Rule for how to generate a random content of particular member <br/>
@@ -404,9 +409,18 @@ namespace Faker
             memberInfos.ExceptWith(HasRulefor);
             memberInfos.ExceptWith(HasSetFaker);
             memberInfos.ExceptWith(this.IgnoredStrictly);
+            memberInfos.ExceptWith(this.Ignored);
 
             return memberInfos;
         }
+
+        internal void ScanIgnoreAttriutes()
+        {
+            Type type = typeof(TClass);
+            HashSet<MemberInfo> IgnoredMembers = type.GetMembers().Where(m => m.GetCustomAttributes<FakerIgnoreAttribute>().Count() > 0).ToHashSet();
+            this.Ignored = IgnoredMembers;
+        }
+
         /// <summary>
         /// which ctor should be used to create instances of TClass when faker is used as inner faker
         /// </summary>

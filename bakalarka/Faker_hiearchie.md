@@ -491,7 +491,7 @@ Taken from **[1]**.
 
  **Má vliv, když `faker.FillEmptyMembers` je nastaven na `UnfilledMembers.DefaultRandomFunc`. Ponechá položku nevyplněnou.**
 
-- [ ] 
+- [x] 
 
 **Priorita: 3**
 
@@ -584,6 +584,14 @@ Person p = (Person) personFaker;
 ```
 
 Taken from **[1]**.
+
+### Další atributy?
+
+- [ ] 
+
+**Priorita: 4**
+
+Např. atribut, na úrovni třídy, co má být vyplněna pseudonáhodným obsahem, co jejím Fakerů, automaticky nastaví `this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;`
 
 ### Náhodný výběr z `Enum`
 
