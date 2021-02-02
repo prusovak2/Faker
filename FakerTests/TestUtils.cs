@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FakerTests
 {
@@ -31,6 +32,28 @@ namespace FakerTests
                 res += "\n\t";
             }
             return res;
+        }
+        public static void IncInDic<T>(Dictionary<T, int> dic, T member)
+        {
+            if (dic.ContainsKey(member))
+            {
+                dic[member]++;
+            }
+            else
+            {
+                dic.Add(member, 1);
+            }
+        }
+
+        public static void CheckDic<T>(Dictionary<T, int> dic, int unwantedValue)
+        {
+            foreach (var item in dic)
+            {
+                if (dic[item.Key] == unwantedValue)
+                {
+                    Assert.Fail();
+                }
+            }
         }
     }
 }

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Faker">
+      <HintPath>..\..\Faker\bin\Release\netcoreapp3.1\Faker.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

@@ -56,12 +56,21 @@ namespace Faker
         /// once member is IgnoredStrictly, it cannot have a RuleFor or InnnerFaker set for it in the same instance of the Faker
         /// </summary>
         internal HashSet<MemberInfo> IgnoredStrictly { get; } = new HashSet<MemberInfo>();
+
+        /// <summary>
+        /// set of members whose content should not be filled by a default random function when UnfilledMember.DefaultRandomFunc is set<br/>
+        /// members with FakerIgnoreAttribute get inserted here <br/>
+        /// these members can have a RuleFor or InnerFaker set for them - it has higher priority than FakerIgnore attribute 
+        /// </summary>
+        internal HashSet<MemberInfo> Ignored { get; private set; } = new HashSet<MemberInfo>();
+
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically
         /// </summary>
         public BaseFaker()
         {
             this.Random = new RandomGenerator();
+            
         }
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of RandomGenerator with a given seed
@@ -404,9 +413,21 @@ namespace Faker
             memberInfos.ExceptWith(HasRulefor);
             memberInfos.ExceptWith(HasSetFaker);
             memberInfos.ExceptWith(this.IgnoredStrictly);
+            memberInfos.ExceptWith(this.Ignored);
 
             return memberInfos;
         }
+
+        /// <summary>
+        /// Store members TClass with the FakerIgnore attribute in the Ignored HashSet
+        /// </summary>
+        internal protected void ScanIgnoreAttriutes()
+        {
+            Type type = typeof(TClass);
+            HashSet<MemberInfo> IgnoredMembers = type.GetMembers().Where(m => m.GetCustomAttributes<FakerIgnoreAttribute>().Count() > 0).ToHashSet();
+            this.Ignored = IgnoredMembers;
+        }
+
         /// <summary>
         /// which ctor should be used to create instances of TClass when faker is used as inner faker
         /// </summary>
@@ -425,4 +446,41 @@ namespace Faker
             DefaultRandomFunc
         }
     }
+    /// <summary>
+    /// Faker that RESPECTS FAKER IGNORE ATTRIBUTES assigned to the members of a TClass instance
+    /// </summary>
+    /// <typeparam name="TClass"></typeparam>
+    public class IgnoreFaker<TClass>: BaseFaker<TClass> where TClass : class
+    {
+        /// <summary>
+        /// new instance of IgnoreFaker that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
+        /// RESPECTS FAKER IGNORE ATTRIBUTES
+        /// </summary>
+        public IgnoreFaker() :base()
+        {
+            ScanIgnoreAttriutes();
+        }
+        /// <summary>
+        /// new instance of IgnoreFaker that creates a new instance of RandomGenerator with a given seed <br/>
+        /// RESPECTS FAKER IGNORE ATTRIBUTES
+        /// </summary>
+        /// <param name="seed"></param>
+        public IgnoreFaker(ulong seed) : base(seed)
+        {
+            ScanIgnoreAttriutes();
+        }
+        /// <summary>
+        /// new instance of IgnoreFaker that uses existing instance of RandomGenerator <br/>
+        /// one instance of random generator can be shared by multiple fakers to save memory <br/>
+        /// recommended for innerFakers 
+        /// RESPECTS FAKER IGNORE ATTRIBUTES
+        /// </summary>
+        /// <param name="randomGenerator"></param>
+        public IgnoreFaker(RandomGenerator randomGenerator) : base(randomGenerator)
+        {
+            ScanIgnoreAttriutes();
+        }
+    } 
+
+    
 }
