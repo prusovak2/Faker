@@ -722,6 +722,21 @@ public class Person
 
 I'm not really sure how attributes work and how difficult (if even possible) this would be to implement. Suitable for classes that are written with intention to be faked. Idea is to allow user to set default random function (used when `faker.FillEmptyMembers` is set to `UnfilledMembers.DefaultRandomFunc`) while implementing the class in question. 
 
+```
+Attribute parameter types
+
+The types of positional and named parameters for an attribute class are limited to the attribute parameter types, which are:
+
+    One of the following types: bool, byte, char, double, float, int, long, sbyte, short, string, uint, ulong, ushort.
+    The type object.
+    The type System.Type.
+    An enum type, provided it has public accessibility and the types in which it is nested (if any) also have public accessibility (Attribute specification).
+    Single-dimensional arrays of the above types.
+    A constructor argument or public field which does not have one of these types, cannot be used as a positional or named parameter in an attribute specification.
+```
+
+https://docs.microsoft.com/cs-cz/dotnet/csharp/language-reference/language-specification/attributes#attribute-specification
+
 I don't think that **[1]** supports this feature.
 
 ###  Bohaté API, široká škála náhodných entit, co je možné generovat - jen nápady
