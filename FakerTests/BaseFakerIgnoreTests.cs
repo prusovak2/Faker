@@ -229,6 +229,47 @@ namespace FakerTests
         }
     }
 
+    public class InnerWithATTR
+    {
+        [FakerIgnore]
+        public int IgnoredInt { get; set; } = 42;
+        [FakerIgnore]
+        public short IgnoredShort = 42;
+
+        public long Long = 0;
+
+        public override string ToString()
+        {
+            return InstanceToString(this);
+        }
+    }
+
+    public class InnerWithATTRIgnoreFaker : IgnoreFaker<InnerWithATTR>
+    {
+        public InnerWithATTRIgnoreFaker()
+        {
+            this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+        }
+    }
+
+    public class ContainsInnerATTR
+    {
+        public InnerWithATTR Inner { get; set; }
+        public override string ToString()
+        {
+            return InstanceToString(this);
+        }
+    }
+
+    public class ContainsInnerATTRIgnoreFaker : IgnoreFaker<ContainsInnerATTR>
+    {
+        public ContainsInnerATTRIgnoreFaker()
+        {
+            this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            SetFaker(x => x.Inner, new InnerWithATTRIgnoreFaker());
+        }
+    }
+
     [TestClass]
     public class BaseFakerIgnoreTests
     {
@@ -399,6 +440,26 @@ namespace FakerTests
             CheckDic(dateTimeCounts, numIterations);
             CheckDic(doubleCounts, numIterations);
             CheckDic(guidCounts, numIterations);
+        }
+        [TestMethod]
+        public void IgnoreFakerAsInnerFakerTest()
+        {
+            int numIterations = 20;
+            Dictionary<long, int> LongCounts = new Dictionary<long, int>();
+            for (int i = 0; i < numIterations; i++)
+            {
+                ContainsInnerATTR cia = new ContainsInnerATTR();
+                ContainsInnerATTRIgnoreFaker faker = new ContainsInnerATTRIgnoreFaker();
+                cia = faker.Generate();
+
+                IncInDic(LongCounts, cia.Inner.Long);
+
+                Console.WriteLine(cia);
+
+                Assert.AreEqual(42, cia.Inner.IgnoredInt);
+                Assert.AreEqual(42, cia.Inner.IgnoredShort);
+            }
+            CheckDic(LongCounts, numIterations);
         }
     }
 }
