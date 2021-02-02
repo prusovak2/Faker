@@ -164,7 +164,7 @@ namespace FakerTests
         }
     }
 
-    public class WithIgnoreAttrFaker : BaseFaker<WithIgnoreAttr>
+    public class WithIgnoreAttrFaker : IgnoreFaker<WithIgnoreAttr>
     {
         public WithIgnoreAttrFaker()
         {
@@ -184,7 +184,7 @@ namespace FakerTests
         }
     }
 
-    public class ValueFakerNonEmpty : BaseFaker<Value>
+    public class ValueFakerNonEmpty : IgnoreFaker<Value>
     {
         public ValueFakerNonEmpty()
         {
@@ -192,15 +192,15 @@ namespace FakerTests
         }
     }
     
-    public class RuleForSetFakerForIgnoreATTRfaker : BaseFaker<ContainsValueATTR>
+    public class RuleForSetFakerForIgnoreATTRfaker : IgnoreFaker<ContainsValueATTR>
     {
         public RuleForSetFakerForIgnoreATTRfaker()
         {
+            FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
             RuleFor(x => x.IgnoredInt, _ => 73);
             SetFaker(x => x.IgnoredVal, new ValueFakerNonEmpty());
         }
     }
-
 
     public class LotOfMembersATTR
     {
@@ -221,15 +221,13 @@ namespace FakerTests
         }
     }
 
-    public class LotOfMembersATTRFaker : BaseFaker<LotOfMembers>
+    public class LotOfMembersATTRFaker : IgnoreFaker<LotOfMembersATTR>
     {
         public LotOfMembersATTRFaker()
         {
             FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
         }
     }
-
-
 
     [TestClass]
     public class BaseFakerIgnoreTests
@@ -379,8 +377,8 @@ namespace FakerTests
 
             for (int i = 0; i < numIterations; i++)
             {
-                LotOfMembers lom;
-                LotOfMembersFaker faker = new LotOfMembersFaker();
+                LotOfMembersATTR lom;
+                LotOfMembersATTRFaker faker = new LotOfMembersATTRFaker();
                 lom = faker.Generate();
 
                 IncInDic(intCounts, lom.Int);

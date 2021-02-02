@@ -59,14 +59,14 @@ namespace Faker
 
         internal HashSet<MemberInfo> Ignored { get; private set; } = new HashSet<MemberInfo>();
 
-        public BaseFaker(bool scan)
+        /*public BaseFaker(bool scan)
         {
             this.Random = new RandomGenerator();
             if (scan)
             {
                 ScanIgnoreAttriutes();
             }
-        }
+        }*/
 
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically
@@ -74,7 +74,7 @@ namespace Faker
         public BaseFaker()
         {
             this.Random = new RandomGenerator();
-            ScanIgnoreAttriutes();
+            
         }
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of RandomGenerator with a given seed
@@ -83,7 +83,6 @@ namespace Faker
         public BaseFaker(ulong seed)
         {
             this.Random = new RandomGenerator(seed);
-            ScanIgnoreAttriutes();
         }
         /// <summary>
         /// new instance of BaseFaker that uses existing instance of RandomGenerator <br/>
@@ -94,7 +93,6 @@ namespace Faker
         public BaseFaker(RandomGenerator randomGenerator)
         {
             this.Random = randomGenerator;
-            ScanIgnoreAttriutes();
         }
         /// <summary>
         /// Adds Rule for how to generate a random content of particular member <br/>
@@ -424,7 +422,7 @@ namespace Faker
             return memberInfos;
         }
 
-        internal void ScanIgnoreAttriutes()
+        internal protected void ScanIgnoreAttriutes()
         {
             Type type = typeof(TClass);
             HashSet<MemberInfo> IgnoredMembers = type.GetMembers().Where(m => m.GetCustomAttributes<FakerIgnoreAttribute>().Count() > 0).ToHashSet();
@@ -449,4 +447,35 @@ namespace Faker
             DefaultRandomFunc
         }
     }
+
+    public class IgnoreFaker<TClass>: BaseFaker<TClass> where TClass : class
+    {
+        /// <summary>
+        /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically
+        /// </summary>
+        public IgnoreFaker() :base()
+        {
+            ScanIgnoreAttriutes();
+        }
+        /// <summary>
+        /// new instance of BaseFaker that creates a new instance of RandomGenerator with a given seed
+        /// </summary>
+        /// <param name="seed"></param>
+        public IgnoreFaker(ulong seed) : base(seed)
+        {
+            ScanIgnoreAttriutes();
+        }
+        /// <summary>
+        /// new instance of BaseFaker that uses existing instance of RandomGenerator <br/>
+        /// one instance of random generator can be shared by multiple fakers to save memory <br/>
+        /// recommended for innerFakers 
+        /// </summary>
+        /// <param name="randomGenerator"></param>
+        public IgnoreFaker(RandomGenerator randomGenerator) : base(randomGenerator)
+        {
+            ScanIgnoreAttriutes();
+        }
+    } 
+
+    
 }
