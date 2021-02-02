@@ -58,6 +58,16 @@ namespace Faker
         internal HashSet<MemberInfo> IgnoredStrictly { get; } = new HashSet<MemberInfo>();
 
         internal HashSet<MemberInfo> Ignored { get; private set; } = new HashSet<MemberInfo>();
+
+        public BaseFaker(bool scan)
+        {
+            this.Random = new RandomGenerator();
+            if (scan)
+            {
+                ScanIgnoreAttriutes();
+            }
+        }
+
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically
         /// </summary>
