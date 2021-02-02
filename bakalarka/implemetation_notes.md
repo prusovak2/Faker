@@ -24,7 +24,7 @@ https://www.pcg-random.org/posts/how-to-test-with-practrand.html
 
 Volat z ctoru `BaseFakeru` metodu, co používá reflexion, aby ososala případné `FakerIgnore` atributy z položek třídy plněné pseudonáhodným obsahem, ctor zpomalí 100x (viz benchmarks). 
 
-**Benchmark z VS, výsledky předtím, než byl implementován `IgnoreFaker`**
+**Benchmark, výsledky předtím, než byl implementován `IgnoreFaker`**
 
 ``` ini
 BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.746 (2004/?/20H1)
@@ -42,23 +42,6 @@ Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cor
 | WithoutIgnoreScan   | 21,394.1 ns | 301.76 ns | 267.51 ns |  0.99 |    0.02 |    2 | 2.9297 |     - |     - |    4617 B |
 | WithIgnoreScan      | 21,605.3 ns | 358.42 ns | 335.27 ns |  1.00 |    0.00 |    2 | 2.9297 |     - |     - |    4617 B |
 
-**Benchmark z CMD LINE, výsledky předtím, než byl implementován `IgnoreFaker`**
-
-``` ini
-BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.746 (2004/?/20H1)
-Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
-.NET Core SDK=5.0.101
-  [Host]     : .NET Core 3.1.10 (CoreCLR 4.700.20.51601, CoreFX 4.700.20.51901), X64 RyuJIT  [AttachedDebugger]
-  DefaultJob : .NET Core 3.1.10 (CoreCLR 4.700.20.51601, CoreFX 4.700.20.51901), X64 RyuJIT
-
-
-```
-
-| Method              |        Mean |     Error |    StdDev | Ratio | RatioSD | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
-| ------------------- | ----------: | --------: | --------: | ----: | ------: | ---: | -----: | ----: | ----: | --------: |
-| WithoutIgnoreNOScan |    253.3 ns |   4.82 ns |   8.31 ns |  0.01 |    0.00 |    1 | 0.4282 |     - |     - |     672 B |
-| WithoutIgnoreScan   | 21,394.1 ns | 301.76 ns | 267.51 ns |  0.99 |    0.02 |    2 | 2.9297 |     - |     - |    4617 B |
-| WithIgnoreScan      | 21,605.3 ns | 358.42 ns | 335.27 ns |  1.00 |    0.00 |    2 | 2.9297 |     - |     - |    4617 B |
 
 ```csharp
 //ctor added to BaseFaker to allow previous benchmark to run
@@ -159,4 +142,97 @@ Situaci by bylo možné vyřešit parametrem ctoru `BaseFakeru` (`bool`, co by u
 Proto jsem se rozhodla naimplementovat `IgnoreFaker <TClass>` typ poděděný od `BaseFaker<TClasss>`. V ctoru `IgnoreFakeru` je volán příslušný ctor `BaseFakeru` a navíc je zde provedeno skenování atributů. `BaseFaker` tedy není sám o sobě skenováním zatížen a usage base case není zbytečně zpomalen. Použití `IgnoreFakeru` je stále stejně jednoduché jako použití `BaseFakeru`. 
 
 Nevýhodou tohoto přístupu oproti skenování atributů přímo v ctoru  `BaseFakeru` je menší transparentnost použití `FakerIgnore` atributů. Uživatel, jež si není vědom existence a účelu `IgnoreFakeru` bude zmaten, že jeho `FakerIgnore` atributy nemají ve `Fakeru` poděděném přímo od `BaseFakeru` žádný účinek.  
+
+**Benchmark , `IgnoreFaker` vs `BaseFaker`**
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.746 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.101
+  [Host]     : .NET Core 3.1.10 (CoreCLR 4.700.20.51601, CoreFX 4.700.20.51901), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 3.1.10 (CoreCLR 4.700.20.51601, CoreFX 4.700.20.51901), X64 RyuJIT
+
+
+```
+
+| Method                   |        Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| ------------------------ | ----------: | --------: | --------: | ---: | -----: | ----: | ----: | --------: |
+| WithoutIgnoreBaseFaker   |    251.7 ns |   5.03 ns |  11.36 ns |    1 | 0.4282 |     - |     - |     672 B |
+| WithIgnoreBaseFaker      |    252.6 ns |   4.97 ns |  10.37 ns |    1 | 0.4282 |     - |     - |     672 B |
+| WithoutIgnoreIgnoreFaker | 21,391.5 ns | 409.87 ns | 739.09 ns |    2 | 2.9297 |     - |     - |    4617 B |
+| WithIgnoreIgnoreFaker    | 22,056.8 ns | 428.68 ns | 641.63 ns |    3 | 2.9297 |     - |     - |    4617 B |
+
+```csharp
+//used benchmark 
+public class WithIgnore
+    {
+        public int Int;
+        public byte Byte;
+        [FakerIgnore]
+        public short Short { get; set; } = 73;
+        public DateTime DateTime { get; set; }
+        [FakerIgnore]
+        public double Double = 42.73;
+        public Guid Guid;
+        [FakerIgnore]
+        public string IgnoredString { get; set; } = "IGNORED";
+        [FakerIgnore]
+        public int IgnoredInt = 42;
+    }
+
+    public class WithIgnoreBaseFaker : BaseFaker<WithIgnore> { }
+
+    public class WithIgnoreIgnoreFaker : IgnoreFaker<WithIgnore> { }
+ 
+
+    public class WithoutIgnore
+    {
+        public int Int;
+        public byte Byte;
+        public short Short { get; set; } = 73;
+        public DateTime DateTime { get; set; }
+        public double Double = 42.73;
+        public Guid Guid;
+        public string IgnoredString { get; set; } = "IGNORED";
+        public int IgnoredInt = 42;
+    }
+
+    public class WithoutIgnoreBaseFaker : BaseFaker<WithIgnore> { }
+
+    public class WithoutIgnoreIgnoreFaker : IgnoreFaker<WithIgnore> { }
+
+    [MemoryDiagnoser]
+    [RankColumn]
+    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    public class IgnoreBenchmarks
+    {
+        [Benchmark]
+        public void WithIgnoreBaseFaker()
+        {
+            // no scanning is carried out, class contains FakerIgnore attributes
+            new WithIgnoreBaseFaker();
+        }
+
+        [Benchmark]
+        public void WithIgnoreIgnoreFaker()
+        {
+            //scanning is carried out, class contains FakerIgnore attributes
+            new WithIgnoreIgnoreFaker();
+        }
+
+        [Benchmark]
+        public void WithoutIgnoreBaseFaker()
+        {
+            // no scanning is carried out, class doesn't contain FakerIgnore attributes
+            new WithoutIgnoreBaseFaker();
+        }
+
+        [Benchmark]
+        public void WithoutIgnoreIgnoreFaker()
+        {
+            //scanning is carried out, class doesn't contain FakerIgnore attributes
+            new WithoutIgnoreIgnoreFaker();
+        }
+    }
+```
 
