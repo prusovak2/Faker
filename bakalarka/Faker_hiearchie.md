@@ -437,6 +437,18 @@ Markovovské texty *(4/5)* *Generování náhodného textu napodobujícího text
 
 **Priorita: 3**
 
+```csharp
+public class LotOfMembersAutoFaker : AutoFaker<LotOfMembers>
+{
+    public LotOfMembersAutoFaker()
+    {
+    	FillEmptyMembers = UnfilledMembers.LeaveBlank;
+    }
+}
+```
+
+
+
 `AutoFaker<T>`  je třída poděděné od `BaseFaker<T>`, která má flag `faker.FillEmptyMembers` nastavený automaticky na `UnfilledMembers.DefaultRandomFunc`. Implementačně velmi jednoduché rozšíření API, které zjednoduší a zpříjemní použití fakerů. Díky AutoFakeru lze nadefinovat plně funkční faker na jednom řádku.
 
 Rozmyslet si: jaké další flags souvisí s implicitním vyplňováním pomocí defaultních randomizačních funkcí a jak by měly být nastaveny.
@@ -530,7 +542,7 @@ I don't think that **[1]** supports this feature.
 
  **Má vliv, když `faker.FillEmptyMembers` je nastaven na `UnfilledMembers.DefaultRandomFunc`. Ponechá položku nevyplněnou. Pro třídy psané s úmyslem jejich vyplňování náhodným obsahem.** 
 
-- [ ] 
+- [x] 
 
 **Priorita: 3**
 

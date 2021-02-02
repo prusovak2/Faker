@@ -472,15 +472,57 @@ namespace Faker
         /// <summary>
         /// new instance of IgnoreFaker that uses existing instance of RandomGenerator <br/>
         /// one instance of random generator can be shared by multiple fakers to save memory <br/>
-        /// recommended for innerFakers 
-        /// RESPECTS FAKER IGNORE ATTRIBUTES
+        /// recommended for innerFakers <br/>
+        /// RESPECTS FAKER IGNORE ATTRIBUTES 
         /// </summary>
         /// <param name="randomGenerator"></param>
         public IgnoreFaker(RandomGenerator randomGenerator) : base(randomGenerator)
         {
             ScanIgnoreAttriutes();
         }
-    } 
+    }
+    /// <summary>
+    /// Simple Faker that RESPECTS FAKER IGNORE ATTRIBUTES assigned to the members of a TClass instance <br/>
+    /// and all members of TClass of basic types with no RuleFor set for them fills by calling a default random function 
+    /// </summary>
+    /// <typeparam name="TClass"></typeparam>
+    public class AutoFaker<TClass> : IgnoreFaker<TClass> where TClass: class
+    {
+        public new UnfilledMembers FillEmptyMembers { get => UnfilledMembers.DefaultRandomFunc; }
+        /// <summary>
+        /// new instance of AutoFaker that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
+        /// RESPECTS FAKER IGNORE ATTRIBUTES <br/>
+        /// fills all members of TClass of basic types with no RuleFor set for them by default random function for particular type
+        /// </summary>
+        public AutoFaker() : base() 
+        {
+            base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+        }
+
+        /// <summary>
+        /// new instance of AutoFaker that creates a new instance of RandomGenerator with a given seed <br/>
+        /// RESPECTS FAKER IGNORE ATTRIBUTES
+        /// fills all members of TClass of basic types with no RuleFor set for them by default random function for particular type
+        /// </summary>
+        /// <param name="seed"></param>
+        public AutoFaker(ulong seed) : base(seed) 
+        {
+            base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+        }
+
+        /// <summary>
+        /// new instance of AutoFaker that uses existing instance of RandomGenerator <br/>
+        /// one instance of random generator can be shared by multiple fakers to save memory <br/>
+        /// recommended for innerFakers <br/>
+        /// RESPECTS FAKER IGNORE ATTRIBUTES <br/>
+        /// this  faker fills all members of TClass of basic types with no RuleFor set for them by default random function for particular type
+        /// </summary>
+        /// <param name="randomGenerator"></param>
+        public AutoFaker(RandomGenerator randomGenerator) : base(randomGenerator) 
+        {
+            base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+        }
+    }
 
     
 }
