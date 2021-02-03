@@ -522,7 +522,12 @@ namespace Faker
         {
             base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
         }
-        
+
+        /// <summary>
+        /// creates AutoFaker for given type that uses default random functions to fill members of basic types <br/>
+        /// and recursively creates and set similar AutoFakers for members of user defined class types
+        /// </summary>
+        /// <returns></returns>
         public static AutoFaker<TClass> CreateAutoFaker()
         {
             return AutoFakerCreator.CreateAutoFaker<TClass>();
@@ -541,7 +546,7 @@ namespace Faker
         {
             AutoFaker<TMember> faker = new AutoFaker<TMember>();
             Type type = typeof(TMember);
-            List<MemberInfo> memberInfos = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && IsReferenceType(memberInfo))).ToList();
+            List<MemberInfo> memberInfos = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && IsUserDefinedClassType(memberInfo))).ToList();
             foreach (var memberInfo in memberInfos)
             {
                 Type memberType = GetTypeFromMemberInfo(memberInfo);
@@ -567,9 +572,14 @@ namespace Faker
             }
         }
 
-        internal static bool IsReferenceType(MemberInfo memberInfo)
+        internal static bool IsUserDefinedClassType(MemberInfo memberInfo)
         {
             Type memberType = GetTypeFromMemberInfo(memberInfo);
+            if (typeof(Delegate).IsAssignableFrom(memberType))
+            {
+                return false;
+            }
+            
             return memberType.IsClass;
         }
     }
