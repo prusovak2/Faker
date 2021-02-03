@@ -522,6 +522,56 @@ namespace Faker
         {
             base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
         }
+        
+        public static AutoFaker<TClass> CreateAutoFaker()
+        {
+            return AutoFakerCreator.CreateAutoFaker<TClass>();
+        }
+        
+    }
+
+    internal class AutoFakerCreator
+    {
+        /// <summary>
+        /// creates AutoFaker for given type that uses default random functions to fill members of basic types <br/>
+        /// and recursively creates and set similar AutoFakers for members of user defined class types
+        /// </summary>
+        /// <returns></returns>
+        public static AutoFaker<TMember> CreateAutoFaker<TMember>() where TMember : class
+        {
+            AutoFaker<TMember> faker = new AutoFaker<TMember>();
+            Type type = typeof(TMember);
+            List<MemberInfo> memberInfos = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && IsReferenceType(memberInfo))).ToList();
+            foreach (var memberInfo in memberInfos)
+            {
+                Type memberType = GetTypeFromMemberInfo(memberInfo);
+                var memberAutoFaker = typeof(AutoFakerCreator).GetMethod("CreateAutoFaker").MakeGenericMethod(memberType).Invoke(null, null);
+                faker.InnerFakers.Add(memberInfo, (IFaker)memberAutoFaker);
+            }
+            return faker;
+        }
+
+        internal static Type GetTypeFromMemberInfo(MemberInfo memberInfo)
+        {
+            if (memberInfo is PropertyInfo propertyInfo)
+            {
+                return propertyInfo.PropertyType;
+            }
+            else if (memberInfo is FieldInfo fieldInfo)
+            {
+                return fieldInfo.FieldType;
+            }
+            else
+            {
+                throw new NotImplementedException("This method is expected to be used only for properties and fields");
+            }
+        }
+
+        internal static bool IsReferenceType(MemberInfo memberInfo)
+        {
+            Type memberType = GetTypeFromMemberInfo(memberInfo);
+            return memberType.IsClass;
+        }
     }
 
     

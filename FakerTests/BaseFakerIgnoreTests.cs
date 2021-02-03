@@ -84,6 +84,11 @@ namespace FakerTests
     {
         public int Int;
         public Value Val { get; set; }
+
+        public override string ToString()
+        {
+            return InstanceToString(this);
+        }
     }
 
     public class ValueFaker : BaseFaker<Value> { }
@@ -277,6 +282,20 @@ namespace FakerTests
         {
             FillEmptyMembers = UnfilledMembers.LeaveBlank;
         }*/
+    }
+
+    public class UpperNested
+    {
+        public int IntField = 42;
+
+        public ulong UlongProp { get; set; } = 42;
+
+        public ContainsValue Inner { get; set; }
+
+        public override string ToString()
+        {
+            return InstanceToString(this); 
+        }
     }
 
     [TestClass]
@@ -522,6 +541,21 @@ namespace FakerTests
              CheckDic(guidCounts, numIterations);
              CheckDic(igIntCounts, numIterations);
              CheckDic(igStringCounts, numIterations);
+        }
+
+        [TestMethod]
+        public void CreateAutoFakerBasicTest()
+        {
+            AutoFaker<ContainsValue> autoFaker = AutoFaker<ContainsValue>.CreateAutoFaker();
+            ContainsValue cv = autoFaker.Generate();
+            Console.WriteLine(cv);
+        }
+        [TestMethod]
+        public void CreateAutoFakerNested()
+        {
+            AutoFaker<UpperNested> autoFaker = AutoFaker<UpperNested>.CreateAutoFaker();
+            UpperNested un = autoFaker.Generate();
+            Console.WriteLine(un);
         }
     }
 }
