@@ -549,6 +549,10 @@ namespace Faker
             List<MemberInfo> memberInfos = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && IsUserDefinedClassType(memberInfo))).ToList();
             foreach (var memberInfo in memberInfos)
             {
+                if(faker.Ignored.Contains(memberInfo) || faker.IgnoredStrictly.Contains(memberInfo))
+                {
+                    continue;
+                }
                 Type memberType = GetTypeFromMemberInfo(memberInfo);
                 var memberAutoFaker = typeof(AutoFakerCreator).GetMethod("CreateAutoFaker").MakeGenericMethod(memberType).Invoke(null, null);
                 faker.InnerFakers.Add(memberInfo, (IFaker)memberAutoFaker);
@@ -576,6 +580,10 @@ namespace Faker
         {
             Type memberType = GetTypeFromMemberInfo(memberInfo);
             if (typeof(Delegate).IsAssignableFrom(memberType))
+            {
+                return false;
+            }
+            if(memberType == typeof(string))
             {
                 return false;
             }

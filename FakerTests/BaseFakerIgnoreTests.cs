@@ -315,6 +315,31 @@ namespace FakerTests
             return InstanceToString(this);
         }
     }
+    public class LotOfMembersATTRforAUTO
+    {
+        public int Int;
+        public byte Byte;
+        public short Short { get; set; }
+        public DateTime DateTime { get; set; }
+        public double Double;
+        public Guid Guid;
+        public string StringToFill;
+        [FakerIgnore]
+        public string IgnoredString { get; set; } = "IGNORED";
+        [FakerIgnore]
+        public int IgnoredInt = 42;
+        
+        [FakerIgnore]
+        public Value IgnoredVal = new Value();
+
+        public Value ValToFill = new Value();
+
+        public override string ToString()
+        {
+            return TestUtils.InstanceToString(this);
+        }
+    }
+
 
     [TestClass]
     public class BaseFakerIgnoreTests
@@ -580,7 +605,7 @@ namespace FakerTests
             CheckDic(shortCounts, numIterations);
             
         }
-        [TestMethod]
+        //[TestMethod]
         public void CreateAutoFakerNested()
         {
             int numIterations = 20;
@@ -606,8 +631,52 @@ namespace FakerTests
             CheckDic(shortCounts, numIterations);
             CheckDic(int2Counts, numIterations);
             CheckDic(ulongCounts, numIterations);
-
         }
+        [TestMethod]
+        public void CreateAutoFakerIgnoreATTRTest()
+        {
+            int numIterations = 20;
+            Dictionary<int, int> intCounts = new Dictionary<int, int>();
+            Dictionary<byte, int> byteCounts = new Dictionary<byte, int>();
+            Dictionary<short, int> shortCounts = new Dictionary<short, int>();
+            Dictionary<DateTime, int> dateTimeCounts = new Dictionary<DateTime, int>();
+            Dictionary<double, int> doubleCounts = new Dictionary<double, int>();
+            Dictionary<Guid, int> guidCounts = new Dictionary<Guid, int>();
+            Dictionary<string, int> stringCounts = new Dictionary<string, int>();
+            Dictionary<short, int> short2Counts = new Dictionary<short, int>();
+
+            LotOfMembersATTRforAUTO lom;
+            AutoFaker<LotOfMembersATTRforAUTO> faker = AutoFaker<LotOfMembersATTRforAUTO>.CreateAutoFaker();
+
+            for (int i = 0; i < numIterations; i++)
+            {
+               
+                lom = faker.Generate();
+
+                IncInDic(intCounts, lom.Int);
+                IncInDic(byteCounts, lom.Byte);
+                IncInDic(shortCounts, lom.Short);
+                IncInDic(dateTimeCounts, lom.DateTime);
+                IncInDic(doubleCounts, lom.Double);
+                IncInDic(guidCounts, lom.Guid);
+                IncInDic(stringCounts, lom.StringToFill);
+                IncInDic(short2Counts, lom.ValToFill.value);
+
+                Console.WriteLine(lom);
+
+                Assert.AreEqual("IGNORED", lom.IgnoredString);
+                Assert.AreEqual(42, lom.IgnoredInt);
+                Assert.AreEqual(42, lom.IgnoredVal.value);
+            }
+            CheckDic(intCounts, numIterations);
+            CheckDic(byteCounts, numIterations);
+            CheckDic(shortCounts, numIterations);
+            CheckDic(dateTimeCounts, numIterations);
+            CheckDic(doubleCounts, numIterations);
+            CheckDic(guidCounts, numIterations);
+            CheckDic(stringCounts, numIterations);
+        }
+
     }
 }
 
