@@ -288,6 +288,10 @@ namespace FakerTests
     {
         public int IntField = 42;
 
+        public MyStruct structField = new MyStruct(42);
+
+        public Delegate del;
+
         public ulong UlongProp { get; set; } = 42;
 
         public ContainsValue Inner { get; set; }
@@ -295,6 +299,20 @@ namespace FakerTests
         public override string ToString()
         {
             return InstanceToString(this); 
+        }
+    }
+    public struct MyStruct
+    {
+        public sbyte Sbyte;
+
+        public MyStruct(sbyte s)
+        {
+            Sbyte = s;
+        }
+
+        public override string ToString()
+        {
+            return InstanceToString(this);
         }
     }
 
@@ -546,16 +564,49 @@ namespace FakerTests
         [TestMethod]
         public void CreateAutoFakerBasicTest()
         {
-            AutoFaker<ContainsValue> autoFaker = AutoFaker<ContainsValue>.CreateAutoFaker();
-            ContainsValue cv = autoFaker.Generate();
-            Console.WriteLine(cv);
+            int numIterations = 20;
+            Dictionary<int, int> intCounts = new Dictionary<int, int>();
+            Dictionary<short, int> shortCounts = new Dictionary<short, int>();
+            for (int i = 0; i < numIterations; i++)
+            {
+                AutoFaker<ContainsValue> autoFaker = AutoFaker<ContainsValue>.CreateAutoFaker();
+                ContainsValue cv = autoFaker.Generate();
+                Console.WriteLine(cv);
+
+                IncInDic(intCounts, cv.Int);
+                IncInDic(shortCounts, cv.Val.value);
+            }
+            CheckDic(intCounts, numIterations);
+            CheckDic(shortCounts, numIterations);
+            
         }
         [TestMethod]
         public void CreateAutoFakerNested()
         {
-            AutoFaker<UpperNested> autoFaker = AutoFaker<UpperNested>.CreateAutoFaker();
-            UpperNested un = autoFaker.Generate();
-            Console.WriteLine(un);
+            int numIterations = 20;
+            Dictionary<int, int> intCounts = new Dictionary<int, int>();
+            Dictionary<int, int> int2Counts = new Dictionary<int, int>();
+            Dictionary<short, int> shortCounts = new Dictionary<short, int>();
+            Dictionary<ulong, int> ulongCounts = new Dictionary<ulong, int>();
+
+            for (int i = 0; i < numIterations; i++)
+            {
+                AutoFaker<UpperNested> autoFaker = AutoFaker<UpperNested>.CreateAutoFaker();
+                UpperNested un = autoFaker.Generate();
+                Console.WriteLine(un);
+
+                IncInDic(intCounts, un.IntField);
+                IncInDic(int2Counts, un.Inner.Int);
+                IncInDic(shortCounts, un.Inner.Val.value);
+                IncInDic(ulongCounts, un.UlongProp);
+
+                Assert.AreEqual(42, un.structField.Sbyte);
+            }
+            CheckDic(intCounts, numIterations);
+            CheckDic(shortCounts, numIterations);
+            CheckDic(int2Counts, numIterations);
+            CheckDic(ulongCounts, numIterations);
+
         }
     }
 }
