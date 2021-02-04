@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -579,7 +580,7 @@ namespace Faker
         internal static bool IsUserDefinedClassType(MemberInfo memberInfo)
         {
             Type memberType = GetTypeFromMemberInfo(memberInfo);
-            if (typeof(Delegate).IsAssignableFrom(memberType))
+            if (typeof(Delegate).IsAssignableFrom(memberType) || typeof(IEnumerable).IsAssignableFrom(memberType))
             {
                 return false;
             }

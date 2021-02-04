@@ -317,6 +317,9 @@ namespace FakerTests
     }
     public class LotOfMembersATTRforAUTO
     {
+        public Guid[] guids = new Guid[10];
+        public List<DateTime> dateTimes = new List<DateTime>(); 
+
         public int Int;
         public byte Byte;
         public short Short { get; set; }
@@ -605,7 +608,7 @@ namespace FakerTests
             CheckDic(shortCounts, numIterations);
             
         }
-        //[TestMethod]
+        [TestMethod]
         public void CreateAutoFakerNested()
         {
             int numIterations = 20;
@@ -676,7 +679,6 @@ namespace FakerTests
             CheckDic(guidCounts, numIterations);
             CheckDic(stringCounts, numIterations);
         }
-
     }
 }
 
