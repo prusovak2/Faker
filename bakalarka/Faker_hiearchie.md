@@ -290,7 +290,13 @@ Lower case / upper case hexadecimal digits? Přidat `0x` prefix?
 
 **Priorita: 1**
 
-[0,1) default range, when lower specified and greater than 1 and upper not specified, borders gonna get swapped, 1 is gonna become lower border and lower boarder specified by user is gonna be treated as upper border. BUG! Solve somehow.
+[0,1) default range, when lower specified and greater than 1 and upper not specified, borders gonna get swapped, 1 is gonna become lower boarder and lower boarder specified by user is gonna be treated as upper border. BUG! Solve somehow.
+
+**Possible solutions**
+
+* get rid of swapping boarders in ALL random functions with boarders - to preserve consistency
+* add parameterless variants for floating point types - what about default values of parameters for overload with lower and upper param? And how about option to specify just one boarder? (just lower or just upper?)  + necessary to add overloads to ALL  random functions that use floating point random functions in question (Lists, enumerables, nullable variants...)
+* change defaults to MIN, MAX value (in ALL methods using floating point random methods) and add paramless functions generating values from [0,1) interval (with corresponding method name) 
 
 ### Ilist of basic Random types
 
