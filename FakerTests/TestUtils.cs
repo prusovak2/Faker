@@ -11,6 +11,10 @@ namespace FakerTests
     {
         public static string InstanceToString<T>(T instance)
         {
+            if (instance is null)
+            {
+                throw new ArgumentNullException();
+            }
             Type type = typeof(T);
             string res = type.Name + ":\n\t";
             List<MemberInfo> memberInfos = type.GetMembers().Where(memberInfo => (memberInfo is PropertyInfo || memberInfo is FieldInfo)).ToList();
@@ -19,11 +23,27 @@ namespace FakerTests
                 res += (memInfo.Name + ": ");
                 if (memInfo is PropertyInfo propInfo)
                 {
-                    res += propInfo.GetValue(instance).ToString();
+                    var val = propInfo.GetValue(instance);
+                    if(val is object)
+                    {
+                        res += val.ToString();
+                    }
+                    else
+                    {
+                        res += "null";
+                    }
                 }
                 else if (memInfo is FieldInfo fieldInfo)
                 {
-                    res += fieldInfo.GetValue(instance).ToString();
+                    var val = fieldInfo.GetValue(instance);
+                    if (val is object)
+                    {
+                        res += val.ToString();
+                    }
+                    else
+                    {
+                        res += "null";
+                    }
                 }
                 else
                 {

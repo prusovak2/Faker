@@ -433,9 +433,22 @@ Markovovské texty *(4/5)* *Generování náhodného textu napodobujícího text
 
 **Jednodušší syntax pro vytváření fakerů, které vyplňují položky defaultními randomizačními metodami (bez explicitního specifikování `RuleFor` či`SetFaker`).**
 
-- [ ] 
+- [x] 
 
 **Priorita: 3**
+
+```csharp
+public class LotOfMembersAutoFaker : AutoFaker<LotOfMembers>
+{
+    public LotOfMembersAutoFaker()
+    {
+        //won't compile
+    	FillEmptyMembers = UnfilledMembers.LeaveBlank;
+    }
+}
+```
+
+
 
 `AutoFaker<T>`  je třída poděděné od `BaseFaker<T>`, která má flag `faker.FillEmptyMembers` nastavený automaticky na `UnfilledMembers.DefaultRandomFunc`. Implementačně velmi jednoduché rozšíření API, které zjednoduší a zpříjemní použití fakerů. Díky AutoFakeru lze nadefinovat plně funkční faker na jednom řádku.
 
@@ -453,6 +466,24 @@ public class SimplePersonFaker : BaseFaker<Person>
 // after AutoFaker<T> type is implemented
 public class EvenSimplerPersonFaker : AutoFaker<Person> { }
 ```
+
+### `AutoFaker<T>.CreateAutoFaker`
+
+- [x] 
+
+Umožňuje na jedné řádce nadefinovat funkční `AutoFaker`, poskytující uživateli základní funkcionalitou `Fakeru` a minimální námahou na jeho vytvoření a nakonfigurování.
+
+```csharp
+MyClass myClass;
+AutoFaker<MyClass> faker = AutoFaker<MyClass>.CreateAutoFaker();
+myClass = faker.Generate();
+```
+
+Metoda `AutoFaker<T>.CreateAutoFaker()` vytvoří defaultní `AutoFaker` specializovaný na typ `T`. Všechny položky základních typů bude tento `Faker` vyplňovat voláním defaultní random funkce příslušné danému typu. Pro položky, jejichž typ odpovídá nějaké uživatelem definované třídě bude rekurzivně vytvořen podobný `AutoFaker` a nastaven jako jejich `InnerFaker`. Položky typu delagátů a kolekcí (Enumerable) jsou `Fakerem` ignorovány.  
+
+`AutoFaker` respektuje `FakerIgnore` atributy.
+
+Všechny typy, jejichž položky se ve vyplňované třídě (i ve třídách tvořících položky dotyčné třídy,  rekurzivně) vyskytují, musí mít veřejný bezparametrický konstruktor, jinak volání `Generate()` vyhodí `FakerException`.
 
 ### Odd and even variants for all integral types
 
@@ -530,7 +561,7 @@ I don't think that **[1]** supports this feature.
 
  **Má vliv, když `faker.FillEmptyMembers` je nastaven na `UnfilledMembers.DefaultRandomFunc`. Ponechá položku nevyplněnou. Pro třídy psané s úmyslem jejich vyplňování náhodným obsahem.** 
 
-- [ ] 
+- [x] 
 
 **Priorita: 3**
 

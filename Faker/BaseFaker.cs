@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -472,15 +473,133 @@ namespace Faker
         /// <summary>
         /// new instance of IgnoreFaker that uses existing instance of RandomGenerator <br/>
         /// one instance of random generator can be shared by multiple fakers to save memory <br/>
-        /// recommended for innerFakers 
-        /// RESPECTS FAKER IGNORE ATTRIBUTES
+        /// recommended for innerFakers <br/>
+        /// RESPECTS FAKER IGNORE ATTRIBUTES 
         /// </summary>
         /// <param name="randomGenerator"></param>
         public IgnoreFaker(RandomGenerator randomGenerator) : base(randomGenerator)
         {
             ScanIgnoreAttriutes();
         }
-    } 
+    }
+    /// <summary>
+    /// Simple Faker that RESPECTS FAKER IGNORE ATTRIBUTES assigned to the members of a TClass instance <br/>
+    /// and all members of TClass of basic types with no RuleFor set for them fills by calling a default random function 
+    /// </summary>
+    /// <typeparam name="TClass"></typeparam>
+    public class AutoFaker<TClass> : IgnoreFaker<TClass> where TClass: class
+    {
+        public new UnfilledMembers FillEmptyMembers { get => UnfilledMembers.DefaultRandomFunc; }
+        /// <summary>
+        /// new instance of AutoFaker that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
+        /// RESPECTS FAKER IGNORE ATTRIBUTES <br/>
+        /// fills all members of TClass of basic types with no RuleFor set for them by default random function for particular type
+        /// </summary>
+        public AutoFaker() : base() 
+        {
+            base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+        }
 
-    
+        /// <summary>
+        /// new instance of AutoFaker that creates a new instance of RandomGenerator with a given seed <br/>
+        /// RESPECTS FAKER IGNORE ATTRIBUTES
+        /// fills all members of TClass of basic types with no RuleFor set for them by default random function for particular type
+        /// </summary>
+        /// <param name="seed"></param>
+        public AutoFaker(ulong seed) : base(seed) 
+        {
+            base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+        }
+
+        /// <summary>
+        /// new instance of AutoFaker that uses existing instance of RandomGenerator <br/>
+        /// one instance of random generator can be shared by multiple fakers to save memory <br/>
+        /// recommended for innerFakers <br/>
+        /// RESPECTS FAKER IGNORE ATTRIBUTES <br/>
+        /// this  faker fills all members of TClass of basic types with no RuleFor set for them by default random function for particular type
+        /// </summary>
+        /// <param name="randomGenerator"></param>
+        public AutoFaker(RandomGenerator randomGenerator) : base(randomGenerator) 
+        {
+            base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+        }
+
+        /// <summary>
+        /// creates AutoFaker for given type that uses default random functions to fill members of basic types <br/>
+        /// and recursively creates and set similar AutoFakers for members of user defined class types
+        /// created Faker respects FakerIgnore attributes
+        /// All user defined types appearing as member in hierarchy of TClass must have public parameterless ctor 
+        /// </summary>
+        /// <returns></returns>
+        public static AutoFaker<TClass> CreateAutoFaker()
+        {
+            return AutoFakerCreator.CreateAutoFaker<TClass>();
+        }
+        
+    }
+
+    internal class AutoFakerCreator
+    {
+        /// <summary>
+        /// creates AutoFaker for given type that uses default random functions to fill members of basic types <br/>
+        /// and recursively creates and set similar AutoFakers for members of user defined class types
+        /// </summary>
+        /// <returns></returns>
+        public static AutoFaker<TMember> CreateAutoFaker<TMember>() where TMember : class
+        {
+            AutoFaker<TMember> faker = new AutoFaker<TMember>();
+            Type type = typeof(TMember);
+            List<MemberInfo> memberInfos = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && IsUserDefinedClassType(memberInfo))).ToList();
+            foreach (var memberInfo in memberInfos)
+            {
+                if(faker.Ignored.Contains(memberInfo) || faker.IgnoredStrictly.Contains(memberInfo))
+                {
+                    continue;
+                }
+                Type memberType = GetTypeFromMemberInfo(memberInfo);
+                var memberAutoFaker = typeof(AutoFakerCreator).GetMethod("CreateAutoFaker").MakeGenericMethod(memberType).Invoke(null, null);
+                faker.InnerFakers.Add(memberInfo, (IFaker)memberAutoFaker);
+            }
+            return faker;
+        }
+        /// <summary>
+        /// if member is property or field, returns a type of corresponding property or field
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <returns></returns>
+        internal static Type GetTypeFromMemberInfo(MemberInfo memberInfo)
+        {
+            if (memberInfo is PropertyInfo propertyInfo)
+            {
+                return propertyInfo.PropertyType;
+            }
+            else if (memberInfo is FieldInfo fieldInfo)
+            {
+                return fieldInfo.FieldType;
+            }
+            else
+            {
+                throw new NotImplementedException("This method is expected to be used only for properties and fields");
+            }
+        }
+        /// <summary>
+        /// determines whether the member has type that for which an inner AutoFaker should be generated while creating AutoFaker via CreateAutoFaker method 
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <returns></returns>
+        internal static bool IsUserDefinedClassType(MemberInfo memberInfo)
+        {
+            Type memberType = GetTypeFromMemberInfo(memberInfo);
+            if (typeof(Delegate).IsAssignableFrom(memberType) || typeof(IEnumerable).IsAssignableFrom(memberType))
+            {
+                return false;
+            }
+            if(memberType == typeof(string))
+            {
+                return false;
+            }
+            
+            return memberType.IsClass;
+        }
+    }
 }
