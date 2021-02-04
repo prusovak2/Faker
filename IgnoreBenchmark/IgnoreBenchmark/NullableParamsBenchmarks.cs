@@ -13,7 +13,126 @@ namespace FakerBenchmark
     [MemoryDiagnoser]
     [RankColumn]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-    public class NullableParamsBenchmarks
+    public class NullableParamsCompoundBenchmark
+    {
+        public RandomGenerator random;
+
+        [GlobalSetup]
+        public void GlobalSetup()
+        {
+            random = new RandomGenerator();
+        }
+
+        public void DoubleNullableCompoundTest()
+        {
+            random.Random.DoubleNullableParams();
+            random.Random.DoubleNullableParams(upper: -1);
+            random.Random.DoubleNullableParams(-1000000, 1000000);
+        }
+
+        [Benchmark]
+        public void DoubleNullableCompound()
+        {
+            DoubleNullableCompoundTest();
+        }
+
+        public void DecimalNullableCompoundTest()
+        {
+            random.Random.DecimalNullableParams();
+            random.Random.DecimalNullableParams(upper: -1);
+            random.Random.DecimalNullableParams(-1000000, 1000000);
+        }
+
+        [Benchmark]
+        public void DecimalNullableCompound()
+        {
+            DecimalNullableCompoundTest();
+        }
+
+        public void IntNullableCompoundTest()
+        {
+            random.Random.IntNullableParams();
+            random.Random.IntNullableParams(upper: -1);
+            random.Random.IntNullableParams(-1000000, 1000000);
+        }
+
+        [Benchmark]
+        public void IntNullableCompound()
+        {
+            IntNullableCompoundTest();
+        }
+
+        public void LongNullableCompoundTest()
+        {
+            random.Random.LongNullableParams();
+            random.Random.LongNullableParams(upper: -1);
+            random.Random.LongNullableParams(-1000000, 1000000);
+        }
+
+        [Benchmark]
+        public void LongNullableCompound()
+        {
+            LongNullableCompoundTest();
+        }
+
+        public void DoubleCompoundTest()
+        {
+            random.Random.Double();
+            random.Random.Double(upper: -1);
+            random.Random.Double(-1000000, 1000000);
+        }
+
+        [Benchmark]
+        public void DoubleCompound()
+        {
+            DoubleCompoundTest();
+        }
+
+        public void DecimalCompoundTest()
+        {
+            random.Random.Decimal();
+            random.Random.Decimal(upper: -1);
+            random.Random.Decimal(-1000000, 1000000);
+        }
+
+        [Benchmark]
+        public void DecimalCompound()
+        {
+            DecimalCompoundTest();
+        }
+
+        public void IntCompoundTest()
+        {
+            random.Random.Int();
+            random.Random.Int(upper: -1);
+            random.Random.Int(-1000000, 1000000);
+        }
+
+        [Benchmark]
+        public void IntCompound()
+        {
+            IntCompoundTest();
+        }
+
+        public void LongCompoundTest()
+        {
+            random.Random.Long();
+            random.Random.Long(upper: -1);
+            random.Random.Long(-1000000, 1000000);
+        }
+
+        [Benchmark]
+        public void LongCompound()
+        {
+            LongCompoundTest();
+        }
+    }
+
+
+    [MemoryDiagnoser]
+    [RankColumn]
+    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    public class NullableParamsBasicBenchmarks
     {
         public RandomGenerator random;
 
