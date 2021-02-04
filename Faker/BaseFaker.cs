@@ -528,7 +528,7 @@ namespace Faker
         /// creates AutoFaker for given type that uses default random functions to fill members of basic types <br/>
         /// and recursively creates and set similar AutoFakers for members of user defined class types
         /// created Faker respects FakerIgnore attributes
-        /// All user defined types appearing as member in hierarchy TClass must have public parameterless ctor 
+        /// All user defined types appearing as member in hierarchy of TClass must have public parameterless ctor 
         /// </summary>
         /// <returns></returns>
         public static AutoFaker<TClass> CreateAutoFaker()
