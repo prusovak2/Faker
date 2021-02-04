@@ -527,6 +527,8 @@ namespace Faker
         /// <summary>
         /// creates AutoFaker for given type that uses default random functions to fill members of basic types <br/>
         /// and recursively creates and set similar AutoFakers for members of user defined class types
+        /// created Faker respects FakerIgnore attributes
+        /// All user defined types appearing as member in hierarchy TClass must have public parameterless ctor 
         /// </summary>
         /// <returns></returns>
         public static AutoFaker<TClass> CreateAutoFaker()
@@ -560,7 +562,11 @@ namespace Faker
             }
             return faker;
         }
-
+        /// <summary>
+        /// if member is property or field, returns a type of corresponding property or field
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <returns></returns>
         internal static Type GetTypeFromMemberInfo(MemberInfo memberInfo)
         {
             if (memberInfo is PropertyInfo propertyInfo)
@@ -576,7 +582,11 @@ namespace Faker
                 throw new NotImplementedException("This method is expected to be used only for properties and fields");
             }
         }
-
+        /// <summary>
+        /// determines whether the member has type that for which an inner AutoFaker should be generated while creating AutoFaker via CreateAutoFaker method 
+        /// </summary>
+        /// <param name="memberInfo"></param>
+        /// <returns></returns>
         internal static bool IsUserDefinedClassType(MemberInfo memberInfo)
         {
             Type memberType = GetTypeFromMemberInfo(memberInfo);
@@ -592,6 +602,4 @@ namespace Faker
             return memberType.IsClass;
         }
     }
-
-    
 }
