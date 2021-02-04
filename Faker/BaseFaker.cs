@@ -95,10 +95,10 @@ namespace Faker
         /// Adds Rule for how to generate a random content of particular member <br/>
         /// selector and setter must have the same return type
         /// </summary>
-        /// <typeparam name="TMember"></typeparam>
-        /// <param name="selector"></param>
-        /// <param name="setter"></param>
-        /// <exception cref="FakerException">Throws FakerException, when you are trying to set a RuleFor a member that already has a Rule or InnerFaker set</exception>
+        /// <typeparam name="TMember">Type of member to be filled in </typeparam>
+        /// <param name="selector">lambda returning member to be filled </param>
+        /// <param name="setter">random function to fill in the member </param>
+        /// <exception cref="FakerException">Throws FakerException, when you are trying to set a RuleFor a member that already has a Rule or InnerFaker set or is Ignored by Ignore method</exception>
         public void RuleFor<TMember>(
             Expression<Func<TClass, TMember>> selector,
             Func<RandomGenerator, TMember> setter)
@@ -127,7 +127,8 @@ namespace Faker
         /// FillEmptyMembers is set to UnfilledMembers.DefaultRandomFunc.
         /// </summary>
         /// <typeparam name="TMember">Type of member to be ignored</typeparam>
-        /// <param name="selector"></param>
+        /// <param name="selector">lambda returning member to be ignored</param>
+        /// <exception cref="FakerException">Throws FakerException, when you are trying to Ignore a member that already has a Rule or InnerFaker set for it</exception>
         public void Ignore<TMember>(Expression<Func<TClass, TMember>> selector)
         {
             MemberInfo memberInfo = this.GetMemberFromExpression(selector);
@@ -147,10 +148,10 @@ namespace Faker
         /// <summary>
         /// sets InnerFaker for a member of TInnerClass type
         /// </summary>
-        /// <typeparam name="TInnerClass"></typeparam>
-        /// <param name="selector"></param>
-        /// <param name="faker"></param>
-        /// /// <exception cref="FakerException">Throws FakerException, when you are trying to SetFaker for a member that already has a Rule or InnerFaker set</exception>
+        /// <typeparam name="TInnerClass"> type of member to has a faker set for it</typeparam>
+        /// <param name="selector"> lambda returning the member </param>
+        /// <param name="faker"> Faker to be used to generate contend of the member </param>
+        /// <exception cref="FakerException">Throws FakerException, when you are trying to SetFaker for a member that already has a Rule or InnerFaker set or is Ignored by Ignore method</exception>
         public void SetFaker<TInnerClass>(Expression<Func<TClass, TInnerClass>> selector, 
             BaseFaker<TInnerClass> faker) where TInnerClass : class
         {
@@ -176,7 +177,7 @@ namespace Faker
         /// <summary>
         /// Called when faker is used as an innerFaker
         /// </summary>
-        /// <returns></returns>
+        /// <returns> generated instance </returns>
         object IFaker.Generate(object instance)
         {
             switch (this.CtorUsageFlag)
@@ -271,7 +272,7 @@ namespace Faker
             return instance;
         }
         /// <summary>
-        /// Fill one member with a random content
+        /// Fill one member with a random contend
         /// </summary>
         /// <param name="instance">instance, whose member is to be filled</param>
         /// <param name="MemberInfo">info about member to be filled</param>
@@ -530,7 +531,7 @@ namespace Faker
         /// created Faker respects FakerIgnore attributes
         /// All user defined types appearing as member in hierarchy of TClass must have public parameterless ctor 
         /// </summary>
-        /// <returns></returns>
+        /// <returns> a newly created AutoFaker </returns>
         public static AutoFaker<TClass> CreateAutoFaker()
         {
             return AutoFakerCreator.CreateAutoFaker<TClass>();
@@ -544,7 +545,7 @@ namespace Faker
         /// creates AutoFaker for given type that uses default random functions to fill members of basic types <br/>
         /// and recursively creates and set similar AutoFakers for members of user defined class types
         /// </summary>
-        /// <returns></returns>
+        /// <returns> a newly created AutoFaker </returns>
         public static AutoFaker<TMember> CreateAutoFaker<TMember>() where TMember : class
         {
             AutoFaker<TMember> faker = new AutoFaker<TMember>();
