@@ -286,7 +286,7 @@ Lower case / upper case hexadecimal digits? Přidat `0x` prefix?
 
 #### Solve boarders problem for floating point types
 
-- [ ]  
+- [x]  
 
 **Priorita: 1**
 
