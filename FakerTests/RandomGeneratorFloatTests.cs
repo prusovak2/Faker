@@ -171,6 +171,31 @@ namespace FakerTests
                 Assert.IsTrue(rf2 < 1 && rf2 >= 0);
             }
         }
+
+        [TestMethod]
+        public void FloatNullableSwapTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            float low = 2;
+            float up = -1;
+
+            for (int i = 0; i < 20; i++)
+            {
+                float rd1 = rg.Random.Float(upper: up);
+                Console.WriteLine($"{up}>{rd1}");
+                Assert.IsTrue(rd1 < up);
+
+                float rd2 = rg.Random.Float(lower: low);
+                Console.WriteLine($"{low}<{rd2}");
+                Assert.IsTrue(rd2 > low);
+
+                //boarder swap
+                float rd3 = rg.Random.Float(up, low);
+                Console.WriteLine($"{up}<{rd3}<{low}");
+                Assert.IsTrue((up < rd3) && (rd3 < low));
+            }
+        }
+
         [TestMethod]
         public void RandomDecimalTest()
         {
@@ -319,6 +344,33 @@ namespace FakerTests
                 Assert.IsTrue(rd2 <= 1 && rd2 >= 0);
             }
         }
+
+        [TestMethod]
+        public void DecimalNullableSwapTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            decimal low = 2;
+            decimal up = -1;
+
+            for (int i = 0; i < 20; i++)
+            {
+                decimal rd1 = rg.Random.Decimal(upper: up);
+                Console.WriteLine($"{up}>{rd1}");
+                Assert.IsTrue(rd1 < up);
+
+                decimal rd2 = rg.Random.Decimal(lower: low);
+                Console.WriteLine($"{low}<{rd2}");
+                Assert.IsTrue(rd2 > low);
+
+                //boarder swap
+                decimal rd3 = rg.Random.Decimal(up, low);
+                Console.WriteLine($"{up}<{rd3}<{low}");
+                Assert.IsTrue((up < rd3) && (rd3 < low));
+            }
+        }
+
+
+
         /*[TestMethod]
         public void Test()
         {
