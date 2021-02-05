@@ -297,6 +297,7 @@ Lower case / upper case hexadecimal digits? Přidat `0x` prefix?
 * get rid of swapping boarders in ALL random functions with boarders - to preserve consistency
 * add parameterless variants for floating point types - what about default values of parameters for overload with lower and upper param? And how about option to specify just one boarder? (just lower or just upper?)  + necessary to add overloads to ALL  random functions that use floating point random functions in question (Lists, enumerables, nullable variants...)
 * change defaults to MIN, MAX value (in ALL methods using floating point random methods) and add paramless functions generating values from [0,1) interval (with corresponding method name) 
+* **make boarder params nullable, swap only, when they are not null -  benchmark** whether it's gonna too negatively affect the performance 
 
 ### Ilist of basic Random types
 
@@ -497,9 +498,9 @@ Všechny typy, jejichž položky se ve vyplňované třídě (i ve třídách tv
 
 **Priorita: 3**
 
-### StrickMode 
+### StrictMode 
 
-**Vynutí stanoven pravidel pro všechny veřejné položky.**
+**Vynutí stanovení pravidel pro všechny veřejné položky.**
 
 - [ ] 
 
@@ -510,6 +511,8 @@ Flag na Fakeru. Je-li nastaven na `true`, všechny veřejné položky třídy mu
 Užitečné pro třídy s velkým množstvím veřejných položek v kontextu, kdy je třeba náhodně vyplnit všechny veřejné položky. Umožňuje uživateli zavést kontrolu, že na vyplnění nějaké položky nezapomněl.
 
 **Rozmyslet si:** jak se `StrickMode` chová ve vztahu k `FillEmptyMembers = UnfilledMembers.DefaultRandomFunc`.
+
+A `[FakerIgnore]` atributu.
 
 ```csharp
 public class Person

@@ -238,6 +238,28 @@ public class WithIgnore
 
 ### Floating point types boarders problem - default values of parameteres for floating point  random methods
 
+[0,1) default range, when lower specified and greater than 1 and upper not specified, borders gonna get swapped, 1 is gonna become lower boarder and lower boarder specified by user is gonna be treated as upper border. BUG! Solve somehow.
+
+**Possible solutions**
+
+* get rid of swapping boarders in ALL random functions with boarders - to preserve consistency
+
+* add parameterless variants for floating point types - what about default values of parameters for overload with lower and upper param? And how about option to specify just one boarder? (just lower or just upper?)  + necessary to add overloads to ALL  random functions that use floating point random functions in question (Lists, enumerables, nullable variants...)
+
+* change defaults to MIN, MAX value (in ALL methods using floating point random methods) and add paramless functions generating values from [0,1) interval (with corresponding method name) 
+
+* **make boarder params nullable, swap only, when they are not null -  benchmark** whether it's gonna too negatively affect the performance 
+
+**Chosen Solution**
+
+Boarder params made nullable for random functions returning floating point types. Parameters of integral random functions remain non nullable. This is slight inconsistency. I, however, believe it is justified. Making parameters of integral random functions nullable would impaired the performance, especially while generating collections as one need to call random function multiple times (as many times as many members of collection he desires to generate) even a slight change of performance is gonna have measurable impact.  Unlike floating point random functions, nullable parameters do provide integral random function with no significant advantage when it comes to usability of the API - default boarders would not change after making params nullable (nor there is any need to change them). Whereas making params of floating point random functions nullable allows us to provide default interval [0,1) for these functions while still preserving sensible swapping of the boarders (when the boarders are passed incorrectly).
+
+The disadvantage  of this approach is that it causes a slight inconsistency as params are passed differently to floating point and non-floating point random function. User, that makes use of passing nullable params to floating point random functions and would like to similarly treat the integral variants of functions is about to be disappointed.  I don't reckon, however, that usage like that would be frequent and it doesn't seems to be good enough reason to slow down basic use cases. 
+
+**Performance is affected just mildly** - few milliseconds. 
+`[0,1)` default interval for floating point types is preserved. When only one of the borders is specified by a user, Min/Max value of particular type is chosen as the unspecified boarder. Probably inconsistent with respect to floating point types themselves - default values of boarder differs when non of them is specified and when one of them is specified. Consistent, however, with the behavior of  all other (non-floating point) random methods  as their defaults are Min/Max values. What is more, when only one of the boarders is specified, it makes much more sense to use Min/Max value as the other boarder then it does to chose 0/1 as default it that case. For instance, when user specifies the upper boarder, sensible behavior seem to be to generate values from interval `[min,boarder)` than `[0, boarder)` or `[boarder,0)` depending on whether `boarder > 0`.
+
+
 ``` ini
 BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.746 (2004/?/20H1)
 Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
