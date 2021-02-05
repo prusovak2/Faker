@@ -162,6 +162,7 @@ namespace Faker
             }
             /// <summary>
             /// returns IEnumerable of at most count random doubles from interval [lower, upper)<br/>
+            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead
             /// when count is null, returned IEnumerable is INFINITE <br/>
             /// when precise is false and count not null, a random number less or equal to count is generated and used as a count<br/>
             /// </summary>
@@ -170,7 +171,7 @@ namespace Faker
             /// <param name="lower"></param>
             /// <param name="upper"></param>
             /// <returns></returns>
-            public IEnumerable<double> Double(int? count = null, double lower = 0, double upper = 1, bool precise = true)
+            public IEnumerable<double> Double(int? count = null, double? lower = null, double? upper = null, bool precise = true)
             {
                 if (count is null)
                 {

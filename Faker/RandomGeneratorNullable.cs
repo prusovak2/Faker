@@ -17,12 +17,13 @@ namespace Faker
             /// </summary>
             /// <typeparam name="Tval"></typeparam>
             /// <param name="nullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval or when there is no default random function for TVal type </exception>
             /// <returns></returns>
             internal Tval? NullableGeneric<Tval>(float nullProbability) where Tval : struct
             {
                 if ((nullProbability > 1) || (nullProbability < 0))
                 {
-                    throw new ArgumentException("nullProbanility must belong to interval [0,1]");
+                    throw new ArgumentException("nullProbability must belong to interval [0,1]");
                 }
                 float generateNull = RandomZeroToOneFloat();
                 if (generateNull < nullProbability)
@@ -48,12 +49,41 @@ namespace Faker
             /// <param name="randomFunc">random function used to get not nullable random value</param>
             /// <param name="lower">lower bound for random value if null is not generated</param>
             /// <param name="upper">upper bound for random value if null is not generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// <returns></returns>
             internal Tval? NullableGeneric<Tval>(float nullProbability, Func<Tval, Tval, Tval> randomFunc, Tval lower, Tval upper) where Tval : struct
             {
                 if ((nullProbability > 1) || (nullProbability < 0))
                 {
-                    throw new ArgumentException("nullProbanility must belong to interval [0,1]");
+                    throw new ArgumentException("nullProbability must belong to interval [0,1]");
+                }
+                float generateNull = RandomZeroToOneFloat();
+                if (generateNull < nullProbability)
+                {
+                    return null;
+                }
+                return randomFunc(lower, upper);
+            }
+
+
+            /// <summary>
+            /// Generates random value of nullable version of Tval, probability that null is generated is passed as the first param <br/>
+            /// nullProbability param must belong to [0,1] interval <br\>
+            /// uses random function passed as arg <br\>
+            /// overload for floating point numbers
+            /// </summary>
+            /// <typeparam name="Tval"></typeparam>
+            /// <param name="nullProbability">>lies in [0,1], probability that null is generated</param>
+            /// <param name="randomFunc">random function used to get not nullable random value</param>
+            /// <param name="lower">lower bound for random value if null is not generated</param>
+            /// <param name="upper">upper bound for random value if null is not generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
+            /// <returns></returns>
+            internal TVal? NullableGeneric<TVal>(float nullProbability, Func<TVal?, TVal?, TVal> randomFunc, TVal? lower, TVal? upper) where TVal : struct
+            {
+                if ((nullProbability > 1) || (nullProbability < 0))
+                {
+                    throw new ArgumentException("nullProbability must belong to interval [0,1]");
                 }
                 float generateNull = RandomZeroToOneFloat();
                 if (generateNull < nullProbability)
@@ -69,6 +99,7 @@ namespace Faker
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, byte.MinValue/byte.MaxValue is used 
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public byte? NullableByte(float NullProbability, byte lower = byte.MinValue, byte upper = byte.MaxValue)
             {
@@ -81,6 +112,7 @@ namespace Faker
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, sbyte.MinValue/sbyte.MaxValue is used 
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public sbyte? NullableSbyte(float NullProbability, sbyte lower = sbyte.MinValue, sbyte upper = sbyte.MaxValue)
             {
@@ -93,6 +125,7 @@ namespace Faker
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, short.MinValue/short.MaxValue is used 
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public short? NullableShort(float NullProbability, short lower = short.MinValue, short upper = short.MaxValue)
             {
@@ -105,6 +138,7 @@ namespace Faker
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, ushort.MinValue/ushort.MaxValue is used 
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public ushort? NullableUshort(float NullProbability, ushort lower = ushort.MinValue, ushort upper = ushort.MaxValue)
             {
@@ -129,6 +163,7 @@ namespace Faker
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, uint.MinValue/uint.MaxValue is used 
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public uint? NullableUint(float NullProbability, uint lower = uint.MinValue, uint upper = uint.MaxValue)
             {
@@ -140,6 +175,7 @@ namespace Faker
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, long.MinValue/long.MaxValue is used 
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public long? NullableLong(float NullProbability, long lower = long.MinValue, long upper = long.MaxValue)
             {
@@ -151,6 +187,7 @@ namespace Faker
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, ulong.MinValue/ulong.MaxValue is used 
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public ulong? NullableUlong(float NullProbability, ulong lower = ulong.MinValue, ulong upper = ulong.MaxValue)
             {
@@ -162,6 +199,7 @@ namespace Faker
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, char.MinValue/char.MaxValue is used 
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public char? NullableChar(float NullProbability, char lower = char.MinValue, char upper = char.MaxValue)
             {
@@ -173,6 +211,7 @@ namespace Faker
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, 0/1 is used   <br/>
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public float? NullableFloat(float NullProbability, float lower = 0f, float upper = 1f)
             {
@@ -180,12 +219,14 @@ namespace Faker
             }
             /// <summary>
             /// generates a random nullable double from interval [lower,upper) <br/>
+            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead
             /// probability that null is generated is passed as the first param <br/>
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, 0/1 is used  
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
-            public double? NullableDouble(float NullProbability, double lower = 0d, double upper = 1d)
+            public double? NullableDouble(float NullProbability, double? lower = null, double? upper = null)
             {
                 return NullableGeneric<double>(NullProbability, this.Double, lower, upper);
             }
@@ -195,6 +236,7 @@ namespace Faker
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, 0/1 is used  
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public decimal? NullableDecimal(float NullProbability, decimal lower = 0m, decimal upper = 1m)
             {
@@ -206,6 +248,7 @@ namespace Faker
             /// probability that null is generated is passed as the first param <br/>
             /// nullProbability param must belong to [0,1] interval <br/>
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public bool? NullableBool(float NullProbability)
             {
@@ -217,6 +260,7 @@ namespace Faker
             /// probability that null is generated is passed as the first param <br/>
             /// nullProbability param must belong to [0,1] interval 
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public DateTime? NullableDateTime(float NullProbability)
             {
@@ -227,6 +271,7 @@ namespace Faker
             /// probability that null is generated is passed as the first param
             /// nullProbability param must belong to [0,1] interval 
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public DateTime? NullableDateTime(float NullProbability, DateTime lower, DateTime upper)
             {
@@ -238,6 +283,7 @@ namespace Faker
             /// probability that null is generated is passed as the first param
             /// nullProbability param must belong to [0,1] interval 
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
+            /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
             public Guid? NullableGuid(float NullProbability)
             {

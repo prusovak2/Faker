@@ -21,67 +21,16 @@ namespace Faker
                 double result = random / (double)9007199254740992; // divide by 2^53 - normalize number to [0-1) interval
                 return result;
             }
+
             /// <summary>
             /// generates random double from interval [lower, upper) <br/>
-            /// when lower/upper bound is not specified, 0/1 is used 
+            /// when both lower and upper are not specified or are null uses interval [0,1)
+            /// when only one of boarders is unspecified, uses Double.MinValue resp. Double.MaxValue instead 
             /// </summary>
             /// <param name="lower"></param>
             /// <param name="upper"></param>
             /// <returns></returns>
-            public double Double(double lower = 0d, double upper = 1d)
-            {
-                //to make a generating of doubles from [0,1) interval as fast as possible
-                if (lower == 0d && upper == 1d)
-                {
-                    return this.RandomZeroToOneDouble();
-                }
-
-                // swap numbers so that lower is actually lower
-                if (lower.EpsilonEquals(upper))
-                {
-                    return lower;
-                }
-                if (lower > upper)
-                {
-                    double tmp = lower;
-                    lower = upper;
-                    upper = tmp;
-                }
-                double rangeLenght = Math.Abs(upper - lower); //this will be infinity for too large interval
-
-                //when interval is too large to store its size in double, divide it into two interval of a half size
-                if (double.IsInfinity(rangeLenght))
-                {
-                    double middlePoint = (lower + upper) / 2;
-                    //determine randomly, which of halfintervals is to be used
-                    bool useLower = this.Bool();
-                    if (useLower)
-                    {
-                        double lowerRandom = this.Double(lower, middlePoint);
-                        return lowerRandom;
-                    }
-                    else
-                    {
-                        double upperRandom = this.Double(middlePoint, upper);
-                        return upperRandom;
-                    }
-                }
-
-                double random01 = this.RandomZeroToOneDouble();
-                double scaled = random01 * rangeLenght;
-                //shift scaled random number to interval required
-                double random = lower + scaled;
-                return random;
-            }
-
-            /// <summary>
-            /// generates random double from interval [lower, upper) <br/>
-            /// when lower/upper bound is not specified, 0/1 is used 
-            /// </summary>
-            /// <param name="lower"></param>
-            /// <param name="upper"></param>
-            /// <returns></returns>
-            public double DoubleNullableParams(double? lower = null, double? upper = null)
+            public double Double(double? lower = null, double? upper = null)
             {
                 //to make a generating of doubles from [0,1) interval as fast as possible
                 if (lower is null && upper is null)

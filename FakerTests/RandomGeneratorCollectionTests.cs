@@ -23,7 +23,9 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(byte));
                 Assert.IsTrue(item >= 5 && item <= byte.MaxValue);
             }
-            ICollection<double> c2 = r.GenericCollection(r.Random.Double, 5d, Double.MaxValue, 30);
+            // Nullable params - Func<TMember?, TMember?, TMember> overload
+            double? d = 5d;
+            ICollection<double> c2 = r.GenericCollection<double>(r.Random.Double, d, Double.MaxValue, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c2)
             {
@@ -32,6 +34,7 @@ namespace FakerTests
                 Assert.IsTrue(item >= 5 && item < double.MaxValue);
             }
         }
+
         [TestMethod]
         public void RandomCollectionDefaultFuncTest()
         {
@@ -51,6 +54,7 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(DateTime));
             }
 
+            //no default random function
             Assert.ThrowsException<FakerException>(() => { ICollection<ValueClass> c3 = r.GenericCollection<ValueClass>(30); });
 
             ICollection<Char> c3 = r.GenericCollection<Char>(30);
@@ -215,7 +219,9 @@ namespace FakerTests
                 Assert.IsInstanceOfType(item, typeof(byte));
                 Assert.IsTrue(item >= 5 && item <= byte.MaxValue);
             }
-            IList<double> c2 = r.GenericList(r.Random.Double, 5d, Double.MaxValue, 30);
+            // Nullable params - Func<TMember?, TMember?, TMember> overload
+            double? d = 5d;
+            IList<double> c2 = r.GenericList(r.Random.Double, d, Double.MaxValue, 30);
             Console.WriteLine(c.Count);
             foreach (var item in c2)
             {
@@ -323,7 +329,9 @@ namespace FakerTests
             }
             Assert.AreEqual(count, counter);
             counter = 0;
-            IEnumerable<double> c2 = r.GenericEnumerable(r.Random.Double, 5d, Double.MaxValue, count, false);
+            // Nullable params - Func<TMember?, TMember?, TMember> overload
+            double? d = 5d;
+            IEnumerable<double> c2 = r.GenericEnumerable(r.Random.Double, d, Double.MaxValue, count, false);
             foreach (var item in c2)
             {
                 Console.WriteLine("{0}: {1}", counter, item);
@@ -459,8 +467,10 @@ namespace FakerTests
                 }
             }
             Assert.AreEqual(count, counter);
+            // Nullable params - Func<TMember?, TMember?, TMember> overload
             counter = 0;
-            IEnumerable<double> c2 = r.InfiniteGenericEnumerable(r.Random.Double, 5d, Double.MaxValue);
+            double? d = 5d;
+            IEnumerable<double> c2 = r.InfiniteGenericEnumerable(r.Random.Double, d, Double.MaxValue);
             foreach (var item in c2)
             {
                 Console.WriteLine("{0}: {1}", counter, item);

@@ -136,6 +136,7 @@ namespace Faker
             }
             /// <summary>
             /// returns IList of at most count random doubles from interval [lower, upper) <br/>
+            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead
             /// when precise is false a random number less or equal to count is generated and used as a count
             /// </summary>
             /// <param name="count"></param>
@@ -143,7 +144,7 @@ namespace Faker
             /// <param name="upper"></param>
             /// <param name="precise"></param>
             /// <returns></returns>
-            public IList<double> Double(int count, double lower = 0d, double upper = 1d, bool precise = true)
+            public IList<double> Double(int count, double? lower = null, double? upper = null, bool precise = true)
             {
                 return RG.GenericList<double>(RG.Random.Double, lower, upper, count, precise);
             }
