@@ -20,6 +20,7 @@ namespace Faker
                 int randomInt = (int)Math.Round(randomDouble);
                 return randomInt;
             }
+
             /// <summary>
             /// generates a random unsigned integer from interval [lower,upper] <br/>
             /// when lower/upper bound is not specified, uint.MinValue/uint.MaxValue is used 
@@ -76,6 +77,7 @@ namespace Faker
                 long randomLong = (long)Math.Round(randomDouble);
                 return randomLong;
             }
+
             /// <summary>
             /// generates a random unsigned long from interval [lower,upper] <br/>
             /// when lower/upper bound is not specified, ulong.MinValue/ulong.MaxValue is used 

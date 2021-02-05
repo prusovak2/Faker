@@ -32,7 +32,7 @@ namespace Faker
                 {
                     return this.RG.InfiniteGenericEnumerable<int>(this.RG.Random.Int, lower, upper);
                 }
-                return this.RG.GenericEnumerable<int>(this.RG.Random.Int, lower, upper, count.Value, precise);
+                return RG.GenericEnumerable<int>(RG.Random.Int, count.Value, lower, upper);
             }
             /// <summary>
             /// returns IEnumerable of at most count random uints from interval [lower, upper]<br/>
@@ -50,7 +50,7 @@ namespace Faker
                 {
                     return this.RG.InfiniteGenericEnumerable<uint>(this.RG.Random.Uint, lower, upper);
                 }
-                return this.RG.GenericEnumerable<uint>(this.RG.Random.Uint, lower, upper, count.Value, precise);
+                return this.RG.GenericEnumerable<uint>(this.RG.Random.Uint, count.Value, lower, upper, precise);
             }
             /// <summary>
             /// returns IEnumerable of at most count random shorts from interval [lower, upper]<br/>
@@ -68,7 +68,7 @@ namespace Faker
                 {
                     return this.RG.InfiniteGenericEnumerable<short>(this.RG.Random.Short, lower, upper);
                 }
-                return this.RG.GenericEnumerable<short>(this.RG.Random.Short, lower, upper, count.Value, precise);
+                return this.RG.GenericEnumerable<short>(this.RG.Random.Short, count.Value, lower, upper, precise);
             }
             /// <summary>
             /// returns IEnumerable of at most count random ushorts from interval [lower, upper]<br/>
@@ -86,7 +86,7 @@ namespace Faker
                 {
                     return this.RG.InfiniteGenericEnumerable<ushort>(this.RG.Random.Ushort, lower, upper);
                 }
-                return this.RG.GenericEnumerable<ushort>(this.RG.Random.Ushort, lower, upper, count.Value, precise);
+                return this.RG.GenericEnumerable<ushort>(this.RG.Random.Ushort, count.Value, lower, upper, precise);
             }
             /// <summary>
             /// returns IEnumerable of at most count random sbytes from interval [lower, upper]<br/>
@@ -104,7 +104,7 @@ namespace Faker
                 {
                     return this.RG.InfiniteGenericEnumerable<sbyte>(this.RG.Random.Sbyte, lower, upper);
                 }
-                return this.RG.GenericEnumerable<sbyte>(this.RG.Random.Sbyte, lower, upper, count.Value, precise);
+                return this.RG.GenericEnumerable<sbyte>(this.RG.Random.Sbyte, count.Value, lower, upper, precise);
             }
             /// <summary>
             /// returns IEnumerable of at most count random bytes from interval [lower, upper]<br/>
@@ -122,7 +122,7 @@ namespace Faker
                 {
                     return this.RG.InfiniteGenericEnumerable<byte>(this.RG.Random.Byte, lower, upper);
                 }
-                return this.RG.GenericEnumerable<byte>(this.RG.Random.Byte, lower, upper, count.Value, precise);
+                return this.RG.GenericEnumerable<byte>(this.RG.Random.Byte, count.Value, lower, upper, precise);
             }
             /// <summary>
             /// returns IEnumerable of at most count random longs from interval [lower, upper]<br/>
@@ -140,7 +140,7 @@ namespace Faker
                 {
                     return this.RG.InfiniteGenericEnumerable<long>(this.RG.Random.Long, lower, upper);
                 }
-                return this.RG.GenericEnumerable<long>(this.RG.Random.Long, lower, upper, count.Value, precise);
+                return this.RG.GenericEnumerable<long>(this.RG.Random.Long, count.Value, lower, upper, precise);
             }
             /// <summary>
             /// returns IEnumerable of at most count random ulongs from interval [lower, upper]<br/>
@@ -158,10 +158,11 @@ namespace Faker
                 {
                     return this.RG.InfiniteGenericEnumerable<ulong>(this.RG.Random.Ulong, lower, upper);
                 }
-                return this.RG.GenericEnumerable<ulong>(this.RG.Random.Ulong, lower, upper, count.Value, precise);
+                return this.RG.GenericEnumerable<ulong>(this.RG.Random.Ulong, count.Value, lower, upper, precise);
             }
             /// <summary>
             /// returns IEnumerable of at most count random doubles from interval [lower, upper)<br/>
+            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead <br/>
             /// when count is null, returned IEnumerable is INFINITE <br/>
             /// when precise is false and count not null, a random number less or equal to count is generated and used as a count<br/>
             /// </summary>
@@ -170,16 +171,17 @@ namespace Faker
             /// <param name="lower"></param>
             /// <param name="upper"></param>
             /// <returns></returns>
-            public IEnumerable<double> Double(int? count = null, double lower = 0, double upper = 1, bool precise = true)
+            public IEnumerable<double> Double(int? count = null, double? lower = null, double? upper = null, bool precise = true)
             {
                 if (count is null)
                 {
                     return this.RG.InfiniteGenericEnumerable<double>(this.RG.Random.Double, lower, upper);
                 }
-                return this.RG.GenericEnumerable<double>(this.RG.Random.Double, lower, upper, count.Value, precise);
+                return this.RG.GenericEnumerable<double>(this.RG.Random.Double, count.Value, lower, upper, precise);
             }
             /// <summary>
             /// returns IEnumerable of at most count random floats from interval [lower, upper)<br/>
+            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead <br/>
             /// when count is null, returned IEnumerable is INFINITE <br/>
             /// when precise is false and count not null, a random number less or equal to count is generated and used as a count<br/>
             /// </summary>
@@ -188,16 +190,17 @@ namespace Faker
             /// <param name="lower"></param>
             /// <param name="upper"></param>
             /// <returns></returns>
-            public IEnumerable<float> Float(int? count = null, float lower = 0, float upper = 1, bool precise = true)
+            public IEnumerable<float> Float(int? count = null, float? lower = null, float? upper = null, bool precise = true)
             {
                 if (count is null)
                 {
                     return this.RG.InfiniteGenericEnumerable<float>(this.RG.Random.Float, lower, upper);
                 }
-                return this.RG.GenericEnumerable<float>(this.RG.Random.Float, lower, upper, count.Value, precise);
+                return this.RG.GenericEnumerable<float>(this.RG.Random.Float, count.Value, lower, upper, precise);
             }
             /// <summary>
             /// returns IEnumerable of at most count random decimals from interval [lower, upper)<br/>
+            ///  default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead <br/>
             /// when count is null, returned IEnumerable is INFINITE <br/>
             /// when precise is false and count not null, a random number less or equal to count is generated and used as a count<br/>
             /// </summary>
@@ -206,16 +209,17 @@ namespace Faker
             /// <param name="lower"></param>
             /// <param name="upper"></param>
             /// <returns></returns>
-            public IEnumerable<Decimal> Decimal(int? count = null, decimal lower = 0, decimal upper = 1, bool precise = true)
+            public IEnumerable<Decimal> Decimal(int? count = null, decimal? lower = null, decimal? upper = null, bool precise = true)
             {
                 if (count is null)
                 {
                     return this.RG.InfiniteGenericEnumerable<decimal>(this.RG.Random.Decimal, lower, upper);
                 }
-                return this.RG.GenericEnumerable<decimal>(this.RG.Random.Decimal, lower, upper, count.Value, precise);
+                return this.RG.GenericEnumerable<decimal>(RG.Random.Decimal, count.Value, lower, upper, precise);
             }
             /// <summary>
             /// returns IEnumerable of at most count random DateTimes from interval [lower, upper]<br/>
+            /// when any of boarders is not specified, DateTime.MinValue/DateTime.MaxValue is used instead <br/>
             /// when count is null, returned IEnumerable is INFINITE <br/>
             /// when precise is false and count not null, a random number less or equal to count is generated and used as a count<br/>
             /// </summary>
@@ -224,30 +228,15 @@ namespace Faker
             /// <param name="count"></param>
             /// <param name="precise"></param>
             /// <returns></returns>
-            public IEnumerable<DateTime> DateTime(DateTime lower, DateTime upper, int? count = null, bool precise = true)
+            public IEnumerable<DateTime> DateTime(int? count = null, DateTime? lower = null, DateTime? upper = null, bool precise = true)
             {
                 if (count is null)
                 {
                     return this.RG.InfiniteGenericEnumerable<DateTime>(this.RG.Random.DateTime, lower, upper);
                 }
-                return this.RG.GenericEnumerable<DateTime>(this.RG.Random.DateTime, lower, upper, count.Value, precise);
+                return this.RG.GenericEnumerable<DateTime>(this.RG.Random.DateTime, count.Value, lower, upper, precise);
             }
-            /// <summary>
-            /// returns IEnumerable of at most count random DateTimes from interval [DateTime.MinValue, DateTime.MaxValue]<br/>
-            /// when count is null, returned IEnumerable is INFINITE <br/>
-            /// when precise is false and count not null, a random number less or equal to count is generated and used as a count<br/>
-            /// </summary>
-            /// <param name="count"></param>
-            /// <param name="precise"></param>
-            /// <returns></returns>
-            public IEnumerable<DateTime> DateTime(int? count = null, bool precise = true)
-            {
-                if (count is null)
-                {
-                    return this.RG.InfiniteGenericEnumerable<DateTime>(this.RG.Random.DateTime);
-                }
-                return this.RG.GenericEnumerable<DateTime>(this.RG.Random.DateTime, count.Value, precise);
-            }
+
             /// <summary>
             /// returns IEnumerable of at most count random Guids <br/>
             /// when count is null, returned IEnumerable is INFINITE <br/>
@@ -296,7 +285,7 @@ namespace Faker
                 {
                     return this.RG.InfiniteGenericEnumerable<char>(this.RG.Random.Char, lower, upper);
                 }
-                return this.RG.GenericEnumerable<char>(this.RG.Random.Char, lower, upper, count.Value, precise);
+                return this.RG.GenericEnumerable<char>(this.RG.Random.Char, count.Value, lower, upper, precise);
             }
             /// <summary>
             /// returns IEnumerable of at most count random strings <br/>

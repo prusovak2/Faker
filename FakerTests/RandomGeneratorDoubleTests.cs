@@ -172,6 +172,30 @@ namespace FakerTests
         }
 
 
+        [TestMethod]
+        public void DoubleNullableSwapTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            double low = 2;
+            double up = -1;
+
+            for (int i = 0; i < 20; i++)
+            {
+                double rd1 = rg.Random.Double(upper: up);
+                Console.WriteLine($"{up}>{rd1}");
+                Assert.IsTrue(rd1 < up);
+
+                double rd2 = rg.Random.Double(lower: low);
+                Console.WriteLine($"{low}<{rd2}");
+                Assert.IsTrue(rd2>low);
+
+                //boarder swap
+                double rd3 = rg.Random.Double(up, low);
+                Console.WriteLine($"{up}<{rd3}<{low}");
+                Assert.IsTrue((up < rd3) && (rd3 < low));
+            }
+        }
+
 
         [TestMethod]
         public void RandomBoolTest()

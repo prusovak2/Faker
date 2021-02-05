@@ -61,7 +61,31 @@ namespace Faker
         /// <param name="count">count of members in returned collection</param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public ICollection<TMember> GenericCollection<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
+        public ICollection<TMember> GenericCollection<TMember>(Func<TMember, TMember, TMember> randomFunc, int count, TMember lower, TMember upper, bool precise = true)
+        {
+            ICollection<TMember> result = new Collection<TMember>();
+            int countToUse = this.CountToUse(count, precise);
+            for (int i = 0; i < countToUse; i++)
+            {
+                TMember next = randomFunc(lower, upper);
+                result.Add(next);
+            }
+            return result;
+        }
+        /// <summary>
+        /// returns collection of TMembers produced by Func<TMember?, TMember?, TMembe> randomFunc <br/>
+        /// when precise is true, count is used as a size of returned collection <br/>
+        /// otherwise a random number less or equal to count is generated and used as a count
+        /// overload for floating point types
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="randomFunc"></param>
+        /// <param name="lower">lower bound passed to random function</param>
+        /// <param name="upper">upper bound passed to random function</param>
+        /// <param name="count">count of members in returned collection</param>
+        /// <param name="precise"></param>
+        /// <returns></returns>
+        public ICollection<TMember> GenericCollection<TMember>(Func<TMember?, TMember?, TMember> randomFunc, int count, TMember? lower = null, TMember? upper=null, bool precise = true) where TMember: struct
         {
             ICollection<TMember> result = new Collection<TMember>();
             int countToUse = this.CountToUse(count, precise);
@@ -174,7 +198,7 @@ namespace Faker
         }
 
         /// <summary>
-        /// returns a list of TMembers produced by Func<TMember, TMember, TMembe> randomFunc <br/>
+        /// returns a list of TMembers produced by Func<TMember, TMember, TMember> randomFunc <br/>
         /// when precise is true, count is used as a count of returned list <br/>
         /// otherwise a random number less or equal to count is generated and used as a count
         /// </summary>
@@ -185,7 +209,7 @@ namespace Faker
         /// <param name="count"></param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public IList<TMember> GenericList<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
+        public IList<TMember> GenericList<TMember>(Func<TMember, TMember, TMember> randomFunc, int count, TMember lower, TMember upper, bool precise = true)
         {
             IList<TMember> result = new List<TMember>();
             int countToUse = this.CountToUse(count, precise);
@@ -196,6 +220,31 @@ namespace Faker
             }
             return result;
         }
+        /// <summary>
+        /// returns a list of TMembers produced by Func<TMember?, TMember?, TMember?> randomFunc <br/>
+        /// when precise is true, count is used as a count of returned list <br/>
+        /// otherwise a random number less or equal to count is generated and used as a count
+        /// overload for floating point types
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="randomFunc"></param>
+        /// <param name="lower">lower bound passed to random function</param>
+        /// <param name="upper">upper bound passed to random function</param>
+        /// <param name="count"></param>
+        /// <param name="precise"></param>
+        /// <returns></returns>
+        public IList<TMember> GenericList<TMember>(Func<TMember?, TMember?, TMember> randomFunc, int count, TMember? lower=null, TMember? upper=null, bool precise = true) where TMember :struct
+        {
+            IList<TMember> result = new List<TMember>();
+            int countToUse = this.CountToUse(count, precise);
+            for (int i = 0; i < countToUse; i++)
+            {
+                TMember next = randomFunc(lower, upper);
+                result.Add(next);
+            }
+            return result;
+        }
+
         /// <summary>
         /// returns IList of TMembers produced by Func<int, bool, TMember> randomFunc<br/>
         /// this overload is meant to be used to create random list of random collections (for instance list of random strings)<br/>
@@ -250,7 +299,7 @@ namespace Faker
         /// <param name="count">count of members in returned enumerable</param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public IEnumerable<TMember> GenericEnumerable<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
+        public IEnumerable<TMember> GenericEnumerable<TMember>(Func<TMember, TMember, TMember> randomFunc, int count, TMember lower, TMember upper, bool precise = true)
         {
             int countToUse = this.CountToUse(count, precise);
             for (int i = 0; i < countToUse; i++)
@@ -259,6 +308,29 @@ namespace Faker
                 yield return next;
             }
         }
+        /// <summary>
+        /// returns an enumerable of TMembers produced by Func<TMember?, TMember?, TMember> randomFunc <br/>
+        /// when precise is true, count is used as a size of returned collection <br/>
+        /// otherwise a random number less or equal to count is generated and used as a count
+        /// overload for floating point types
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="randomFunc"></param>
+        /// <param name="lower">lower bound passed to random function</param>
+        /// <param name="upper">upper bound passed to random function</param>
+        /// <param name="count">count of members in returned enumerable</param>
+        /// <param name="precise"></param>
+        /// <returns></returns>
+        public IEnumerable<TMember> GenericEnumerable<TMember>(Func<TMember?, TMember?, TMember> randomFunc, int count, TMember? lower = null, TMember? upper = null, bool precise = true) where TMember: struct
+        {
+            int countToUse = this.CountToUse(count, precise);
+            for (int i = 0; i < countToUse; i++)
+            {
+                TMember next = randomFunc(lower, upper);
+                yield return next;
+            }
+        }
+
         /// <summary>
         /// returns an enumerable of random members produced by a default random function for TMember type <br/>
         /// when precise is true, count is used as a size of returned collection <br/>
@@ -301,12 +373,12 @@ namespace Faker
             int countToUse = this.CountToUse(countOuter, preciseOuter);
             for (int i = 0; i < countToUse; i++)
             {
-                TMember next = (TMember)randomFunc(countInnerCollection, preciseInnerCollection);
+                TMember next = randomFunc(countInnerCollection, preciseInnerCollection);
                 yield return next;
             }
         }
         /// <summary>
-        /// returns INFINITE enumerable of TMembers produced by Func<int, bool, TMember> randomFunc<br/>
+        /// returns INFINITE enumerable of TMembers produced by Func<TMember> randomFunc<br/>
         /// </summary>
         /// <typeparam name="TMember"></typeparam>
         /// <param name="randomFunc"></param>
@@ -320,7 +392,7 @@ namespace Faker
             }
         }
         /// <summary>
-        /// returns an INFINITE enumerable of TMembers produced by Func<TMember, TMember, TMembe> randomFunc <br/>
+        /// returns an INFINITE enumerable of TMembers produced by Func<TMember, TMember, TMember> randomFunc <br/>
         /// </summary>
         /// <typeparam name="TMember"></typeparam>
         /// <param name="randomFunc"></param>
@@ -335,6 +407,24 @@ namespace Faker
                 yield return next;
             }
         }
+        /// <summary>
+        /// returns an INFINITE enumerable of TMembers produced by Func<TMember?, TMember?, TMember> randomFunc <br/>
+        /// overload for floating point types
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="randomFunc"></param>
+        /// <param name="lower"></param>
+        /// <param name="upper"></param>
+        /// <returns></returns>
+        public IEnumerable<TMember> InfiniteGenericEnumerable<TMember>(Func<TMember?, TMember?, TMember> randomFunc, TMember? lower=null, TMember? upper=null) where TMember: struct
+        {
+            while (true)
+            {
+                TMember next = randomFunc(lower, upper);
+                yield return next;
+            }
+        }
+
         /// <summary>
         /// returns an INFINITE enumerable of random members produced by a default random function for TMember type <br/>
         /// </summary>
@@ -368,7 +458,7 @@ namespace Faker
         {
             while(true)
             {
-                TMember next = (TMember)randomFunc(countInnerCollection, preciseInnerCollection);
+                TMember next = randomFunc(countInnerCollection, preciseInnerCollection);
                 yield return next;
             }
         }
