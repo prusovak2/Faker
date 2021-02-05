@@ -264,10 +264,10 @@ namespace Faker
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
             /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
-            public DateTime? NullableDateTime(float NullProbability)
+            /*public DateTime? NullableDateTime(float NullProbability)
             {
                 return NullableGeneric<DateTime>(NullProbability);
-            }
+            }*/
             /// <summary>
             /// returns random nullable DateTime from [lower,upper] interval <br/>
             /// probability that null is generated is passed as the first param
@@ -275,7 +275,7 @@ namespace Faker
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
             /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
-            public DateTime? NullableDateTime(float NullProbability, DateTime lower, DateTime upper)
+            public DateTime? NullableDateTime(float NullProbability, DateTime? lower = null, DateTime? upper = null)
             {
                 return NullableGeneric<DateTime>(NullProbability, this.RG.Random.DateTime, lower, upper);
             }

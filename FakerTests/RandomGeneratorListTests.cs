@@ -624,7 +624,7 @@ namespace FakerTests
 
             //no range, not precise
             counter = 0;
-            l = r.List.DateTime(count, false);
+            l = r.List.DateTime(count, precise:false);
             foreach (var item in l)
             {
                 Console.WriteLine("{0}: {1}", counter, item);

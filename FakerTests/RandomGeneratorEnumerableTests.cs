@@ -671,7 +671,7 @@ namespace FakerTests
             counter = 0;
             DateTime lower = new DateTime(2000, 1, 1);
             DateTime upper = new DateTime(6000, 1, 1);
-            e = r.Enumerable.DateTime(lower, upper, count);
+            e = r.Enumerable.DateTime(count, lower, upper);
             foreach (var item in e)
             {
                 Console.WriteLine("{0}: {1}", counter, item);
@@ -696,7 +696,7 @@ namespace FakerTests
 
             //finite, no range, not precise
             counter = 0;
-            e = r.Enumerable.DateTime(count,false);
+            e = r.Enumerable.DateTime(count, precise:false);
             foreach (var item in e)
             {
                 Console.WriteLine("{0}: {1}", counter, item);

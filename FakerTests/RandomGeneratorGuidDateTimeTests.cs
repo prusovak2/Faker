@@ -47,7 +47,7 @@ namespace FakerTests
             Console.WriteLine("lower-max");
             for (int i = 0; i < 30; i++)
             {
-                DateTime d = r.Random.DateTime(lower, false);
+                DateTime d = r.Random.DateTime(lower: lower);
                 Console.WriteLine(d);
                 Assert.IsTrue(d >= lower);
                 areUnique.Add(d);
@@ -58,7 +58,7 @@ namespace FakerTests
             Console.WriteLine("lower-max");
             for (int i = 0; i < 30; i++)
             {
-                DateTime d = r.Random.DateTime(upper, true);
+                DateTime d = r.Random.DateTime(upper: upper);
                 Console.WriteLine(d);
                 Assert.IsTrue(d <= upper);
                 areUnique.Add(d);
@@ -79,8 +79,8 @@ namespace FakerTests
 
             for (int i = 0; i < 30; i++)
             {
-                DateTime l = r.Random.DateTime(lower, true);
-                DateTime h = r.Random.DateTime(lower, false);
+                DateTime l = r.Random.DateTime(upper: lower);
+                DateTime h = r.Random.DateTime(lower: lower);
                 Console.WriteLine("{0}<={1}", l, h);
                 Assert.IsTrue(l<=h);
                 areUnique.Add(l);

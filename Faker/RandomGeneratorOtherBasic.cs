@@ -77,6 +77,22 @@ namespace Faker
             }
             /// <summary>
             /// returns random DateTime from [lower,upper] interval
+            /// when any of boarders is not specified, DateTime.MinValue/DateTime.MaxValue is used instead
+            /// </summary>
+            /// <param name="lower"></param>
+            /// <param name="upper"></param>
+            /// <returns></returns>
+            public DateTime DateTime(DateTime? lower = null, DateTime? upper = null)
+            {
+                SetNullableVales(ref lower,ref upper, System.DateTime.MinValue, System.DateTime.MaxValue);
+                long randomLong = this.Long(lower.Value.Ticks, upper.Value.Ticks);
+                DateTime randomDateTime = new DateTime(randomLong);
+                return randomDateTime;
+            }
+
+            /*
+            /// <summary>
+            /// returns random DateTime from [lower,upper] interval
             /// </summary>
             /// <param name="lower"></param>
             /// <param name="upper"></param>
@@ -118,7 +134,7 @@ namespace Faker
                     DateTime randomDateTime = new DateTime(randomLong);
                     return randomDateTime;
                 }
-            }
+            }*/
             /// <summary>
             ///generates a random char from interval[lower, upper] <br/>
             /// when lower/upper bound is not specified, char.MinValue/char.MaxValue is used 

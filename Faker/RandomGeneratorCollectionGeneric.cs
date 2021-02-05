@@ -61,7 +61,7 @@ namespace Faker
         /// <param name="count">count of members in returned collection</param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public ICollection<TMember> GenericCollection<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
+        public ICollection<TMember> GenericCollection<TMember>(Func<TMember, TMember, TMember> randomFunc, int count, TMember lower, TMember upper, bool precise = true)
         {
             ICollection<TMember> result = new Collection<TMember>();
             int countToUse = this.CountToUse(count, precise);
@@ -85,7 +85,7 @@ namespace Faker
         /// <param name="count">count of members in returned collection</param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public ICollection<TMember> GenericCollection<TMember>(Func<TMember?, TMember?, TMember> randomFunc, TMember? lower, TMember? upper, int count, bool precise = true) where TMember: struct
+        public ICollection<TMember> GenericCollection<TMember>(Func<TMember?, TMember?, TMember> randomFunc, int count, TMember? lower = null, TMember? upper=null, bool precise = true) where TMember: struct
         {
             ICollection<TMember> result = new Collection<TMember>();
             int countToUse = this.CountToUse(count, precise);
@@ -209,7 +209,7 @@ namespace Faker
         /// <param name="count"></param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public IList<TMember> GenericList<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
+        public IList<TMember> GenericList<TMember>(Func<TMember, TMember, TMember> randomFunc, int count, TMember lower, TMember upper, bool precise = true)
         {
             IList<TMember> result = new List<TMember>();
             int countToUse = this.CountToUse(count, precise);
@@ -233,7 +233,7 @@ namespace Faker
         /// <param name="count"></param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public IList<TMember> GenericList<TMember>(Func<TMember?, TMember?, TMember> randomFunc, TMember? lower, TMember? upper, int count, bool precise = true) where TMember :struct
+        public IList<TMember> GenericList<TMember>(Func<TMember?, TMember?, TMember> randomFunc, int count, TMember? lower=null, TMember? upper=null, bool precise = true) where TMember :struct
         {
             IList<TMember> result = new List<TMember>();
             int countToUse = this.CountToUse(count, precise);
@@ -299,7 +299,7 @@ namespace Faker
         /// <param name="count">count of members in returned enumerable</param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public IEnumerable<TMember> GenericEnumerable<TMember>(Func<TMember, TMember, TMember> randomFunc, TMember lower, TMember upper, int count, bool precise = true)
+        public IEnumerable<TMember> GenericEnumerable<TMember>(Func<TMember, TMember, TMember> randomFunc, int count, TMember lower, TMember upper, bool precise = true)
         {
             int countToUse = this.CountToUse(count, precise);
             for (int i = 0; i < countToUse; i++)
@@ -321,7 +321,7 @@ namespace Faker
         /// <param name="count">count of members in returned enumerable</param>
         /// <param name="precise"></param>
         /// <returns></returns>
-        public IEnumerable<TMember> GenericEnumerable<TMember>(Func<TMember?, TMember?, TMember> randomFunc, TMember? lower, TMember? upper, int count, bool precise = true) where TMember: struct
+        public IEnumerable<TMember> GenericEnumerable<TMember>(Func<TMember?, TMember?, TMember> randomFunc, int count, TMember? lower = null, TMember? upper = null, bool precise = true) where TMember: struct
         {
             int countToUse = this.CountToUse(count, precise);
             for (int i = 0; i < countToUse; i++)
@@ -416,7 +416,7 @@ namespace Faker
         /// <param name="lower"></param>
         /// <param name="upper"></param>
         /// <returns></returns>
-        public IEnumerable<TMember> InfiniteGenericEnumerable<TMember>(Func<TMember?, TMember?, TMember> randomFunc, TMember? lower, TMember? upper) where TMember: struct
+        public IEnumerable<TMember> InfiniteGenericEnumerable<TMember>(Func<TMember?, TMember?, TMember> randomFunc, TMember? lower=null, TMember? upper=null) where TMember: struct
         {
             while (true)
             {
