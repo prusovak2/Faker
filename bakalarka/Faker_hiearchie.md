@@ -408,9 +408,7 @@ I don't think that **[1]** supports this feature.
 
 Doplnit `public Func<object> GetDefaultRandomFuncForType(object o)`  a `TypeExtensions.GetSampleInstance(this Type type)`o nullable typy.
 
-- [ ] 
-
-**Priorita: 2**
+**Cannot be done** - it is not possible to switch by nullable types, they cannot be distinguish from non nullable variants - they are either null (therefore no type) or the same type as non nullable variant.  
 
 ### Lorem Ipsum v různých jazycích
 

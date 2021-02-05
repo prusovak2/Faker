@@ -179,7 +179,6 @@ namespace Faker
             SampleInstances.Add(typeof(string), "string");
             SampleInstances.Add(typeof(DateTime), new DateTime());
             SampleInstances.Add(typeof(Guid), new Guid());
-
         }
         /// <summary>
         /// provides a sample instance of type to be used as param. of RandomGenerator.GetDefaultRandomFuncForType(object o)

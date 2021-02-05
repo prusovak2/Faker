@@ -21,7 +21,6 @@ namespace FakerTests
             }
         }
 
-
         [TestMethod]
         public void PickIListTest()
         {

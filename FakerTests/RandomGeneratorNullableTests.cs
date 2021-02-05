@@ -9,7 +9,7 @@ namespace FakerTests
     [TestClass]
     public class RandomGeneratorNullableTests
     {
-
+       
         [TestMethod]
         public void AlwaysNullNeverNull()
         {
