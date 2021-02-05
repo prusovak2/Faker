@@ -162,7 +162,7 @@ namespace Faker
             }
             /// <summary>
             /// returns IEnumerable of at most count random doubles from interval [lower, upper)<br/>
-            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead
+            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead <br/>
             /// when count is null, returned IEnumerable is INFINITE <br/>
             /// when precise is false and count not null, a random number less or equal to count is generated and used as a count<br/>
             /// </summary>
@@ -181,6 +181,7 @@ namespace Faker
             }
             /// <summary>
             /// returns IEnumerable of at most count random floats from interval [lower, upper)<br/>
+            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead <br/>
             /// when count is null, returned IEnumerable is INFINITE <br/>
             /// when precise is false and count not null, a random number less or equal to count is generated and used as a count<br/>
             /// </summary>
@@ -189,7 +190,7 @@ namespace Faker
             /// <param name="lower"></param>
             /// <param name="upper"></param>
             /// <returns></returns>
-            public IEnumerable<float> Float(int? count = null, float lower = 0, float upper = 1, bool precise = true)
+            public IEnumerable<float> Float(int? count = null, float? lower = null, float? upper = null, bool precise = true)
             {
                 if (count is null)
                 {
@@ -199,6 +200,7 @@ namespace Faker
             }
             /// <summary>
             /// returns IEnumerable of at most count random decimals from interval [lower, upper)<br/>
+            ///  default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead <br/>
             /// when count is null, returned IEnumerable is INFINITE <br/>
             /// when precise is false and count not null, a random number less or equal to count is generated and used as a count<br/>
             /// </summary>
@@ -207,7 +209,7 @@ namespace Faker
             /// <param name="lower"></param>
             /// <param name="upper"></param>
             /// <returns></returns>
-            public IEnumerable<Decimal> Decimal(int? count = null, decimal lower = 0, decimal upper = 1, bool precise = true)
+            public IEnumerable<Decimal> Decimal(int? count = null, decimal? lower = null, decimal? upper = null, bool precise = true)
             {
                 if (count is null)
                 {

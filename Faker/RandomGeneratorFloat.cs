@@ -90,35 +90,38 @@ namespace Faker
             }
             /// <summary>
             /// generates a random float from interval [lower,upper) <br/>
-            /// when lower/upper bound is not specified, 0/1 is used 
+            /// when both lower and upper are not specified or are null uses interval[0, 1)
+            /// when only one of boarders is unspecified, uses Float.MinValue resp. Float.MaxValue instead 
             /// </summary>
             /// <param name="lower"></param>
             /// <param name="upper"></param>
             /// <returns></returns>
-            public float Float(float lower = 0f, float upper = 1f)
+            public float Float(float? lower = null, float? upper = null)
             {
                 //to make a generating of floats from [0,1) interval as fast as possible
-                if (lower == 0f && upper == 1f)
+                if (lower is null && upper is null)
                 {
                     return this.RandomZeroToOneFloat();
                 }
+                SetNullableVales(ref lower, ref upper, float.MinValue, float.MaxValue);
+
                 // swap numbers so that lower is actually lower
-                if (lower.EpsilonEquals(upper))
+                if (lower.Value.EpsilonEquals(upper.Value))
                 {
-                    return lower;
+                    return lower.Value;
                 }
                 if (lower > upper)
                 {
-                    float tmp = lower;
+                    float tmp = lower.Value;
                     lower = upper;
                     upper = tmp;
                 }
-                float rangeLenght = Math.Abs(upper - lower); //this will be infinity for too large interval
+                float rangeLenght = Math.Abs(upper.Value - lower.Value); //this will be infinity for too large interval
 
                 //when interval is too large to store its size in float, divide it into two interval of a half size
                 if (float.IsInfinity(rangeLenght))
                 {
-                    float middlePoint = (lower + upper) / 2;
+                    float middlePoint = (lower.Value + upper.Value) / 2;
                     //determine randomly, which of halfintervals is to be used
                     bool useLower = this.Bool();
                     if (useLower)
@@ -136,7 +139,7 @@ namespace Faker
                 float random01 = this.RandomZeroToOneFloat();
                 float scaled = random01 * rangeLenght;
                 //shift scaled random number to interval required
-                float random = lower + scaled;
+                float random = lower.Value + scaled;
                 return random;
             }
             /// <summary>
@@ -155,58 +158,16 @@ namespace Faker
                 }
                 return value;
             }
+
             /// <summary>
             /// generates a random decimal from interval [lower,upper) <br/>
-            /// when lower/upper bound is not specified, 0/1 is used 
+            /// when both lower and upper are not specified or are null uses interval[0, 1)
+            /// when only one of boarders is unspecified, uses Decimal.MinValue resp. Decimal.MaxValue instead 
             /// </summary>
             /// <param name="lower"></param>
             /// <param name="upper"></param>
             /// <returns></returns>
-            public decimal Decimal(decimal lower = 0m, decimal upper = 1m)
-            {
-                //to make a generating of doubles from [0,1) interval as fast as possible
-                if (lower == 0m && upper == 1m)
-                {
-                    return this.RandomZeroToOneDecimal();
-                }
-
-                // swap numbers so that lower is actually lower
-                if (lower.EpsilonEquals(upper, out bool RangeTooLarge))
-                {
-                    return lower;
-                }
-                if (lower > upper)
-                {
-                    decimal tmp = lower;
-                    lower = upper;
-                    upper = tmp;
-                }
-                //when interval is too large to store its size in ddecimal, divide it into two interval of a half size
-                if (RangeTooLarge)
-                {
-                    decimal middlePoint = (lower + upper) / 2;
-                    bool useLower = this.Bool();
-                    if (useLower)
-                    {
-                        decimal lowerRandom = this.Decimal(lower, middlePoint);
-                        return lowerRandom;
-                    }
-                    else
-                    {
-                        decimal upperRandom = this.Decimal(middlePoint, upper);
-                        return upperRandom;
-                    }
-                }
-                //only reached, when interval size is small enough to fit into decimal
-                decimal rangeLenght = Math.Abs(upper - lower);
-                decimal random01 = this.RandomZeroToOneDecimal();
-                decimal scaled = random01 * rangeLenght;
-                //shift scaled random number to interval required
-                decimal random = lower + scaled;
-                return random;
-            }
-
-            public decimal DecimalNullableParams(decimal? lower = null, decimal? upper = null)
+            public decimal Decimal(decimal? lower = null, decimal? upper = null)
             {
                 //to make a generating of doubles from [0,1) interval as fast as possible
                 if (lower == null && upper == null)

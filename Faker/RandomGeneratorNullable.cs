@@ -207,19 +207,20 @@ namespace Faker
             }
             /// <summary>
             /// generates a random nullable float from interval [lower,upper) <br/>
-            /// probability that null is generated is passed as the first param
+            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead <br/>
+            /// probability that null is generated is passed as the first param <br/>
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, 0/1 is used   <br/>
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
             /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
-            public float? NullableFloat(float NullProbability, float lower = 0f, float upper = 1f)
+            public float? NullableFloat(float NullProbability, float? lower = null, float? upper = null)
             {
                 return NullableGeneric<float>(NullProbability, this.Float, lower, upper);
             }
             /// <summary>
             /// generates a random nullable double from interval [lower,upper) <br/>
-            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead
+            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead <br/>
             /// probability that null is generated is passed as the first param <br/>
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, 0/1 is used  
@@ -232,13 +233,14 @@ namespace Faker
             }
             /// <summary>
             /// generates a random nullable decimal from interval [lower,upper) <br/>
+            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead <br/>
             /// probability that null is generated is passed as the first param <br/>
             /// nullProbability param must belong to [0,1] interval <br/>
             /// when lower/upper bound is not specified, 0/1 is used  
             /// <param name="NullProbability">lies in [0,1], probability that null is generated</param>
             /// <exception cref="ArgumentException">Throws ArgumentException, when nullProbability does not belong to [0,1] interval </exception>
             /// </summary>
-            public decimal? NullableDecimal(float NullProbability, decimal lower = 0m, decimal upper = 1m)
+            public decimal? NullableDecimal(float NullProbability, decimal? lower = null, decimal? upper = null)
             {
                 return NullableGeneric<decimal>(NullProbability, this.Decimal, lower, upper);
             }

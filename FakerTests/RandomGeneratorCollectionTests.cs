@@ -140,7 +140,8 @@ namespace FakerTests
             }
 
             Console.WriteLine("with params");
-            ICollection<decimal> c3 = r.GenericCollection(r.Random.Decimal,200m, 100000m,100,false);
+            Decimal? m = 200m; 
+            ICollection<decimal> c3 = r.GenericCollection(r.Random.Decimal, m, 100000m,100,false);
             Console.WriteLine(c3.Count);
             Assert.IsTrue(c3.Count <= 100);
             foreach (var item in c3)
@@ -177,7 +178,8 @@ namespace FakerTests
             }
 
             Console.WriteLine("with params");
-            IList<decimal> c3 = r.GenericList(r.Random.Decimal, 200m, 100000m, 100, false);
+            decimal? m = 200m;
+            IList<decimal> c3 = r.GenericList(r.Random.Decimal, m, 100000m, 100, false);
             Console.WriteLine(c3.Count);
             Assert.IsTrue(c3.Count <= 100);
             foreach (var item in c3)

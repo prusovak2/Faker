@@ -20,12 +20,6 @@ namespace Faker
                 int randomInt = (int)Math.Round(randomDouble);
                 return randomInt;
             }
-            public int IntNullableParams(int? lower = int.MinValue, int? upper = int.MaxValue)
-            {
-                double randomDouble = this.Double(lower.Value, upper.Value);
-                int randomInt = (int)Math.Round(randomDouble);
-                return randomInt;
-            }
 
             /// <summary>
             /// generates a random unsigned integer from interval [lower,upper] <br/>
@@ -80,13 +74,6 @@ namespace Faker
             public long Long(long lower = long.MinValue, long upper = long.MaxValue)
             {
                 double randomDouble = this.Double(lower, upper);
-                long randomLong = (long)Math.Round(randomDouble);
-                return randomLong;
-            }
-
-            public long LongNullableParams(long? lower = long.MinValue, long? upper = long.MaxValue)
-            {
-                double randomDouble = this.Double(lower.Value, upper.Value);
                 long randomLong = (long)Math.Round(randomDouble);
                 return randomLong;
             }

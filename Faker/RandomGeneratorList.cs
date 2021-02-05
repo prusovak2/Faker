@@ -123,6 +123,7 @@ namespace Faker
             }
             /// <summary>
             /// returns IList of at most count random floats from interval [lower, upper) <br/>
+            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead <br/>
             /// when precise is false a random number less or equal to count is generated and used as a count
             /// </summary>
             /// <param name="count"></param>
@@ -130,13 +131,13 @@ namespace Faker
             /// <param name="upper"></param>
             /// <param name="precise"></param>
             /// <returns></returns>
-            public IList<float> Float(int count, float lower = 0f, float upper = 1f, bool precise = true)
+            public IList<float> Float(int count, float? lower = null, float? upper = null, bool precise = true)
             {
                 return RG.GenericList<float>(RG.Random.Float, lower, upper, count, precise);
             }
             /// <summary>
             /// returns IList of at most count random doubles from interval [lower, upper) <br/>
-            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead
+            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead <br/>
             /// when precise is false a random number less or equal to count is generated and used as a count
             /// </summary>
             /// <param name="count"></param>
@@ -150,6 +151,7 @@ namespace Faker
             }
             /// <summary>
             /// returns IList of at most count random decimals from interval [lower, upper) <br/>
+            /// default interval is [0,1), when only one of boarders is not specified Min/Max value is used instead <br/>
             /// when precise is false a random number less or equal to count is generated and used as a count
             /// </summary>
             /// <param name="count"></param>
@@ -157,7 +159,7 @@ namespace Faker
             /// <param name="upper"></param>
             /// <param name="precise"></param>
             /// <returns></returns>
-            public IList<decimal> Decimal(int count, decimal lower = 0m, decimal upper = 1m, bool precise = true)
+            public IList<decimal> Decimal(int count, decimal? lower = null, decimal? upper = null, bool precise = true)
             {
                 return RG.GenericList<decimal>(RG.Random.Decimal, lower, upper, count, precise);
             }
