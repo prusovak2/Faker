@@ -72,43 +72,44 @@ namespace Faker
         {
             //only way to switch by a type is switch by a type of an instance, one cannot switch by the value of variable of Type type
             //thats why Type.GetSampleInstance is used to provide input values for this function - to avoid using reflexion to create an instance -  slow
-            switch (o)
             {
-                case byte b:
-                    return () => this.Random.Byte();
-                case sbyte sb:
-                    return () => this.Random.Sbyte();
-                case short s:
-                    return () => this.Random.Short();
-                case ushort us:
-                    return () => this.Random.Ushort();
-                case int i:
-                    return () => this.Random.Int();
-                case uint ui:
-                    return () => this.Random.Uint();
-                case long l:
-                    return () => this.Random.Long();
-                case ulong ul:
-                    return () => this.Random.Ulong();
-                case float f:
-                    return () => this.Random.Float();
-                case double d:
-                    return () => this.Random.Double();
-                case decimal d:
-                    return () => this.Random.Decimal();
-                case char c:
-                    return () => this.Char.Char();
-                case bool b:
-                    return () => this.Random.Bool();
-                case string s:
-                    return () => this.String.String();
-                case DateTime dt:
-                    return () => this.Random.DateTime();
-                case Guid g:
-                    return () => this.Random.Guid();
-                default:
-                    return null;
-                 
+                switch (o)
+                {
+                    case byte b:
+                        return () => this.Random.Byte();
+                    case sbyte sb:
+                        return () => this.Random.Sbyte();
+                    case short s:
+                        return () => this.Random.Short();
+                    case ushort us:
+                        return () => this.Random.Ushort();
+                    case int i:
+                        return () => this.Random.Int();
+                    case uint ui:
+                        return () => this.Random.Uint();
+                    case long l:
+                        return () => this.Random.Long();
+                    case ulong ul:
+                        return () => this.Random.Ulong();
+                    case float f:
+                        return () => this.Random.Float();
+                    case double d:
+                        return () => this.Random.Double();
+                    case decimal d:
+                        return () => this.Random.Decimal();
+                    case char c:
+                        return () => this.Char.Char();
+                    case bool b:
+                        return () => this.Random.Bool();
+                    case string s:
+                        return () => this.String.String();
+                    case DateTime dt:
+                        return () => this.Random.DateTime();
+                    case Guid g:
+                        return () => this.Random.Guid();
+                    default:
+                        return null;
+                }
             }
         }
         /// <summary>
