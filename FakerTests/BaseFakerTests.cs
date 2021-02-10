@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Faker;
 using System.Reflection;
 
+
 namespace FakerTests
 {
     public class NestedClass
