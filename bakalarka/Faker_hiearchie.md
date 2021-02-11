@@ -963,3 +963,7 @@ I don't think that **[1]** supports this feature.
 [6] https://github.com/eranpeer/FakeIt
 
 https://github.com/bchavez/Bogus/issues - bogus issues - source of an inspiration
+
+https://github.com/hayd/pyfaker
+
+https://alternativeto.net/software/faker/
