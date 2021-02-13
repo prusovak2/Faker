@@ -318,3 +318,107 @@ Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cor
 | DecimalCompound         | 702.28 ns |  5.937 ns |  5.553 ns |    6 |     - |     - |     - |         - |
 | DecimalNullableCompound | 848.07 ns | 11.807 ns | 11.044 ns |    7 |     - |     - |     - |         - |
 
+### Attempts to use Source Generators with original Faker API unchanged
+
+​	I tried to change implementation underlying `RuleFor` method and memory representation of `Faker` derived objects (user defined Fakers) using `Source Generators` (a new feature that came with `C# 9`).  
+
+I didn't want to change current API of Faker (including the signature of the `RuleFor` method) as I find it convenient, easy to use and more importantly type safe (attempt to a  method as a `RuleFor` a member, whose type is incompatible with a return type of a method will result in compile time error). Original API was well tested by a huge variety of unit tests and has proven to be convenient and straightforward to use (*rephrase this*). Change to the original API that might probably (*think this thought*)  enable incorporation of Source Generators into the project (if that would even be possible, it would definitely require data flow analysis at compile time which is far beyond my current capabilities and time dispositions) would mean too extensive change to the original design of the project that would come too late in the process of project implementation and would be likely to delay a projects completion beyond expected deadline (spring exams).
+
+I meant to move a significant portion of the overhead that comes with storing the information about how the user defined objects with Faker implemented for them should be filled with the pseudorandom content (which random method is to be used for which member of the user defined object) to the compile time.  The idea was to use a new technology of Source Generators and extensive Roslyn API to scan thought a user written code that uses a Fakers in a compile time and based on the obtained information generate a source code of the methods that would carry out the generating and filling the instances of user defined objects in runtime. Generate method overloads and Populate method would be generated for each user defined Faker (instance?) that would contain invocations of the delegates passed to a `RuleFor`  method with the returned values of these invocation assigned to the corresponding members passed to the same `RuleFor` invocation as the first argument. I wanted to replace runtime reflection with compile time source generators.
+
+**Chosen approach**
+
+A `FakerAttribute` was to be added to decorate all the `BaseFaker` derived types considered to be Fakers. This should make scanning for Faker types straightforward and its results unambiguous. 
+
+```csharp
+//sorting out the syntax nodes representing declaration of the new Faker derived types in OnSyntaxNode method
+else if(syntaxNode is ClassDeclarationSyntax classDeclarationSyntax)
+{
+    foreach (var atributeList in classDeclarationSyntax.AttributeLists)
+    {
+        foreach (var attribute in atributeList.Attributes)
+        {
+            if(attribute.Name.ToString() == "Faker" || attribute.Name.ToString() == "FakerAttribute")
+            {
+                DeclarationsWithFakerAttr.Add(classDeclarationSyntax);
+            }
+        }
+    }
+}
+```
+
+  For every `UserFaker` declaration found in previous step it was checked whether it was actually inherited from the `BaseFaker` and if so it was added to `KnownFakerTypes` `HashSet`.
+
+In a similar manner I intended to look up all calls to the `RuleFor` method. As I was unable (just because I'm not familiar with Roslyn API, I pretty sure that thing like that can be done when one knows a bit more what he is doing) state the condition specifying a method name in `OnSyntaxNode` method without restricting the way the method is called (`instance.method()`, `method()`, ....) I sorted out all calls to the methods taking a two arguments of required form of lambda expression and additional conditions where specified in Execute method.
+
+```csharp
+//part of OnSyntaxNode -  condition selection invocations of methods with two arguments of required form of lambda function
+if (syntaxNode is InvocationExpressionSyntax 
+    {
+        ArgumentList:
+        {
+            Arguments:
+            {
+                Count: 2
+            } arguments
+        },
+        Expression:
+        {
+
+        }
+    } invocation
+   )
+{
+    if (arguments[0].Expression is LambdaExpressionSyntax memberLambda && arguments[1].Expression is LambdaExpressionSyntax rgLambda)
+    {
+        if(memberLambda.Body is MemberAccessExpressionSyntax memberAceessSyntax  && 
+           rgLambda.Body is InvocationExpressionSyntax RGinvocation && 
+           RGinvocation.Expression is MemberAccessExpressionSyntax randFundAccesSyntax)
+        {
+            SimpleNameSyntax memberName = memberAceessSyntax.Name;
+            SimpleNameSyntax randFuncName = randFundAccesSyntax.Name;
+            RuleForInvocations.Add(new RuleForPack(invocation, memberName, randFuncName));
+        }
+
+    }
+}
+```
+
+For every found invocation if was checked (latter on in the Execute method) whether the method is actually called `RuleFor` and whether it was invoked on some instance of known `Faker` type (using `KnownFakerTypes` `HashSet`).
+
+```csharp
+ foreach (var ruleForPack in RuleForInvocations)
+            {
+                SemanticModel semanticModel = context.Compilation.GetSemanticModel(ruleForPack.Invocation.SyntaxTree);
+                SymbolInfo symbolInfo = semanticModel.GetSymbolInfo(ruleForPack.Invocation);
+                IMethodSymbol invokedSymbol = symbolInfo.Symbol as IMethodSymbol;
+                string methodName = invokedSymbol.Name;
+
+                if(methodName != "RuleFor")
+                {
+                    continue;
+                }
+                //IParameterSymbol firstParam = invokedSymbol.Parameters[0];
+                //ITypeSymbol typeSymbol = firstParam.Type;
+
+                IInvocationOperation op = (IInvocationOperation)semanticModel.GetOperation(ruleForPack.Invocation);
+                var type = op.Instance.Type;
+                if(type is not INamedTypeSymbol namedType)
+                {
+                    continue;
+                }
+                if (KnownFakerTypes.Contains(namedType))
+                {
+                    sourceBuilder.Append($"{indent}Console.WriteLine(\"{type}\");\n");
+                    sourceBuilder.Append($"{indent}Console.WriteLine(\"{op.Instance.Kind}\");\n");
+                    sourceBuilder.Append($"{indent}Console.WriteLine(\"{methodName}\");\n");
+                    sourceBuilder.Append($"{indent}Console.WriteLine(\"{ruleForPack.MemberName}\");\n");
+                    sourceBuilder.Append($"{indent}Console.WriteLine(\"{ruleForPack.RandomFunctionName}\");\n");
+                    //ADD RuleFor
+                }
+```
+
+The problem with this designed which made it impossible for me to carry on with Source Generator based implementation as I was unable to bypass it was that current design of the Faker API makes it possible to have a various instances of the same Faker type each of whom may have its  Rules configured differently (instances might have either been created using different `ctors` on user defined Faker type or (not exclusive or) other Rules might have been added for some of the instances latter on outside of `ctor` body -  can I make it impossible to call `RuleFor` from outside of the `ctor` by making `RuleFor` method protected? (respectively from outside of methods defined on `Faker` derived type) and would it even be desirable?). I, however didn't figure out any simple enough way to track something like a notion of instances via Roslyn API in compile time. There is `IInvocationOperation.Instance` that allows me to get a Type on which the method was invoked but I don't reckon that it actually hold some notion of the instance. (Jezek suggested that data flow analysis would be required to achieve desirable effect). 
+
+It is therefore impossible for me at the moment to store a Rules per Faker instance during compile time via Roslyn API (and would that even be desirable as a new method would be generated per `.Generate` call on each instance of user defined `Faker`?) and at the same time storing Rules per user defined Faker type is not sufficient to preserve current API design as well as its behavior.
+
