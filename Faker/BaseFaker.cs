@@ -59,13 +59,6 @@ namespace Faker
         internal HashSet<MemberInfo> IgnoredStrictly { get; } = new HashSet<MemberInfo>();
 
         /// <summary>
-        /// set of members whose content should not be filled by a default random function when UnfilledMember.DefaultRandomFunc is set<br/>
-        /// members with FakerIgnoreAttribute get inserted here <br/>
-        /// these members can have a RuleFor or InnerFaker set for them - it has higher priority than FakerIgnore attribute 
-        /// </summary>
-        //internal HashSet<MemberInfo> Ignored { get; private set; } = new HashSet<MemberInfo>();
-
-        /// <summary>
         /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically
         /// </summary>
         public BaseFaker()
@@ -415,20 +408,9 @@ namespace Faker
             memberInfos.ExceptWith(HasRulefor);
             memberInfos.ExceptWith(HasSetFaker);
             memberInfos.ExceptWith(this.IgnoredStrictly);
-            //memberInfos.ExceptWith(this.Ignored);
-
+            
             return memberInfos;
         }
-
-        /// <summary>
-        /// Store members TClass with the FakerIgnore attribute in the Ignored HashSet
-        /// </summary>
-        /*internal protected void ScanIgnoreAttriutes()
-        {
-            Type type = typeof(TClass);
-            HashSet<MemberInfo> IgnoredMembers = type.GetMembers().Where(m => m.GetCustomAttributes<FakerIgnoreAttribute>().Count() > 0).ToHashSet();
-            this.Ignored = IgnoredMembers;
-        }*/
 
         /// <summary>
         /// which ctor should be used to create instances of TClass when faker is used as inner faker
@@ -519,7 +501,7 @@ namespace Faker
             List<MemberInfo> memberInfos = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && (IsUserDefinedClassType(memberInfo)) && (memberInfo.GetCustomAttributes<FakerIgnoreAttribute>().Count() == 0))).ToList();
             foreach (var memberInfo in memberInfos)
             {
-                if(/*faker.Ignored.Contains(memberInfo) ||*/ faker.IgnoredStrictly.Contains(memberInfo))
+                if(faker.IgnoredStrictly.Contains(memberInfo))
                 {
                     continue;
                 }
