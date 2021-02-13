@@ -27,7 +27,7 @@ namespace FakerBenchmark
 
     public class WithIgnoreBaseFaker : BaseFaker<WithIgnore> { }
 
-    public class WithIgnoreIgnoreFaker : IgnoreFaker<WithIgnore> { }
+    //public class WithIgnoreIgnoreFaker : IgnoreFaker<WithIgnore> { }
 
 
     public class WithoutIgnore
@@ -42,9 +42,9 @@ namespace FakerBenchmark
         public int IgnoredInt = 42;
     }
 
-    public class WithoutIgnoreBaseFaker : BaseFaker<WithIgnore> { }
+    public class WithoutIgnoreBaseFaker : BaseFaker<WithoutIgnore> { }
 
-    public class WithoutIgnoreIgnoreFaker : IgnoreFaker<WithIgnore> { }
+    //public class WithoutIgnoreIgnoreFaker : IgnoreFaker<WithoutIgnore> { }
 
     [MemoryDiagnoser]
     [RankColumn]
@@ -68,7 +68,7 @@ namespace FakerBenchmark
         {
             new WithoutIgnoreFaker(false);
         }*/
-        [Benchmark]
+       /* [Benchmark]
         public void WithIgnoreBaseFaker()
         {
             // no scanning is carried out, class contains FakerIgnore attributes
@@ -94,6 +94,6 @@ namespace FakerBenchmark
         {
             //scanning is carried out, class doesn't contain FakerIgnore attributes
             new WithoutIgnoreIgnoreFaker();
-        }
+        }*/
     }
 }

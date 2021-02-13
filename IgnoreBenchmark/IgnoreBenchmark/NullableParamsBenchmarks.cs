@@ -10,7 +10,7 @@ using Faker;
 
 namespace FakerBenchmark
 {
-    [MemoryDiagnoser]
+    /*[MemoryDiagnoser]
     [RankColumn]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class NullableParamsCompoundBenchmark
@@ -126,10 +126,10 @@ namespace FakerBenchmark
         {
             LongCompoundTest();
         }
-    }
+    }*/
 
 
-    [MemoryDiagnoser]
+    /*[MemoryDiagnoser]
     [RankColumn]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class NullableParamsBasicBenchmarks
@@ -285,7 +285,7 @@ namespace FakerBenchmark
         {
             random.Random.Long(-1000000, 1000000);
         }
-    }
+    }*/
 
     class NonNullableArchive
     {
