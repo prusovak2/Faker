@@ -25,7 +25,13 @@ namespace FakerBenchmark
         public int IgnoredInt = 42;
     }
 
-    public class WithIgnoreBaseFaker : BaseFaker<WithIgnore> { }
+    public class WithIgnoreBaseFaker : BaseFaker<WithIgnore> 
+    {
+       public WithIgnoreBaseFaker()
+        {
+            FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+        }
+    }
 
     //public class WithIgnoreIgnoreFaker : IgnoreFaker<WithIgnore> { }
 
@@ -42,7 +48,13 @@ namespace FakerBenchmark
         public int IgnoredInt = 42;
     }
 
-    public class WithoutIgnoreBaseFaker : BaseFaker<WithoutIgnore> { }
+    public class WithoutIgnoreBaseFaker : BaseFaker<WithoutIgnore>
+    {
+        public WithoutIgnoreBaseFaker()
+        {
+            FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+        }
+    }
 
     //public class WithoutIgnoreIgnoreFaker : IgnoreFaker<WithoutIgnore> { }
 

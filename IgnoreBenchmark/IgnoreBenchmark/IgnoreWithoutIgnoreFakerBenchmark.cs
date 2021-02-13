@@ -21,6 +21,15 @@ namespace FakerBenchmark
             WithoutIgnore wi = faker.Generate();
             wi = faker.Generate();
         }
+        public static void WithoutIgnoreAttributesRulefor()
+        {
+            WithoutIgnoreBaseFaker faker = new WithoutIgnoreBaseFaker();
+            WithoutIgnore wi = faker.Generate();
+            faker.RuleFor(x => x.Int, _ => 42);
+            wi = faker.Generate();
+        }
+
+
         public static void WithIgnoreAttributes()
         {
             WithIgnoreBaseFaker faker = new WithIgnoreBaseFaker();
@@ -37,6 +46,11 @@ namespace FakerBenchmark
         public void ScanningBaseFakerATTRs()
         {
             WithIgnoreAttributes();
+        }
+        [Benchmark]
+        public void RuleForBetweenGenerate()
+        {
+            WithoutIgnoreAttributesRulefor();
         }
     }
 }
