@@ -154,6 +154,18 @@ namespace FakerTests
 
         }
     }
+    public class StorageFakerParamlessAuto : AutoFaker<Storage>
+    {
+        public StorageFakerParamlessAuto()
+        {
+
+            SetFaker(e => e.Value, new ValueClassFakerParameterless());
+            RuleFor(e => e.Test, f => f.Random.Int());
+            RuleFor(e => e.Field, f => f.Random.Byte());
+
+        }
+    }
+
     public class StorageFakerMultipleRuleFor :BaseFaker<Storage>
     {
         public StorageFakerMultipleRuleFor()
@@ -333,8 +345,8 @@ namespace FakerTests
                     Console.WriteLine(item.Name);
             }
             Console.WriteLine();
-            StorageFakerParamless s = new StorageFakerParamless();
-            HashSet<MemberInfo> memberInfos = s.GetSetOfMembersToBeFilledByDefaultRandFunc();
+            StorageFakerParamlessAuto s = new StorageFakerParamlessAuto();
+            HashSet<MemberInfo> memberInfos = s.MembersWithoutFakerIgnoreAttribute;
 
             foreach (var item in memberInfos)
             {
