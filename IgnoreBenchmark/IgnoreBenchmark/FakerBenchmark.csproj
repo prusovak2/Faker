@@ -1,18 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
 
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Faker">
-      <HintPath>..\..\Faker\bin\Release\netcoreapp3.1\Faker.dll</HintPath>
+      <HintPath>..\..\Faker\bin\Release\net5.0\Faker.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+
+
 
 </Project>
