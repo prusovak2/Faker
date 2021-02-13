@@ -7,6 +7,39 @@ using System.Reflection;
 
 namespace FakerTests
 {
+    public class SimpleClass
+    {
+        [FakerIgnore]
+        public string IgnoredString = "IGNORED";
+
+        public int Int = 42;
+
+        public sbyte Sbyte { get; set; } = 42;
+
+        public long WithRuleFor = 42;
+
+        public override string ToString()
+        {
+            return TestUtils.InstanceToString(this);
+        }
+    }
+
+    public class SimpleClassBaseFaker : BaseFaker<SimpleClass>
+    {
+        public SimpleClassBaseFaker()
+        {
+            RuleFor(x => x.WithRuleFor, _ => 73);
+        }
+    }
+
+    public class SimpleClassAutoFaker : AutoFaker<SimpleClass>
+    {
+        public SimpleClassAutoFaker()
+        {
+            RuleFor(x => x.WithRuleFor, _ => 73);
+        }
+    }
+
     public class NestedClass
     {
         public int num;
@@ -421,6 +454,54 @@ namespace FakerTests
             TestUtils.CheckDic(numCounts, numIterations);
             TestUtils.CheckDic(nestedValueCounts, numIterations);
             TestUtils.CheckDic(nestedAnotherValCounts, numIterations);
+        }
+
+        [TestMethod]
+        public void PolymophListTest()
+        {
+            List<BaseFaker<SimpleClass>> fakers = new();
+            SimpleClassAutoFaker auto1 = new();
+            SimpleClassAutoFaker auto2 = new();
+            SimpleClassBaseFaker base1 = new();
+            SimpleClassBaseFaker base2 = new();
+
+            fakers.Add(auto1);
+            fakers.Add(base1);
+            fakers.Add(auto2);
+            fakers.Add(base2);
+
+            int numIterations = 10;
+
+            for (int i = 0; i < 4; i++)
+            {
+                Dictionary<int, int> intCounts = new();
+                Dictionary<sbyte, int> sbyteCounts = new();
+
+                for (int j = 0; j < numIterations; j++)
+                {
+                    SimpleClass s = fakers[i].Generate();
+                    Console.WriteLine(s); 
+
+                    Assert.AreEqual("IGNORED", s.IgnoredString);
+                    Assert.AreEqual(73, s.WithRuleFor);
+                    if (i % 2 == 1)
+                    {
+                        //baseFaker
+                        Assert.AreEqual(42, s.Int);
+                        Assert.AreEqual(42, s.Sbyte);
+                    }
+                    else
+                    {
+                        TestUtils.IncInDic(intCounts, s.Int);
+                        TestUtils.IncInDic(sbyteCounts, s.Sbyte);
+                    }
+                }
+                if (i % 2 == 0)
+                {
+                    TestUtils.CheckDic(intCounts, numIterations);
+                    TestUtils.CheckDic(sbyteCounts, numIterations);
+                }
+            }
         }
     }
 }
