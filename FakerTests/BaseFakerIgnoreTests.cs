@@ -22,7 +22,7 @@ namespace FakerTests
             return TestUtils.InstanceToString(this);
         }
     }
-    public class IgnoredPersonFakerNoDefaultFill : BaseFaker<IgnoredPerson>
+    /*public class IgnoredPersonFakerNoDefaultFill : BaseFaker<IgnoredPerson>
     {
         public IgnoredPersonFakerNoDefaultFill()
         {
@@ -30,13 +30,13 @@ namespace FakerTests
             Ignore(p => p.ProprertyThatShouldNotBeFaked);
         }
 
-    }
+    }*/
 
-    public class IgnoredPersonFaker : BaseFaker<IgnoredPerson>
+    public class IgnoredPersonFaker : AutoFaker<IgnoredPerson>
     {
         public IgnoredPersonFaker()
         {
-            this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            //this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
             RuleFor(p => p.Name, _ => "ABRAKA_FAKE");
             Ignore(p => p.ProprertyThatShouldNotBeFaked);
             Ignore(p => p.FieldThatShouldNotBeFaked);
@@ -60,11 +60,11 @@ namespace FakerTests
         }
     }
 
-    public class LotOfMembersFaker : BaseFaker<LotOfMembers>
+    public class LotOfMembersFaker : AutoFaker<LotOfMembers>
     {
         public LotOfMembersFaker()
         {
-            FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            //FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
             Ignore(l => l.IgnoredString);
             Ignore(l => l.IgnoredInt);
         }
@@ -93,7 +93,7 @@ namespace FakerTests
 
     public class ValueFaker : BaseFaker<Value> { }
 
-    public class FlawedFakerIgnoreRuleFor : BaseFaker<ContainsValue>
+    public class FlawedFakerIgnoreRuleFor : AutoFaker<ContainsValue>
     {
         public FlawedFakerIgnoreRuleFor()
         {
@@ -101,7 +101,7 @@ namespace FakerTests
             RuleFor(l => l.Int, _ => 73);
         }
     }
-    public class FlawedFakerRuleForIgnore : BaseFaker<ContainsValue>
+    public class FlawedFakerRuleForIgnore : AutoFaker<ContainsValue>
     {
         public FlawedFakerRuleForIgnore()
         {
@@ -109,7 +109,7 @@ namespace FakerTests
             Ignore(l => l.Int);
         }
     }
-    public class FlawedFakerIgnoreSetFaker : BaseFaker<ContainsValue>
+    public class FlawedFakerIgnoreSetFaker : AutoFaker<ContainsValue>
     {
         public FlawedFakerIgnoreSetFaker()
         {
@@ -117,7 +117,7 @@ namespace FakerTests
             SetFaker(cv => cv.Val, new ValueFaker());
         }
     }
-    public class FlawedFakerSetFakerIgnore : BaseFaker<ContainsValue>
+    public class FlawedFakerSetFakerIgnore : AutoFaker<ContainsValue>
     {
         public FlawedFakerSetFakerIgnore()
         {
@@ -141,7 +141,7 @@ namespace FakerTests
             SetFaker(cv => cv.Val, new ValueFaker());
         }
     }
-    public class IgnoreIgnoreFaker : BaseFaker<ContainsValue>
+    public class IgnoreIgnoreFaker : AutoFaker<ContainsValue>
     {
         public IgnoreIgnoreFaker()
         {
@@ -169,11 +169,11 @@ namespace FakerTests
         }
     }
 
-    public class WithIgnoreAttrFaker : BaseFaker<WithIgnoreAttr>
+    public class WithIgnoreAttrFaker : AutoFaker<WithIgnoreAttr>
     {
         public WithIgnoreAttrFaker()
         {
-            this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            //this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
         }
     }
     public class ContainsValueATTR
@@ -197,11 +197,11 @@ namespace FakerTests
         }
     }
 
-    public class RuleForSetFakerForIgnoreATTRfaker : BaseFaker<ContainsValueATTR>
+    public class RuleForSetFakerForIgnoreATTRfaker : AutoFaker<ContainsValueATTR>
     {
         public RuleForSetFakerForIgnoreATTRfaker()
         {
-            FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            //FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
             RuleFor(x => x.IgnoredInt, _ => 73);
             SetFaker(x => x.IgnoredVal, new ValueFakerNonEmpty());
         }
@@ -226,11 +226,11 @@ namespace FakerTests
         }
     }
 
-    public class LotOfMembersATTRFaker : BaseFaker<LotOfMembersATTR>
+    public class LotOfMembersATTRFaker : AutoFaker<LotOfMembersATTR>
     {
         public LotOfMembersATTRFaker()
         {
-            FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            //FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
         }
     }
 
@@ -249,11 +249,11 @@ namespace FakerTests
         }
     }
 
-    public class InnerWithATTRIgnoreFaker : BaseFaker<InnerWithATTR>
+    public class InnerWithATTRIgnoreFaker : AutoFaker<InnerWithATTR>
     {
         public InnerWithATTRIgnoreFaker()
         {
-            this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            //this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
         }
     }
 
@@ -266,11 +266,11 @@ namespace FakerTests
         }
     }
 
-    public class ContainsInnerATTRIgnoreFaker : BaseFaker<ContainsInnerATTR>
+    public class ContainsInnerATTRIgnoreFaker : AutoFaker<ContainsInnerATTR>
     {
         public ContainsInnerATTRIgnoreFaker()
         {
-            this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            //this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
             SetFaker(x => x.Inner, new InnerWithATTRIgnoreFaker());
         }
     }
@@ -422,7 +422,7 @@ namespace FakerTests
             IgnoreIgnoreFaker i = new IgnoreIgnoreFaker();
         }
 
-        [TestMethod]
+        /*[TestMethod]
         public void NoDefaultFilIgnoreTest()
         {
             for (int i = 0; i < 20; i++)
@@ -436,7 +436,7 @@ namespace FakerTests
                 Assert.AreEqual(42, person.ProprertyThatShouldNotBeFaked);
                 Assert.AreEqual("NO FAKE", person.FieldThatShouldNotBeFaked);
             }
-        }
+        }*/
 
         [TestMethod]
         public void IgnoreAttributeBasicTest()
@@ -543,8 +543,8 @@ namespace FakerTests
             LotOfMembersAutoFaker faker = new LotOfMembersAutoFaker();
             lom = faker.Generate();
             Console.WriteLine(lom);
-            Console.WriteLine(faker.FillEmptyMembers);
-            Assert.AreEqual(BaseFaker<LotOfMembers>.UnfilledMembers.DefaultRandomFunc, faker.FillEmptyMembers);
+           // Console.WriteLine(faker.FillEmptyMembers);
+            //Assert.AreEqual(BaseFaker<LotOfMembers>.UnfilledMembers.DefaultRandomFunc, faker.FillEmptyMembers);
         }
 
         [TestMethod]

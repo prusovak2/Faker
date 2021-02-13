@@ -42,7 +42,7 @@ namespace Faker
         /// How should the members with no RuleFor or InnerFaker set for them be treated <br/>
         /// default is UnfilledMembers.LeaveBlank
         /// </summary>
-        public UnfilledMembers FillEmptyMembers { get; protected set; } = UnfilledMembers.LeaveBlank;
+        //public UnfilledMembers FillEmptyMembers { get; protected set; } = UnfilledMembers.LeaveBlank;
         /// <summary>
         /// Generate call on a faker calls Generate on all its innerFakers 
         /// </summary>
@@ -124,7 +124,7 @@ namespace Faker
         /// <typeparam name="TMember">Type of member to be ignored</typeparam>
         /// <param name="selector">lambda returning member to be ignored</param>
         /// <exception cref="FakerException">Throws FakerException, when you are trying to Ignore a member that already has a Rule or InnerFaker set for it</exception>
-        public void Ignore<TMember>(Expression<Func<TClass, TMember>> selector)
+        internal protected void _internalIgnore<TMember>(Expression<Func<TClass, TMember>> selector)
         {
             MemberInfo memberInfo = this.GetMemberFromExpression(selector);
             if (this.Rules.ContainsKey(memberInfo))
@@ -245,6 +245,10 @@ namespace Faker
         /// <returns>The same instance filled with a random content based on rules</returns>
         public TClass Populate(TClass instance)
         {
+            return this._internal_populate(instance);
+        }
+        internal protected virtual TClass _internal_populate(TClass instance)
+        {
             if(instance is null)
             {
                 throw new FakerException($"Argument of Populate must be existing instance of {typeof(TClass)} type");
@@ -260,10 +264,10 @@ namespace Faker
                 this.UseInnerFaker(instance, innerFaker.Key, innerFaker.Value);
             }
             //if required, fill remaining members with default random functions corresponding to their types
-            if (this.FillEmptyMembers == UnfilledMembers.DefaultRandomFunc)
+            /*if (this.FillEmptyMembers == UnfilledMembers.DefaultRandomFunc)
             {
                 this.RandomlyFillRemainingMembers(instance);
-            }
+            }*/
             return instance;
         }
         /// <summary>
@@ -357,45 +361,7 @@ namespace Faker
 
             return (MemberInfo)expression.Member;
         }
-        /// <summary>
-        /// Fills members with no RuleFor or InnerFaker set for them with random values provided by default random functions corresponding to member types
-        /// </summary>
-        /// <param name="instance"></param>
-        internal void RandomlyFillRemainingMembers(TClass instance)
-        {
-            HashSet<MemberInfo> membersToFill = this.GetSetOfMembersToBeFilledByDefaultRandFunc();
-            foreach (var member in membersToFill)
-            {
-                if(member is PropertyInfo propertyInfo)
-                {
-                    Type propertyType = propertyInfo.PropertyType;
-                    var sampleInstance = propertyType.GetSampleInstance(); // get sample instance of type to be used in GetDefaultRandomFuncForType()
-                    var fillingFunc = this.Random.GetDefaultRandomFuncForType(sampleInstance);
-                    if(fillingFunc is null)
-                    {
-                        //no Default Random Func for this type of property (property is not of supported basic type)
-                        continue;
-                    }
-                    var o = fillingFunc();
-                    var value = Convert.ChangeType(o, propertyType);
-                    propertyInfo.SetValue(instance, value);
-                }
-                if (member is FieldInfo fieldInfo)
-                {
-                    Type fieldType = fieldInfo.FieldType;
-                    var sampleInstance = fieldType.GetSampleInstance();
-                    var fillingFunc = this.Random.GetDefaultRandomFuncForType(sampleInstance);
-                    if (fillingFunc is null)
-                    {
-                        //no Default Random Func for this type of field (field is not of supported basic type)
-                        continue;
-                    }
-                    var o = fillingFunc();
-                    var value = Convert.ChangeType(o, fieldType);
-                    fieldInfo.SetValue(instance, value);
-                }
-            }
-        }
+        
         /// <summary>
         /// returns HashSet of all fields and properties of TClass that does not have RuleFor or InnerFaker set in this Faker
         /// </summary>
@@ -441,17 +407,17 @@ namespace Faker
     /// and all members of TClass of basic types with no RuleFor set for them fills by calling a default random function 
     /// </summary>
     /// <typeparam name="TClass"></typeparam>
-    public class AutoFaker<TClass> : BaseFaker<TClass> where TClass: class
+    public class AutoFaker<TClass> : BaseFaker<TClass>, IFaker where TClass : class
     {
-        public new UnfilledMembers FillEmptyMembers { get => UnfilledMembers.DefaultRandomFunc; }
+        //public new UnfilledMembers FillEmptyMembers { get => UnfilledMembers.DefaultRandomFunc; }
         /// <summary>
         /// new instance of AutoFaker that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
         /// RESPECTS FAKER IGNORE ATTRIBUTES <br/>
         /// fills all members of TClass of basic types with no RuleFor set for them by default random function for particular type
         /// </summary>
-        public AutoFaker() : base() 
+        public AutoFaker() : base()
         {
-            base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            // base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
         }
 
         /// <summary>
@@ -460,9 +426,9 @@ namespace Faker
         /// fills all members of TClass of basic types with no RuleFor set for them by default random function for particular type
         /// </summary>
         /// <param name="seed"></param>
-        public AutoFaker(ulong seed) : base(seed) 
+        public AutoFaker(ulong seed) : base(seed)
         {
-            base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            //base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
         }
 
         /// <summary>
@@ -473,9 +439,9 @@ namespace Faker
         /// this  faker fills all members of TClass of basic types with no RuleFor set for them by default random function for particular type
         /// </summary>
         /// <param name="randomGenerator"></param>
-        public AutoFaker(RandomGenerator randomGenerator) : base(randomGenerator) 
+        public AutoFaker(RandomGenerator randomGenerator) : base(randomGenerator)
         {
-            base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            //base.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
         }
 
         /// <summary>
@@ -489,7 +455,63 @@ namespace Faker
         {
             return AutoFakerCreator.CreateAutoFaker<TClass>();
         }
-        
+
+        protected internal override TClass _internal_populate(TClass instance)
+        {
+            TClass PopulatedInstance = base._internal_populate(instance);
+            RandomlyFillRemainingMembers(PopulatedInstance);
+            return PopulatedInstance;
+        }
+
+        public new TClass Populate(TClass instance)
+        {
+            return this._internal_populate(instance);
+        }
+
+        public void Ignore<TMember>(Expression<Func<TClass, TMember>> selector)
+        {
+            base._internalIgnore(selector);
+        }
+
+        /// <summary>
+        /// Fills members with no RuleFor or InnerFaker set for them with random values provided by default random functions corresponding to member types
+        /// </summary>
+        /// <param name="instance"></param>
+        internal void RandomlyFillRemainingMembers(TClass instance)
+        {
+            HashSet<MemberInfo> membersToFill = this.GetSetOfMembersToBeFilledByDefaultRandFunc();
+            foreach (var member in membersToFill)
+            {
+                if (member is PropertyInfo propertyInfo)
+                {
+                    Type propertyType = propertyInfo.PropertyType;
+                    var sampleInstance = propertyType.GetSampleInstance(); // get sample instance of type to be used in GetDefaultRandomFuncForType()
+                    var fillingFunc = this.Random.GetDefaultRandomFuncForType(sampleInstance);
+                    if (fillingFunc is null)
+                    {
+                        //no Default Random Func for this type of property (property is not of supported basic type)
+                        continue;
+                    }
+                    var o = fillingFunc();
+                    var value = Convert.ChangeType(o, propertyType);
+                    propertyInfo.SetValue(instance, value);
+                }
+                if (member is FieldInfo fieldInfo)
+                {
+                    Type fieldType = fieldInfo.FieldType;
+                    var sampleInstance = fieldType.GetSampleInstance();
+                    var fillingFunc = this.Random.GetDefaultRandomFuncForType(sampleInstance);
+                    if (fillingFunc is null)
+                    {
+                        //no Default Random Func for this type of field (field is not of supported basic type)
+                        continue;
+                    }
+                    var o = fillingFunc();
+                    var value = Convert.ChangeType(o, fieldType);
+                    fieldInfo.SetValue(instance, value);
+                }
+            }
+        }
     }
 
     internal class AutoFakerCreator
