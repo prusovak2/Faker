@@ -169,7 +169,7 @@ namespace FakerTests
         }
     }
 
-    public class WithIgnoreAttrFaker : IgnoreFaker<WithIgnoreAttr>
+    public class WithIgnoreAttrFaker : BaseFaker<WithIgnoreAttr>
     {
         public WithIgnoreAttrFaker()
         {
@@ -189,7 +189,7 @@ namespace FakerTests
         }
     }
 
-    public class ValueFakerNonEmpty : IgnoreFaker<Value>
+    public class ValueFakerNonEmpty : BaseFaker<Value>
     {
         public ValueFakerNonEmpty()
         {
@@ -197,7 +197,7 @@ namespace FakerTests
         }
     }
 
-    public class RuleForSetFakerForIgnoreATTRfaker : IgnoreFaker<ContainsValueATTR>
+    public class RuleForSetFakerForIgnoreATTRfaker : BaseFaker<ContainsValueATTR>
     {
         public RuleForSetFakerForIgnoreATTRfaker()
         {
@@ -226,7 +226,7 @@ namespace FakerTests
         }
     }
 
-    public class LotOfMembersATTRFaker : IgnoreFaker<LotOfMembersATTR>
+    public class LotOfMembersATTRFaker : BaseFaker<LotOfMembersATTR>
     {
         public LotOfMembersATTRFaker()
         {
@@ -249,7 +249,7 @@ namespace FakerTests
         }
     }
 
-    public class InnerWithATTRIgnoreFaker : IgnoreFaker<InnerWithATTR>
+    public class InnerWithATTRIgnoreFaker : BaseFaker<InnerWithATTR>
     {
         public InnerWithATTRIgnoreFaker()
         {
@@ -266,7 +266,7 @@ namespace FakerTests
         }
     }
 
-    public class ContainsInnerATTRIgnoreFaker : IgnoreFaker<ContainsInnerATTR>
+    public class ContainsInnerATTRIgnoreFaker : BaseFaker<ContainsInnerATTR>
     {
         public ContainsInnerATTRIgnoreFaker()
         {

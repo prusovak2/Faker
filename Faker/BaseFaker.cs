@@ -63,7 +63,7 @@ namespace Faker
         /// members with FakerIgnoreAttribute get inserted here <br/>
         /// these members can have a RuleFor or InnerFaker set for them - it has higher priority than FakerIgnore attribute 
         /// </summary>
-        internal HashSet<MemberInfo> Ignored { get; private set; } = new HashSet<MemberInfo>();
+        //internal HashSet<MemberInfo> Ignored { get; private set; } = new HashSet<MemberInfo>();
 
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically
@@ -408,14 +408,14 @@ namespace Faker
         internal HashSet<MemberInfo> GetSetOfMembersToBeFilledByDefaultRandFunc()
         {
             Type type = typeof(TClass);
-            HashSet < MemberInfo > memberInfos = type.GetMembers().Where(memberInfo => (memberInfo is PropertyInfo || memberInfo is FieldInfo)).ToHashSet();
+            HashSet < MemberInfo > memberInfos = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && memberInfo.GetCustomAttributes<FakerIgnoreAttribute>().Count()==0)).ToHashSet();
 
             HashSet<MemberInfo> HasRulefor = this.Rules.Keys.ToHashSet();
             HashSet<MemberInfo> HasSetFaker = this.InnerFakers.Keys.ToHashSet();
             memberInfos.ExceptWith(HasRulefor);
             memberInfos.ExceptWith(HasSetFaker);
             memberInfos.ExceptWith(this.IgnoredStrictly);
-            memberInfos.ExceptWith(this.Ignored);
+            //memberInfos.ExceptWith(this.Ignored);
 
             return memberInfos;
         }
@@ -423,12 +423,12 @@ namespace Faker
         /// <summary>
         /// Store members TClass with the FakerIgnore attribute in the Ignored HashSet
         /// </summary>
-        internal protected void ScanIgnoreAttriutes()
+        /*internal protected void ScanIgnoreAttriutes()
         {
             Type type = typeof(TClass);
             HashSet<MemberInfo> IgnoredMembers = type.GetMembers().Where(m => m.GetCustomAttributes<FakerIgnoreAttribute>().Count() > 0).ToHashSet();
             this.Ignored = IgnoredMembers;
-        }
+        }*/
 
         /// <summary>
         /// which ctor should be used to create instances of TClass when faker is used as inner faker
@@ -448,47 +448,13 @@ namespace Faker
             DefaultRandomFunc
         }
     }
-    /// <summary>
-    /// Faker that RESPECTS FAKER IGNORE ATTRIBUTES assigned to the members of a TClass instance
-    /// </summary>
-    /// <typeparam name="TClass"></typeparam>
-    public class IgnoreFaker<TClass>: BaseFaker<TClass> where TClass : class
-    {
-        /// <summary>
-        /// new instance of IgnoreFaker that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
-        /// RESPECTS FAKER IGNORE ATTRIBUTES
-        /// </summary>
-        public IgnoreFaker() :base()
-        {
-            ScanIgnoreAttriutes();
-        }
-        /// <summary>
-        /// new instance of IgnoreFaker that creates a new instance of RandomGenerator with a given seed <br/>
-        /// RESPECTS FAKER IGNORE ATTRIBUTES
-        /// </summary>
-        /// <param name="seed"></param>
-        public IgnoreFaker(ulong seed) : base(seed)
-        {
-            ScanIgnoreAttriutes();
-        }
-        /// <summary>
-        /// new instance of IgnoreFaker that uses existing instance of RandomGenerator <br/>
-        /// one instance of random generator can be shared by multiple fakers to save memory <br/>
-        /// recommended for innerFakers <br/>
-        /// RESPECTS FAKER IGNORE ATTRIBUTES 
-        /// </summary>
-        /// <param name="randomGenerator"></param>
-        public IgnoreFaker(RandomGenerator randomGenerator) : base(randomGenerator)
-        {
-            ScanIgnoreAttriutes();
-        }
-    }
+
     /// <summary>
     /// Simple Faker that RESPECTS FAKER IGNORE ATTRIBUTES assigned to the members of a TClass instance <br/>
     /// and all members of TClass of basic types with no RuleFor set for them fills by calling a default random function 
     /// </summary>
     /// <typeparam name="TClass"></typeparam>
-    public class AutoFaker<TClass> : IgnoreFaker<TClass> where TClass: class
+    public class AutoFaker<TClass> : BaseFaker<TClass> where TClass: class
     {
         public new UnfilledMembers FillEmptyMembers { get => UnfilledMembers.DefaultRandomFunc; }
         /// <summary>
@@ -550,10 +516,10 @@ namespace Faker
         {
             AutoFaker<TMember> faker = new AutoFaker<TMember>();
             Type type = typeof(TMember);
-            List<MemberInfo> memberInfos = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && IsUserDefinedClassType(memberInfo))).ToList();
+            List<MemberInfo> memberInfos = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && (IsUserDefinedClassType(memberInfo)) && (memberInfo.GetCustomAttributes<FakerIgnoreAttribute>().Count() == 0))).ToList();
             foreach (var memberInfo in memberInfos)
             {
-                if(faker.Ignored.Contains(memberInfo) || faker.IgnoredStrictly.Contains(memberInfo))
+                if(/*faker.Ignored.Contains(memberInfo) ||*/ faker.IgnoredStrictly.Contains(memberInfo))
                 {
                     continue;
                 }
