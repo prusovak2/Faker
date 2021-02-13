@@ -58,6 +58,8 @@ namespace Faker
         /// </summary>
         internal HashSet<MemberInfo> IgnoredStrictly { get; } = new HashSet<MemberInfo>();
 
+        internal HashSet<MemberInfo> MembersWithoutFakerIgnoreAttribute { get; set; } = null;
+
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically
         /// </summary>
@@ -400,9 +402,12 @@ namespace Faker
         /// <returns></returns>
         internal HashSet<MemberInfo> GetSetOfMembersToBeFilledByDefaultRandFunc()
         {
-            Type type = typeof(TClass);
-            HashSet < MemberInfo > memberInfos = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && memberInfo.GetCustomAttributes<FakerIgnoreAttribute>().Count()==0)).ToHashSet();
-
+            if(MembersWithoutFakerIgnoreAttribute is null)
+            {
+                Type type = typeof(TClass);
+                MembersWithoutFakerIgnoreAttribute = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && memberInfo.GetCustomAttributes<FakerIgnoreAttribute>().Count() == 0)).ToHashSet();
+            }
+            HashSet<MemberInfo> memberInfos = MembersWithoutFakerIgnoreAttribute;
             HashSet<MemberInfo> HasRulefor = this.Rules.Keys.ToHashSet();
             HashSet<MemberInfo> HasSetFaker = this.InnerFakers.Keys.ToHashSet();
             memberInfos.ExceptWith(HasRulefor);
