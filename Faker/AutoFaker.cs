@@ -62,7 +62,7 @@ namespace Faker
             this._internalRuleFor(memberInfo, setter);
         }
 
-        protected internal override void _internalRuleFor<TMember>(MemberInfo memberInfo, Func<RandomGenerator, TMember> setter)
+        protected internal sealed override void _internalRuleFor<TMember>(MemberInfo memberInfo, Func<RandomGenerator, TMember> setter)
         {
             base._internalRuleFor(memberInfo, setter);
             MembersToBeFilledDefaultly.Remove(memberInfo);
@@ -96,7 +96,7 @@ namespace Faker
             this._internalSetFaker(memberInfo, faker);
         }
 
-        protected internal override void _internalSetFaker<TInnerClass>(MemberInfo memberInfo, BaseFaker<TInnerClass> faker)
+        protected internal sealed override void _internalSetFaker<TInnerClass>(MemberInfo memberInfo, BaseFaker<TInnerClass> faker)
         {
             base._internalSetFaker(memberInfo, faker);
             MembersToBeFilledDefaultly.Remove(memberInfo);
@@ -112,7 +112,7 @@ namespace Faker
             return this._internal_populate(instance);
         }
 
-        protected internal override TClass _internal_populate(TClass instance)
+        protected internal sealed override TClass _internal_populate(TClass instance)
         {
             TClass PopulatedInstance = base._internal_populate(instance);
             RandomlyFillRemainingMembers(PopulatedInstance);
