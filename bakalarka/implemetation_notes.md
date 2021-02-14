@@ -133,7 +133,7 @@ public class WithIgnore
 
 `FakerIgnore` atributy jsou používány v uživatelem definovaných třídách, které jsou již implementovány s tím, že budou vyplňovány pseudonáhodným obsahem a tento fakt je jedním z hlavních důvodů jejich existence. Takových tříd ale bude pravděpodobně spíše menšina mezi všemi uživatelem definovanými třídami, pro které bude `Faker` používán. Lze předpokládat, že nejčastěji bude `Faker` nadefinován pro třídu, jejíž primární účel nemá s vyplňováním pseudonáhodným obsahem nic společného a pseudonáhodného obsahu je využito např. pro testování funkčnosti či výkonosti.  Nezdá se mi proto smysluplné kvůli okrajovému případu použití s `FakeIgnore`atributy zpomalit mnohem frekventovanější způsob využití bez těchto atributů. 
 
-"Skenování" uživatelem definované třídy, jestli obsahuje `FakerIgnor` atributy je třeba provádět v ctoru `Fakeru`, od kterého uživatelův specializovaný `Faker` dědí. Kdyby automaticky probíhalo v ctoru `BaseFakeru`, došlo by k popisovanému zpomalení base case na úkor corner case.
+"Skenování" uživatelem definované třídy, jestli obsahuje `FakerIgnore` atributy je třeba provádět v ctoru `Fakeru`, od kterého uživatelův specializovaný `Faker` dědí. Kdyby automaticky probíhalo v ctoru `BaseFakeru`, došlo by k popisovanému zpomalení base case na úkor corner case.
 
 Jelikož ale ctor předka je  volán na začátku ctoru potomka, nelze to, jestli má ke skenování dojít, řídit nějakým flagem na `BaseFakeru`, jež by se podobně jako `FillEmptyMembers` flag nastavoval z ctoru uživatelem definovaného potomka `BaseFakeru`, protože k nastavení tohoto flagu by došlo až po provedení těla ctoru `BaseFakeru`, kde by ale už bylo třeba hodnoty flagu využít k rozhodnutí, zda skenovat, či nikoli. 
 
@@ -235,6 +235,192 @@ public class WithIgnore
         }
     }
 ```
+
+#### `IgnoreFaker` replaced by `AutoFaker` and `FillEmptyMembers` flag removed
+
+[14.2.2021]
+
+Dear diary, I've discovered a fatal flaw in mechanisms for filling members of the basic types with no Rule set for them. Each time `.Generate()` (`.Populate()`) was called on the instance of `Faker` with `FillEmptyMembes` flag set to `UnfilledMembers.DefaultrandomFunc`, reflection was used to scan for all public properties and fields on `TClass` and afterwards, `HashSet.ExceptWith` method was used several times to remove the members with `RuleFor` or `InnerFaker` set for them from the original `HashSet` and that way a list of members to be filled with a default random function was obtained. Again and again each time `Generate` or `Populate` method was called on the `Faker`.
+
+And what is more, I didn't even realize that once I'm scanning for all member that are field or property, I can extend the condition so that I can leave out the member decorated with `FakerIgnore` attribute and I therefore don't have carry out the second scanning latter on and moreover introduce difficult solution with new type (`IgnoreFaker`) to create a moment in the code execution when it is the most convenient to do this useless second scanning. I'm such dumbass.
+
+```csharp
+//original method scanning for member to be filled defaultly
+// called from .Populate method that is called from .Generate method 
+/// <summary>
+/// returns HashSet of all fields and properties of TClass that does 			not have RuleFor or InnerFaker set in this Faker
+/// </summary>
+/// <returns></returns>
+internal HashSet<MemberInfo> GetSetOfMembersToBeFilledByDefaultRandFunc()
+{
+    if(MembersToBeFilledDefaultly is null)
+    {
+        Type type = typeof(TClass);
+        MembersToBeFilledDefaultly = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && memberInfo.GetCustomAttributes<FakerIgnoreAttribute>().Count() == 0)).ToHashSet();
+    }
+    HashSet<MemberInfo> memberInfos = MembersToBeFilledDefaultly;
+    HashSet<MemberInfo> HasRulefor = this.Rules.Keys.ToHashSet();
+    HashSet<MemberInfo> HasSetFaker = this.InnerFakers.Keys.ToHashSet();
+    memberInfos.ExceptWith(HasRulefor);
+    memberInfos.ExceptWith(HasSetFaker);
+    memberInfos.ExceptWith(this.Ignored);
+
+    return memberInfos;
+}
+```
+
+**Benchmark - scanning in each .Generate, Populate call**
+
+Results cannot be compared with previous Ignore benchmarks as those measured time it takes to run ctor whereas these measures multiple calls to `.Generate` method. 
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method                   |     Mean |    Error |   StdDev | Rank |   Gen 0 | Gen 1 | Gen 2 | Allocated |
+| ------------------------ | -------: | -------: | -------: | ---: | ------: | ----: | ----: | --------: |
+| ScanningBaseFakerNoATTRs | 33.44 μs | 0.644 μs | 1.301 μs |    1 | 11.8408 |     - |     - |   18.2 KB |
+| ScanningBaseFakerATTRs   | 35.15 μs | 0.693 μs | 1.267 μs |    2 |  6.1035 |     - |     - |   9.35 KB |
+| RuleForBetweenGenerate   | 36.51 μs | 0.715 μs | 1.307 μs |    3 | 12.3291 |     - |     - |  18.89 KB |
+
+```csharp
+/// +- used benchmark
+[MemoryDiagnoser]
+[RankColumn]
+[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+public class IgnoreWithoutIgnoreFakerBenchmark
+{
+    public void BaseWith()
+    {
+        WithIgnoreBaseFaker faker = new();
+        WithIgnore x = faker.Generate();
+        x = faker.Generate();
+    }
+    public void BaseWithout()
+    {
+        WithoutIgnoreBaseFaker faker = new();
+        WithoutIgnore x = faker.Generate();
+        x = faker.Generate();
+    }
+    public void BaseWithRuleFor()
+    {
+        WithIgnoreBaseFaker faker = new();
+        WithIgnore x = faker.Generate();
+        faker.RuleFor(a => a.Byte, _ => 42);
+        x = faker.Generate();
+    }
+    public void AutoWith()
+    {
+        WithIgnoreAutoFaker faker = new();
+        WithIgnore x = faker.Generate();
+        x = faker.Generate();
+    }
+    public void AutoWithout()
+    {
+        WithoutIgnoreAutoFaker faker = new();
+        WithoutIgnore x = faker.Generate();
+        x = faker.Generate();
+    }
+    public void AutoWithRuleFor()
+    {
+        WithIgnoreAutoFaker faker = new();
+        WithIgnore x = faker.Generate();
+        faker.RuleFor(a => a.Byte, _ => 42);
+        x = faker.Generate();
+    }
+    [Benchmark]
+    public void BaseFakerAttributes()
+    {
+        BaseWith();
+    }
+    [Benchmark]
+    public void BaseFakerNoAttributes()
+    {
+        BaseWithout();
+    }
+    [Benchmark]
+    public void BaseFakerAttributesRuleFor()
+    {
+        BaseWithRuleFor();
+    }
+    [Benchmark]
+    public void AutoFakerAttributes()
+    {
+        AutoWith();
+    }
+    [Benchmark]
+    public void AutoFakerNoAttributes()
+    {
+        AutoWithout();
+    }
+    [Benchmark]
+    public void AutoFakerAttributesRuleFor()
+    {
+        AutoWithRuleFor();
+    }
+}
+```
+
+**Similar benchmark with scanning carried out only on the first call to .Populate method and `ExceptWith` called on each such call **
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method                   |     Mean |    Error |   StdDev | Rank |   Gen 0 | Gen 1 | Gen 2 | Allocated |
+| ------------------------ | -------: | -------: | -------: | ---: | ------: | ----: | ----: | --------: |
+| ScanningBaseFakerATTRs   | 21.10 μs | 0.420 μs | 0.561 μs |    1 |  3.9978 |     - |     - |   6.14 KB |
+| ScanningBaseFakerNoATTRs | 26.49 μs | 0.522 μs | 0.828 μs |    2 | 10.1318 |     - |     - |  15.53 KB |
+| RuleForBetweenGenerate   | 32.14 μs | 0.634 μs | 1.295 μs |    3 | 10.5591 |     - |     - |  16.24 KB |
+
+
+
+##### Encountered problems
+
+* It is useless to carry out scanning and store the list of members to be filled defaultly in a Faker  that does not intend to do any default filling (not that that had been happening with original design - multiple scanning was only carried out with appropriately set `FillEmtyMembers` flag). 
+* It is nonsense to scan a multiple times as scanning heavily uses reflection and it's therefore time demanding. It would be better instead to scan only once at Fakers creation. 
+* Furthermore removing all the members with `Rule` or `InnerFaker` set and member that are ignored from the member list obtained by scanning again and again on each `.Populate` call (even though some of these exact members were removed before (taking into account that `ExpectWith` method is linear at the length of extracted `HashSet`)) is wasteful.  On the other hand, adding to each call to the `RuleFor` or `SetFaker` method on the `BaseFaker` instance `HashSet.Remove` method call to keep the list of members to be filled defaultly up to date seems wasteful as well as only these instances that intend to do default filling will benefit from such list.
+* It does not make sense to call .`Ignore` method on the Faker that does not intend to carry out default filling (or is not strict)  as it has no effect. 
+##### Introduced changes
+
+* `FillEmptyMembers` flag was removes (as well as `UnfilledMembers` enum). Instead `BaseFaker` instances never do default filling and when user wants to benefit from he is to use the instance of `AutoFaker` that always carries out the default filling - improvement in API - clearer and more straightforward to use, got  rid of strangely named flag.
+* Member scanning is carried out in derived fakers ctors (`AutoFaker` and `StrictFaker` ctors). Thou property containing the resulting list and the method to obtain contend of such list lives in `BaseFaker` (as internal protected or something like that) so that both deriver Fakers can inherit the implementation and method therefore does not have to be implemented twice, no instance of `BaseFaker` will ever call the scanning method and the `HashSet` property to store the list of members will consequently remain null in each `BaseFaker` instance not wasting much memory.
+* `internal protected virtual _internalPopulate` method was added to both `BaseFaker` and `AutoFaker` (its override) to ensure a different behavior of `Populate` method in `Base` and `Auto` `Faker` (`AutoFakers` version does default filling). `public Populate` method is now only the wrapper around the `_internalPopulate`. I opted for this design in order to prevent user from further overriding the `Populate` method in his derived Fakers. I could make a `public virtual Populate` method `sealed` in `AutoFaker` class but I could not use the `sealed` keyword in `BaseFaker` as I needed to provide the override myself in `AutoFaker`. That is why I went with this a bit clumsy design with internal protected virtual `_internalPopulate`.
+* Similar design (internal protected virtual) was introduced to enable to to keep `HashSet.Remove` calls removing members that are just being assigned `Rule` or `InnerFaker` only in `AutoFaker`'s and `StrictFaker`'s implementations of `RuleFor` and `SetFaker` to avoid slowing the `BaseFaker` down with unnecessary managing the empty list of members (not) to be filled by default random function.
+* BaseFaker now contains only internal protected implemetation of Ignore method and public wrappers are to be found only in AutoFaker and StrictFaker where they make sense.
+* API is more compact and consistent as AutoFaker and StrictFaker are incorporated in much more meaningful way and all methods are distributed to the classes based on whether it makes sense to keep them there.
+* Orders of magnitude faster them original fucked up design.
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method                     |        Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| -------------------------- | ----------: | --------: | --------: | ---: | -----: | ----: | ----: | --------: |
+| BaseFakerNoAttributes      |    690.6 ns |   5.86 ns |   5.20 ns |    1 | 0.6371 |     - |     - |    1000 B |
+| BaseFakerAttributes        |    710.2 ns |  13.93 ns |  13.03 ns |    2 | 0.6371 |     - |     - |    1000 B |
+| BaseFakerAttributesRuleFor |  2,243.2 ns |  40.07 ns |  37.48 ns |    3 | 1.1215 |     - |     - |    1760 B |
+| AutoFakerAttributes        | 16,403.1 ns | 312.14 ns | 306.56 ns |    4 | 3.5400 |     - |     - |    5554 B |
+| AutoFakerAttributesRuleFor | 19,819.9 ns | 308.68 ns | 288.74 ns |    5 | 3.9368 |     - |     - |    6203 B |
+| AutoFakerNoAttributes      | 21,823.6 ns | 427.07 ns | 555.31 ns |    6 | 9.6436 |     - |     - |   15165 B |
 
 ### Floating point types boarders problem - default values of parameteres for floating point  random methods
 
