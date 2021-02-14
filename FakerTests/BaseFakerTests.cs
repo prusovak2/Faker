@@ -379,7 +379,7 @@ namespace FakerTests
             }
             Console.WriteLine();
             StorageFakerParamlessAuto s = new StorageFakerParamlessAuto();
-            HashSet<MemberInfo> memberInfos = s.MembersWithoutFakerIgnoreAttribute;
+            HashSet<MemberInfo> memberInfos = s.MembersToBeFilledDefaultly;
 
             foreach (var item in memberInfos)
             {
