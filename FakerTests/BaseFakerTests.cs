@@ -7,6 +7,26 @@ using System.Reflection;
 
 namespace FakerTests
 {
+    public class ValueClassFakerBase : BaseFaker<ValueClass>
+    {
+        public ValueClassFakerBase()
+        {
+            RuleFor(x => x.Value, _ => 42);
+            RuleFor(x => x.AnotherVal, r => r.Random.Int());
+        }
+    }
+
+    public class StorageFakerBase : StrictFaker<Storage>
+    {
+        public StorageFakerBase()
+        {
+            RuleFor(x => x.Text, _ => "ABRAKA");
+            RuleFor(x => x.Test, _ => 42);
+            RuleFor(x => x.Field, rg => rg.Random.Byte());
+            SetFaker(x => x.Value, new ValueClassFakerBase());
+        }
+    }
+
     public class SimpleClass
     {
         [FakerIgnore]
@@ -309,7 +329,7 @@ namespace FakerTests
         {
             AwesomeFaker awesomeFaker = new AwesomeFaker();
             AwesomeClass awesome = awesomeFaker.Generate();
-            
+
             Console.WriteLine(awesome);
             Assert.IsTrue(awesome.Value is object);
             Assert.IsTrue(awesome.IsAwesome == true || awesome.IsAwesome == false);
@@ -323,7 +343,7 @@ namespace FakerTests
             Console.WriteLine(a);
             Assert.AreEqual("text", a.Text);
             Assert.AreEqual(10, a.Value.Value);
-            Assert.ThrowsException<ArgumentException>(() => { Storage b = s.Generate(new object[] { "dabra"}); });
+            Assert.ThrowsException<ArgumentException>(() => { Storage b = s.Generate(new object[] { "dabra" }); });
             Storage b = s.Generate();
             Assert.AreEqual(10, b.Value.Value);
             Console.WriteLine(b);
@@ -374,7 +394,7 @@ namespace FakerTests
             var members = type.GetMembers();
             foreach (var item in members)
             {
-                if(item is PropertyInfo || item is FieldInfo)
+                if (item is PropertyInfo || item is FieldInfo)
                     Console.WriteLine(item.Name);
             }
             Console.WriteLine();
@@ -480,7 +500,7 @@ namespace FakerTests
                 for (int j = 0; j < numIterations; j++)
                 {
                     SimpleClass s = fakers[i].Generate();
-                    Console.WriteLine(s); 
+                    Console.WriteLine(s);
 
                     Assert.AreEqual("IGNORED", s.IgnoredString);
                     Assert.AreEqual(73, s.WithRuleFor);
@@ -502,6 +522,30 @@ namespace FakerTests
                     TestUtils.CheckDic(sbyteCounts, numIterations);
                 }
             }
+        }
+        [TestMethod]
+        public void BaseFakerBasicTest()
+        {
+            Dictionary<int, int> valueCounts = new();
+            Dictionary<byte, int> fieldCounts = new();
+            int numIterations = 20;
+
+            for (int i = 0; i < numIterations; i++)
+            {
+                StorageFakerBase faker = new();
+                Storage s = faker.Generate();
+
+                Console.WriteLine(s);
+                TestUtils.IncInDic(valueCounts, s.Value.AnotherVal);
+                TestUtils.IncInDic(fieldCounts, s.Field);
+
+                Assert.AreEqual("ABRAKA", s.Text);
+                Assert.AreEqual(42, s.Test);
+                Assert.AreEqual(42, s.Value.Value);
+            }
+
+            TestUtils.CheckDic(valueCounts, numIterations);
+            TestUtils.CheckDic(fieldCounts, numIterations);
         }
     }
 }

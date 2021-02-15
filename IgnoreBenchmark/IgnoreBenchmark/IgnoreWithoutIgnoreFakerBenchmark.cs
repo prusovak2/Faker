@@ -23,14 +23,8 @@ namespace FakerBenchmark
         [FakerIgnore]
         public int IgnoredInt = 42;
     }
-
     public class WithIgnoreBaseFaker : BaseFaker<WithIgnore> { }
     public class WithIgnoreAutoFaker : AutoFaker<WithIgnore> { }
-
-
-    //public class WithIgnoreIgnoreFaker : IgnoreFaker<WithIgnore> { }
-
-
     public class WithoutIgnore
     {
         public int Int;
@@ -42,11 +36,9 @@ namespace FakerBenchmark
         public string IgnoredString { get; set; } = "IGNORED";
         public int IgnoredInt = 42;
     }
-
     public class WithoutIgnoreBaseFaker : BaseFaker<WithoutIgnore> { }
     public class WithoutIgnoreAutoFaker : AutoFaker<WithoutIgnore> { }
-
-
+    
     [MemoryDiagnoser]
     [RankColumn]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
@@ -71,8 +63,6 @@ namespace FakerBenchmark
             faker.RuleFor(a => a.Byte, _ => 42);
             x = faker.Generate();
         }
-
-
         public void AutoWith()
         {
             WithIgnoreAutoFaker faker = new();
@@ -97,32 +87,26 @@ namespace FakerBenchmark
         {
             BaseWith();
         }
-
         [Benchmark]
         public void BaseFakerNoAttributes()
         {
             BaseWithout();
         }
-
         [Benchmark]
         public void BaseFakerAttributesRuleFor()
         {
             BaseWithRuleFor();
         }
-
-
         [Benchmark]
         public void AutoFakerAttributes()
         {
             AutoWith();
         }
-
         [Benchmark]
         public void AutoFakerNoAttributes()
         {
             AutoWithout();
         }
-
         [Benchmark]
         public void AutoFakerAttributesRuleFor()
         {

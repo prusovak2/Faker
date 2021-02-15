@@ -234,7 +234,7 @@ namespace Faker
         /// </summary>
         /// <returns>New TClass instance with random content</returns>
         /// <exception cref="ArgumentException">Throws ArgumentException, when TClass does not have a corresponding constructor</exception>
-        public TClass Generate(object[] CtorParams)
+        public TClass Generate(params object[] CtorParams)
         {
             //get array of param. types
             Type[] paramTypes = new Type[CtorParams.Length];
