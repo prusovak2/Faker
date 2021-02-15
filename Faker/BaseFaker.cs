@@ -21,6 +21,8 @@ namespace Faker
     internal interface IFaker
     {
         internal object Generate(object instance);
+        internal bool AllRulesSetRecursively();
+        HashSet<MemberInfo> GetRecursivelyAllMembersRequiringRule();
     }
     public class BaseFaker<TClass> : IFaker where TClass : class
     {
@@ -207,6 +209,16 @@ namespace Faker
                     throw new NotImplementedException();
             }
         }
+        bool IFaker.AllRulesSetRecursively()
+        {
+            return true;
+        }
+
+        HashSet<MemberInfo> IFaker.GetRecursivelyAllMembersRequiringRule()
+        {
+            return new HashSet<MemberInfo>();
+        }
+
         /// <summary>
         /// Creates new instance of TClass using parameterless constructor, generates a random content base on RulesFor and InnerFakers stated for this Faker<br/>
         /// it is recommended to created instance by ctor and than call Populate() on existing instance - avoids using reflexion to create an instance

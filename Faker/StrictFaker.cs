@@ -45,6 +45,44 @@ namespace Faker
             return !this.MembersToBeFilledDefaultly.Any();
         }
 
+        bool IFaker.AllRulesSetRecursively()
+        {
+            bool allFiled = this.AllRulesSet();
+            if (!allFiled)
+            {
+                return allFiled;
+            }
+            foreach (var innerFaker in this.InnerFakers)
+            {
+                allFiled = allFiled & innerFaker.Value.AllRulesSetRecursively();
+            }
+            return allFiled;
+        }
+
+        public bool AllRulesSetRecursively()
+        {
+            return ((IFaker) this).AllRulesSetRecursively();
+        }
+
+        public HashSet<MemberInfo> GetAllMembersRequiringRule()
+        {
+            return this.MembersToBeFilledDefaultly;
+        }
+        HashSet<MemberInfo> IFaker.GetRecursivelyAllMembersRequiringRule()
+        {
+            HashSet<MemberInfo> members = this.GetAllMembersRequiringRule();
+            foreach (var innerFaker in InnerFakers)
+            {
+                members.UnionWith(innerFaker.Value.GetRecursivelyAllMembersRequiringRule());
+            }
+            return members;
+        }
+
+        public HashSet<MemberInfo> GetRecursivelyAllMembersRequiringRule()
+        {
+            return ((IFaker)this).GetRecursivelyAllMembersRequiringRule();
+        }
+
         /// <summary>
         /// Adds Rule for how to generate a random content of particular member <br/>
         /// selector and setter must have the same return type

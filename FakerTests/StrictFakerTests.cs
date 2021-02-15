@@ -61,6 +61,26 @@ namespace FakerTests
     public class StrictFakerTests
     {
         [TestMethod]
+        public void AllRulesSetTest()
+        {
+            StorageFakerAllRules faker4 = new();
+            Assert.IsTrue(faker4.AllRulesSet());
+            Assert.IsTrue(faker4.AllRulesSetRecursively());
+
+            ValueClassFakerMissingRule faker = new();
+            Assert.IsFalse(faker.AllRulesSet());
+            Assert.IsFalse(faker.AllRulesSetRecursively());
+
+            StorageFakerFlawedValueFaker faker2 = new();
+            Assert.IsTrue(faker2.AllRulesSet());
+            Assert.IsFalse(faker2.AllRulesSetRecursively());
+
+            StorageFakerMissingRule faker3 = new();
+            Assert.IsFalse(faker3.AllRulesSet());
+            Assert.IsFalse(faker3.AllRulesSetRecursively());
+        }
+
+        [TestMethod]
         public void MissingRuleTest()
         {
             ValueClassFakerMissingRule faker = new();
