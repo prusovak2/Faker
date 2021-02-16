@@ -40,47 +40,52 @@ namespace Faker
             InitializeListOfRandomlyFilledMembers();
         }
 
-        public bool AllRulesSet()
+        public bool AllRulesSetShallow()
         {
             return !this.MembersToBeFilledDefaultly.Any();
         }
 
-        bool IFaker.AllRulesSetRecursively()
+        bool IFaker.AllRulesSetDeep()
         {
-            bool allFiled = this.AllRulesSet();
+            bool allFiled = this.AllRulesSetShallow();
             if (!allFiled)
             {
                 return allFiled;
             }
             foreach (var innerFaker in this.InnerFakers)
             {
-                allFiled = allFiled & innerFaker.Value.AllRulesSetRecursively();
+                allFiled = allFiled & innerFaker.Value.AllRulesSetDeep();
             }
             return allFiled;
         }
 
-        public bool AllRulesSetRecursively()
+        public bool AllRulesSetDeep()
         {
-            return ((IFaker) this).AllRulesSetRecursively();
+            return ((IFaker) this).AllRulesSetDeep();
         }
 
-        public HashSet<MemberInfo> GetAllMembersRequiringRule()
+        public HashSet<MemberInfo> GetAllMembersRequiringRuleShallow()
         {
-            return this.MembersToBeFilledDefaultly;
+            HashSet<MemberInfo> toReturn = new HashSet<MemberInfo>();
+            foreach (var item in this.MembersToBeFilledDefaultly)
+            {
+                toReturn.Add(item);
+            }
+            return toReturn;
         }
-        HashSet<MemberInfo> IFaker.GetRecursivelyAllMembersRequiringRule()
+        HashSet<MemberInfo> IFaker.GetAllMembersRequiringRuleDeep()
         {
-            HashSet<MemberInfo> members = this.GetAllMembersRequiringRule();
+            HashSet<MemberInfo> members = this.GetAllMembersRequiringRuleShallow();
             foreach (var innerFaker in InnerFakers)
             {
-                members.UnionWith(innerFaker.Value.GetRecursivelyAllMembersRequiringRule());
+                members.UnionWith(innerFaker.Value.GetAllMembersRequiringRuleDeep());
             }
             return members;
         }
 
-        public HashSet<MemberInfo> GetRecursivelyAllMembersRequiringRule()
+        public HashSet<MemberInfo> GetAllMembersRequiringRuleDeep()
         {
-            return ((IFaker)this).GetRecursivelyAllMembersRequiringRule();
+            return ((IFaker)this).GetAllMembersRequiringRuleDeep();
         }
 
         /// <summary>
@@ -151,7 +156,7 @@ namespace Faker
 
         protected internal sealed override TClass _internal_populate(TClass instance)
         {
-            if (!this.AllRulesSet())
+            if (!this.AllRulesSetShallow())
             {
                 throw new FakerException("IgnoreFaker must have RuleFor or InnerFaker set for every member of TClass or the members must be marked ignored before Generate method is called.");
             }

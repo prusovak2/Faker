@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Faker;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using static FakerTests.TestUtils;
 
 namespace FakerTests
@@ -55,29 +58,106 @@ namespace FakerTests
             RuleFor(x => x.Field, rg => rg.Random.Byte());
         }
     }
+    public class ValueClassfakerAllRulesMissing : StrictFaker<ValueClass> { }
+
+    public class StorageFakerMultipleMissingRules : StrictFaker<Storage>
+    {
+        public StorageFakerMultipleMissingRules()
+        {
+            SetFaker(x => x.Value, new ValueClassfakerAllRulesMissing());
+        }
+    }
 
 
     [TestClass]
     public class StrictFakerTests
     {
         [TestMethod]
+        public void GetAllMembersRequiringRuleTest()
+        {
+            StorageFakerAllRules faker4 = new();
+            var set1 = faker4.GetAllMembersRequiringRuleShallow();
+            var set2 = faker4.GetAllMembersRequiringRuleDeep();
+            Assert.IsTrue(set1.Count == 0);
+            Assert.IsTrue(set2.Count == 0);
+
+            ValueClassFakerMissingRule faker = new();
+            set1 = faker.GetAllMembersRequiringRuleDeep();
+            set2 = faker.GetAllMembersRequiringRuleShallow();
+            foreach (var item in set1)
+            {
+                Console.WriteLine(item);
+            }
+            Console.WriteLine();
+            foreach (var item in set2)
+            {
+                Console.WriteLine(item);
+            }
+            Assert.IsTrue(set1.Count == 1);
+            Assert.IsTrue(set2.Count == 1);
+            var arr1 = set1.ToArray();
+            Assert.AreEqual("AnotherVal", arr1[0].Name);
+            var arr2 = set2.ToArray();
+            Assert.AreEqual("AnotherVal", arr2[0].Name);
+            set1.Clear();
+            set2.Clear();
+
+            Console.WriteLine();
+            Console.WriteLine();
+            StorageFakerFlawedValueFaker faker2 = new();
+            set2 = faker2.GetAllMembersRequiringRuleShallow();
+            set1 = faker2.GetAllMembersRequiringRuleDeep();
+            
+            foreach (var item in set1)
+            {
+                Console.WriteLine(item);
+            }
+            Console.WriteLine();
+            foreach (var item in set2)
+            {
+                Console.WriteLine(item);
+            }
+            Assert.IsTrue(set1.Count == 1);
+            Assert.IsTrue(set2.Count == 0);
+            arr1 = set1.ToArray();
+            Assert.AreEqual("AnotherVal", arr1[0].Name);
+
+            Console.WriteLine();
+            Console.WriteLine();
+            StorageFakerMultipleMissingRules faker3 = new();
+            set2 = faker3.GetAllMembersRequiringRuleShallow();
+            set1 = faker3.GetAllMembersRequiringRuleDeep();
+            foreach (var item in set1)
+            {
+                Console.WriteLine(item);
+            }
+            Console.WriteLine();
+            foreach (var item in set2)
+            {
+                Console.WriteLine(item);
+            }
+            Assert.IsTrue(set1.Count == 5);
+            Assert.IsTrue(set2.Count == 3);
+        }
+
+        [TestMethod]
         public void AllRulesSetTest()
         {
             StorageFakerAllRules faker4 = new();
-            Assert.IsTrue(faker4.AllRulesSet());
-            Assert.IsTrue(faker4.AllRulesSetRecursively());
+            Assert.IsTrue(faker4.AllRulesSetShallow());
+            Assert.IsTrue(faker4.AllRulesSetDeep());
 
             ValueClassFakerMissingRule faker = new();
-            Assert.IsFalse(faker.AllRulesSet());
-            Assert.IsFalse(faker.AllRulesSetRecursively());
+            Assert.IsFalse(faker.AllRulesSetShallow());
+            Assert.IsFalse(faker.AllRulesSetDeep());
 
             StorageFakerFlawedValueFaker faker2 = new();
-            Assert.IsTrue(faker2.AllRulesSet());
-            Assert.IsFalse(faker2.AllRulesSetRecursively());
+            Assert.IsTrue(faker2.AllRulesSetShallow());
+            Assert.IsFalse(faker2.AllRulesSetDeep());
 
             StorageFakerMissingRule faker3 = new();
-            Assert.IsFalse(faker3.AllRulesSet());
-            Assert.IsFalse(faker3.AllRulesSetRecursively());
+            Assert.IsFalse(faker3.AllRulesSetShallow());
+            Assert.IsFalse(faker3.AllRulesSetDeep());
         }
 
         [TestMethod]

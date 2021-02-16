@@ -21,8 +21,8 @@ namespace Faker
     internal interface IFaker
     {
         internal object Generate(object instance);
-        internal bool AllRulesSetRecursively();
-        HashSet<MemberInfo> GetRecursivelyAllMembersRequiringRule();
+        internal bool AllRulesSetDeep();
+        HashSet<MemberInfo> GetAllMembersRequiringRuleDeep();
     }
     public class BaseFaker<TClass> : IFaker where TClass : class
     {
@@ -209,12 +209,12 @@ namespace Faker
                     throw new NotImplementedException();
             }
         }
-        bool IFaker.AllRulesSetRecursively()
+        bool IFaker.AllRulesSetDeep()
         {
             return true;
         }
 
-        HashSet<MemberInfo> IFaker.GetRecursivelyAllMembersRequiringRule()
+        HashSet<MemberInfo> IFaker.GetAllMembersRequiringRuleDeep()
         {
             return new HashSet<MemberInfo>();
         }
