@@ -12,7 +12,7 @@ using System.Text;
     Faker
     Generator of pseudo random contend of C# objects
     Katerina Prusova, sophomore MFF UK
-    summer term 2019/2020
+    summer term 2019/2020 
     Jazyk C# a platforma .NET (NPRG035), Pokročilé programování pro .NET I (NPRG038)
 */
 

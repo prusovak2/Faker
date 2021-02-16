@@ -24,17 +24,25 @@ namespace Faker {
         {
  ");
             sb.AppendLine($"{indent}Console.WriteLine(\"ABRAKA\");");
-            sb.AppendLine($"{indent}return \"ABRAKA\";");
-            /*foreach (AdditionalText file in context.AdditionalFiles)
+            foreach (AdditionalText file in context.AdditionalFiles)
             {
-                Path.GetExtension(file.Path);
-                var text = file.GetText().ToString();
-            }*/
-
+                //Path.GetExtension(file.Path);
+                sb.AppendLine($@"{indent}Console.WriteLine(""{file.Path.Replace('\\', '/')}"");");
+                var text = file.GetText(context.CancellationToken).ToString();
+                //char[] delims = { ' ', '\t', '\n' };
+                var words = text.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+                foreach (var item in words)
+                {
+                    sb.AppendLine($@"{indent}Console.WriteLine(""{item}"");");
+                }
+               
+            }
+            sb.AppendLine($"{indent}return \"ABRAKA\";");
             sb.Append(@"
         }
     }
 }");
+            
             context.AddSource("Generated.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
         }
     }

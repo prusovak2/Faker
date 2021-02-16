@@ -9,8 +9,6 @@
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" />
   </ItemGroup>
   
-  <ItemGroup>
-    <AditionalFiles Include="Names.txt"/>
-  </ItemGroup>
+
 
 </Project>
