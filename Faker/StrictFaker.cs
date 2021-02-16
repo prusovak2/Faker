@@ -40,11 +40,24 @@ namespace Faker
             InitializeListOfRandomlyFilledMembers();
         }
 
+        /// <summary>
+        /// indicates whether all members of this instance of TClass do have a Rule or an InnerFaker set for them <br/>
+        /// does not recursively check all inner StrictFakers <br/>
+        /// is false, attempt to call .Generate() or .Popuplate() on this instance of the StrictFaker will result in FakerException
+        /// </summary>
+        /// <returns></returns>
         public bool AllRulesSetShallow()
         {
             return !this.MembersToBeFilledDefaultly.Any();
         }
 
+        /// <summary>
+        /// Internal method to be called on InnerFakers  <br/>
+        /// indicates whether all members of this instance of TClass as well as all members of members of TClass with a StrictFaker set for them <br/>
+        /// do have a Rule or an InnerFaker set for them <br/>
+        /// is false, attempt to call .Generate() or .Popuplate() on this instance of the StrictFaker will result in FakerException
+        /// </summary>
+        /// <returns></returns>
         bool IFaker.AllRulesSetDeep()
         {
             bool allFiled = this.AllRulesSetShallow();
@@ -59,11 +72,22 @@ namespace Faker
             return allFiled;
         }
 
+        /// <summary>
+        /// indicates whether all members of this instance of TClass as well as all members of members of TClass with a StrictFaker set for them <br/>
+        /// do have a Rule or an InnerFaker set for them <br/>
+        /// is false, attempt to call .Generate() or .Popuplate() on this instance of the StrictFaker will result in FakerException
+        /// </summary>
+        /// <returns></returns>
         public bool AllRulesSetDeep()
         {
             return ((IFaker) this).AllRulesSetDeep();
         }
 
+        /// <summary>
+        /// returns HashSet of the members of this instance of TClass that require a Rule or a InnerFaker to be set for them <br/>
+        /// does not recursively scan all inner StrictFakers
+        /// </summary>
+        /// <returns></returns>
         public HashSet<MemberInfo> GetAllMembersRequiringRuleShallow()
         {
             HashSet<MemberInfo> toReturn = new HashSet<MemberInfo>();
@@ -73,6 +97,13 @@ namespace Faker
             }
             return toReturn;
         }
+        /// <summary>
+        /// Internal method to be called on InnerFakers  <br/>
+        /// returns HashSet of the members of this instance of TClass that require a Rule or a InnerFaker to be set for them <br/>
+        /// and scans all the members with StrictFaker set for them recursively for all other members requiring a Rule or an InnerFaker <br/>
+        /// in the whole tree of members beneath this instance 
+        /// </summary>
+        /// <returns></returns>
         HashSet<MemberInfo> IFaker.GetAllMembersRequiringRuleDeep()
         {
             HashSet<MemberInfo> members = this.GetAllMembersRequiringRuleShallow();
@@ -83,6 +114,12 @@ namespace Faker
             return members;
         }
 
+        /// <summary>
+        /// returns HashSet of the members of this instance of TClass that require a Rule or a InnerFaker to be set for them <br/>
+        /// and scans all the members with StrictFaker set for them recursively for all other members requiring a Rule or an InnerFaker <br/>
+        /// in the whole tree of members beneath this instance 
+        /// </summary>
+        /// <returns></returns>
         public HashSet<MemberInfo> GetAllMembersRequiringRuleDeep()
         {
             return ((IFaker)this).GetAllMembersRequiringRuleDeep();
