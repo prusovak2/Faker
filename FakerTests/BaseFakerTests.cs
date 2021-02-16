@@ -7,6 +7,59 @@ using System.Reflection;
 
 namespace FakerTests
 {
+    public class ValueClassFakerBase : BaseFaker<ValueClass>
+    {
+        public ValueClassFakerBase()
+        {
+            RuleFor(x => x.Value, _ => 42);
+            RuleFor(x => x.AnotherVal, r => r.Random.Int());
+        }
+    }
+
+    public class StorageFakerBase : StrictFaker<Storage>
+    {
+        public StorageFakerBase()
+        {
+            RuleFor(x => x.Text, _ => "ABRAKA");
+            RuleFor(x => x.Test, _ => 42);
+            RuleFor(x => x.Field, rg => rg.Random.Byte());
+            SetFaker(x => x.Value, new ValueClassFakerBase());
+        }
+    }
+
+    public class SimpleClass
+    {
+        [FakerIgnore]
+        public string IgnoredString = "IGNORED";
+
+        public int Int = 42;
+
+        public sbyte Sbyte { get; set; } = 42;
+
+        public long WithRuleFor = 42;
+
+        public override string ToString()
+        {
+            return TestUtils.InstanceToString(this);
+        }
+    }
+
+    public class SimpleClassBaseFaker : BaseFaker<SimpleClass>
+    {
+        public SimpleClassBaseFaker()
+        {
+            RuleFor(x => x.WithRuleFor, _ => 73);
+        }
+    }
+
+    public class SimpleClassAutoFaker : AutoFaker<SimpleClass>
+    {
+        public SimpleClassAutoFaker()
+        {
+            RuleFor(x => x.WithRuleFor, _ => 73);
+        }
+    }
+
     public class NestedClass
     {
         public int num;
@@ -14,7 +67,7 @@ namespace FakerTests
         public NestedClass() { }
         public override string ToString()
         {
-            return $"Nested:num:{this.num},{this.value},";
+            return TestUtils.InstanceToString(this);
         }
     }
 
@@ -35,7 +88,8 @@ namespace FakerTests
         }
         public override string ToString()
         {
-            return $"Number={this.Number},SmallerNumber={this.SmallerNumber},{this.Value},Private={this.Private},\nIsAwesome={this.IsAwesome},SomeString={this.SomeString} nested:{this.nested}";
+            //return $"Number={this.Number},SmallerNumber={this.SmallerNumber},{this.Value},Private={this.Private},\nIsAwesome={this.IsAwesome},SomeString={this.SomeString} nested:{this.nested}";
+            return TestUtils.InstanceToString(this);
         }
     }
     public class Storage
@@ -47,7 +101,8 @@ namespace FakerTests
         public string Text { get; set; }
         public override string ToString()
         {
-            return $"Storage, Test = {this.Test}, Field = {this.Field}, Text = {this.Text}, Value ={this.Value}";
+            //return $"Storage, Test = {this.Test}, Field = {this.Field}, Text = {this.Text}, Value ={this.Value}";
+            return TestUtils.InstanceToString(this);
         }
         public Storage(int num, string text, bool abraka) 
         {
@@ -152,6 +207,18 @@ namespace FakerTests
 
         }
     }
+    public class StorageFakerParamlessAuto : AutoFaker<Storage>
+    {
+        public StorageFakerParamlessAuto()
+        {
+
+            SetFaker(e => e.Value, new ValueClassFakerParameterless());
+            RuleFor(e => e.Test, f => f.Random.Int());
+            RuleFor(e => e.Field, f => f.Random.Byte());
+
+        }
+    }
+
     public class StorageFakerMultipleRuleFor :BaseFaker<Storage>
     {
         public StorageFakerMultipleRuleFor()
@@ -180,25 +247,39 @@ namespace FakerTests
             RuleFor(e => e.Value, f => new ValueClass());
         }
     }
-    public class StorageFakerFillDefault : BaseFaker<Storage>
+    public class ValueFakerAuto : AutoFaker<ValueClass> { }
+
+    public class StorageFakerFillDefault : AutoFaker<Storage>
     {
         public StorageFakerFillDefault()
         {
             RuleFor(e => e.Text, f => "ABRAKA DABRA");
-            this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            SetFaker(e => e.Value, new ValueFakerAuto());
+            //this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
         }
     }
-    public class AwesomeFakerNoRules : BaseFaker<AwesomeClass>
+
+    public class NestedClassFakerAuto : AutoFaker<NestedClass>
     {
-        public AwesomeFakerNoRules(UnfilledMembers unfilled, InnerFakerConstructorUsage ctorFlag, object[] parameters)
+        public NestedClassFakerAuto()
+        {
+            SetFaker(e => e.value, new ValueFakerAuto());
+        }
+    }
+
+    public class AwesomeFakerNoRules : AutoFaker<AwesomeClass>
+    {
+        public AwesomeFakerNoRules(InnerFakerConstructorUsage ctorFlag, object[] parameters)
         {
             RuleFor(e => e.SomeString, f => "ABRAKA");
-            this.FillEmptyMembers = unfilled;
+            SetFaker(e => e.Value, new ValueFakerAuto());
+            SetFaker(e => e.nested, new NestedClassFakerAuto());
+            //this.FillEmptyMembers = unfilled;
             this.CtorUsageFlag = ctorFlag;
             this.CtorParameters = parameters;
         }
     }
-    public class AwesomeFaker : BaseFaker<AwesomeClass>
+    public class AwesomeFaker : AutoFaker<AwesomeClass>
     {
         public AwesomeFaker()
         {
@@ -206,7 +287,7 @@ namespace FakerTests
             RuleFor(e => e.SmallerNumber, g => g.Random.Byte());
             RuleFor(e => e.Number, h => h.Random.Int());
             RuleFor(e => e.IsAwesome, i => i.Random.Bool());
-            this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            //this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
             this.SetFaker(e => e.Value, new ValueClassFakerParameterless());
         }
     }
@@ -218,12 +299,12 @@ namespace FakerTests
             SetFaker(e => e.value, new ValueClassFakerParameterless());
         }
     }
-    public class AwesomeFakerNested :BaseFaker<AwesomeClass>
+    public class AwesomeFakerNested :AutoFaker<AwesomeClass>
     {
         public AwesomeFakerNested()
         {
             RuleFor(e => e.SomeString, f => "ABRAKA");
-            this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
+            //this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
             SetFaker(e => e.nested, new NestedFaker());
         }
     }
@@ -248,7 +329,7 @@ namespace FakerTests
         {
             AwesomeFaker awesomeFaker = new AwesomeFaker();
             AwesomeClass awesome = awesomeFaker.Generate();
-            
+
             Console.WriteLine(awesome);
             Assert.IsTrue(awesome.Value is object);
             Assert.IsTrue(awesome.IsAwesome == true || awesome.IsAwesome == false);
@@ -262,7 +343,7 @@ namespace FakerTests
             Console.WriteLine(a);
             Assert.AreEqual("text", a.Text);
             Assert.AreEqual(10, a.Value.Value);
-            Assert.ThrowsException<ArgumentException>(() => { Storage b = s.Generate(new object[] { "dabra"}); });
+            Assert.ThrowsException<ArgumentException>(() => { Storage b = s.Generate(new object[] { "dabra" }); });
             Storage b = s.Generate();
             Assert.AreEqual(10, b.Value.Value);
             Console.WriteLine(b);
@@ -313,12 +394,12 @@ namespace FakerTests
             var members = type.GetMembers();
             foreach (var item in members)
             {
-                if(item is PropertyInfo || item is FieldInfo)
+                if (item is PropertyInfo || item is FieldInfo)
                     Console.WriteLine(item.Name);
             }
             Console.WriteLine();
-            StorageFakerParamless s = new StorageFakerParamless();
-            HashSet<MemberInfo> memberInfos = s.GetSetOfMembersToBeFilledByDefaultRandFunc();
+            StorageFakerParamlessAuto s = new StorageFakerParamlessAuto();
+            HashSet<MemberInfo> memberInfos = s.MembersToBeFilledDefaultly;
 
             foreach (var item in memberInfos)
             {
@@ -331,21 +412,140 @@ namespace FakerTests
         public void DefaultFillTest()
         {
             StorageFakerFillDefault f = new StorageFakerFillDefault();
-            Storage s = f.Generate();
-            Console.WriteLine(s);
-            //may fail when 0 is randomly generated
-            Assert.AreNotEqual(0, s.Test);
-            Assert.AreNotEqual(0, s.Field);
-            Assert.AreEqual("ABRAKA DABRA", s.Text);
+            int numIterations = 20;
+
+            Dictionary<int, int> testCounts = new();
+            Dictionary<byte, int> fieldCount = new();
+            Dictionary<int, int> valueCounts = new();
+            Dictionary<int, int> anotherValCounts = new();
+
+            for (int i = 0; i < numIterations; i++)
+            {
+                Storage s = f.Generate();
+                Console.WriteLine(s);
+                TestUtils.IncInDic(testCounts, s.Test);
+                TestUtils.IncInDic(fieldCount, s.Field);
+                TestUtils.IncInDic(valueCounts, s.Value.Value);
+                TestUtils.IncInDic(anotherValCounts, s.Value.AnotherVal);
+
+                Assert.AreEqual("ABRAKA DABRA", s.Text);
+            }
+            TestUtils.CheckDic(testCounts, numIterations);
+            TestUtils.CheckDic(fieldCount, numIterations);
+            TestUtils.CheckDic(valueCounts, numIterations);
+            TestUtils.CheckDic(anotherValCounts, numIterations);
+
         }
         [TestMethod]
         public void AwesomeEmptyDefaultFillTest()
         {
-            AwesomeFakerNoRules af = new AwesomeFakerNoRules(BaseFaker<AwesomeClass>.UnfilledMembers.DefaultRandomFunc, BaseFaker<AwesomeClass>.InnerFakerConstructorUsage.Parameterless, null);
-            AwesomeClass a = af.Generate();
-            Console.WriteLine(a);
-            Assert.AreNotEqual(0, a.Number);
-            Assert.AreEqual("ABRAKA", a.SomeString);
+            AwesomeFakerNoRules af = new AwesomeFakerNoRules(BaseFaker<AwesomeClass>.InnerFakerConstructorUsage.Parameterless, null);
+            int numIterations = 20;
+
+            Dictionary<int, int> numberCounts = new();
+            Dictionary<byte, int> smallerNumberCounts = new();
+            Dictionary<int, int> valueCounts = new();
+            Dictionary<int, int> anotherValCounts = new();
+            Dictionary<bool, int> isAwesomeCounts = new();
+            Dictionary<int, int> numCounts = new();
+            Dictionary<int, int> nestedValueCounts = new();
+            Dictionary<int, int> nestedAnotherValCounts = new();
+
+            for (int i = 0; i < numIterations; i++)
+            {
+                AwesomeClass s = af.Generate();
+                Console.WriteLine(s);
+                Assert.AreEqual("ABRAKA", s.SomeString);
+                TestUtils.IncInDic(numberCounts, s.Number);
+                TestUtils.IncInDic(smallerNumberCounts, s.SmallerNumber);
+                TestUtils.IncInDic(valueCounts, s.Value.Value);
+                TestUtils.IncInDic(anotherValCounts, s.Value.AnotherVal);
+                TestUtils.IncInDic(isAwesomeCounts, s.IsAwesome);
+                TestUtils.IncInDic(numCounts, s.nested.num);
+                TestUtils.IncInDic(nestedValueCounts, s.nested.value.Value);
+                TestUtils.IncInDic(nestedAnotherValCounts, s.nested.value.AnotherVal);
+            }
+
+            TestUtils.CheckDic(numberCounts, numIterations);
+            TestUtils.CheckDic(smallerNumberCounts, numIterations);
+            TestUtils.CheckDic(valueCounts, numIterations);
+            TestUtils.CheckDic(anotherValCounts, numIterations);
+            TestUtils.CheckDic(isAwesomeCounts, numIterations);
+            TestUtils.CheckDic(numCounts, numIterations);
+            TestUtils.CheckDic(nestedValueCounts, numIterations);
+            TestUtils.CheckDic(nestedAnotherValCounts, numIterations);
+        }
+
+        [TestMethod]
+        public void PolymophListTest()
+        {
+            List<BaseFaker<SimpleClass>> fakers = new();
+            SimpleClassAutoFaker auto1 = new();
+            SimpleClassAutoFaker auto2 = new();
+            SimpleClassBaseFaker base1 = new();
+            SimpleClassBaseFaker base2 = new();
+
+            fakers.Add(auto1);
+            fakers.Add(base1);
+            fakers.Add(auto2);
+            fakers.Add(base2);
+
+            int numIterations = 10;
+
+            for (int i = 0; i < 4; i++)
+            {
+                Dictionary<int, int> intCounts = new();
+                Dictionary<sbyte, int> sbyteCounts = new();
+
+                for (int j = 0; j < numIterations; j++)
+                {
+                    SimpleClass s = fakers[i].Generate();
+                    Console.WriteLine(s);
+
+                    Assert.AreEqual("IGNORED", s.IgnoredString);
+                    Assert.AreEqual(73, s.WithRuleFor);
+                    if (i % 2 == 1)
+                    {
+                        //baseFaker
+                        Assert.AreEqual(42, s.Int);
+                        Assert.AreEqual(42, s.Sbyte);
+                    }
+                    else
+                    {
+                        TestUtils.IncInDic(intCounts, s.Int);
+                        TestUtils.IncInDic(sbyteCounts, s.Sbyte);
+                    }
+                }
+                if (i % 2 == 0)
+                {
+                    TestUtils.CheckDic(intCounts, numIterations);
+                    TestUtils.CheckDic(sbyteCounts, numIterations);
+                }
+            }
+        }
+        [TestMethod]
+        public void BaseFakerBasicTest()
+        {
+            Dictionary<int, int> valueCounts = new();
+            Dictionary<byte, int> fieldCounts = new();
+            int numIterations = 20;
+
+            for (int i = 0; i < numIterations; i++)
+            {
+                StorageFakerBase faker = new();
+                Storage s = faker.Generate();
+
+                Console.WriteLine(s);
+                TestUtils.IncInDic(valueCounts, s.Value.AnotherVal);
+                TestUtils.IncInDic(fieldCounts, s.Field);
+
+                Assert.AreEqual("ABRAKA", s.Text);
+                Assert.AreEqual(42, s.Test);
+                Assert.AreEqual(42, s.Value.Value);
+            }
+
+            TestUtils.CheckDic(valueCounts, numIterations);
+            TestUtils.CheckDic(fieldCounts, numIterations);
         }
     }
 }

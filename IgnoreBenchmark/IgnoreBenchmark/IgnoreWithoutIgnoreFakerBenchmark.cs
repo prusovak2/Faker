@@ -8,49 +8,109 @@ using Faker;
 
 namespace FakerBenchmark
 {
+    public class WithIgnore
+    {
+        public int Int;
+        public byte Byte;
+        [FakerIgnore]
+        public short Short { get; set; } = 73;
+        public DateTime DateTime { get; set; }
+        [FakerIgnore]
+        public double Double = 42.73;
+        public Guid Guid;
+        [FakerIgnore]
+        public string IgnoredString { get; set; } = "IGNORED";
+        [FakerIgnore]
+        public int IgnoredInt = 42;
+    }
+    public class WithIgnoreBaseFaker : BaseFaker<WithIgnore> { }
+    public class WithIgnoreAutoFaker : AutoFaker<WithIgnore> { }
+    public class WithoutIgnore
+    {
+        public int Int;
+        public byte Byte;
+        public short Short { get; set; } = 73;
+        public DateTime DateTime { get; set; }
+        public double Double = 42.73;
+        public Guid Guid;
+        public string IgnoredString { get; set; } = "IGNORED";
+        public int IgnoredInt = 42;
+    }
+    public class WithoutIgnoreBaseFaker : BaseFaker<WithoutIgnore> { }
+    public class WithoutIgnoreAutoFaker : AutoFaker<WithoutIgnore> { }
     
-
     [MemoryDiagnoser]
     [RankColumn]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class IgnoreWithoutIgnoreFakerBenchmark
     {
-        public static void WithoutIgnoreAttributes()
+        public void BaseWith()
         {
-            WithoutIgnoreBaseFaker faker = new WithoutIgnoreBaseFaker();
-            WithoutIgnore wi = faker.Generate();
-            wi = faker.Generate();
+            WithIgnoreBaseFaker faker = new();
+            WithIgnore x = faker.Generate();
+            x = faker.Generate();
         }
-        public static void WithoutIgnoreAttributesRulefor()
+        public void BaseWithout()
         {
-            WithoutIgnoreBaseFaker faker = new WithoutIgnoreBaseFaker();
-            WithoutIgnore wi = faker.Generate();
-            faker.RuleFor(x => x.Int, _ => 42);
-            wi = faker.Generate();
+            WithoutIgnoreBaseFaker faker = new();
+            WithoutIgnore x = faker.Generate();
+            x = faker.Generate();
         }
-
-
-        public static void WithIgnoreAttributes()
+        public void BaseWithRuleFor()
         {
-            WithIgnoreBaseFaker faker = new WithIgnoreBaseFaker();
-            WithIgnore wi = faker.Generate();
-            wi = faker.Generate();
+            WithIgnoreBaseFaker faker = new();
+            WithIgnore x = faker.Generate();
+            faker.RuleFor(a => a.Byte, _ => 42);
+            x = faker.Generate();
         }
-
+        public void AutoWith()
+        {
+            WithIgnoreAutoFaker faker = new();
+            WithIgnore x = faker.Generate();
+            x = faker.Generate();
+        }
+        public void AutoWithout()
+        {
+            WithoutIgnoreAutoFaker faker = new();
+            WithoutIgnore x = faker.Generate();
+            x = faker.Generate();
+        }
+        public void AutoWithRuleFor()
+        {
+            WithIgnoreAutoFaker faker = new();
+            WithIgnore x = faker.Generate();
+            faker.RuleFor(a => a.Byte, _ => 42);
+            x = faker.Generate();
+        }
         [Benchmark]
-        public void ScanningBaseFakerNoATTRs()
+        public void BaseFakerAttributes()
         {
-            WithoutIgnoreAttributes();
+            BaseWith();
         }
         [Benchmark]
-        public void ScanningBaseFakerATTRs()
+        public void BaseFakerNoAttributes()
         {
-            WithIgnoreAttributes();
+            BaseWithout();
         }
         [Benchmark]
-        public void RuleForBetweenGenerate()
+        public void BaseFakerAttributesRuleFor()
         {
-            WithoutIgnoreAttributesRulefor();
+            BaseWithRuleFor();
+        }
+        [Benchmark]
+        public void AutoFakerAttributes()
+        {
+            AutoWith();
+        }
+        [Benchmark]
+        public void AutoFakerNoAttributes()
+        {
+            AutoWithout();
+        }
+        [Benchmark]
+        public void AutoFakerAttributesRuleFor()
+        {
+            AutoWithRuleFor();
         }
     }
 }

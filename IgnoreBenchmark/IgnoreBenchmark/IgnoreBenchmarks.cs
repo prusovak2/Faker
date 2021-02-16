@@ -9,52 +9,7 @@ using Faker;
 
 namespace FakerBenchmark
 {
-    public class WithIgnore
-    {
-        public int Int;
-        public byte Byte;
-        [FakerIgnore]
-        public short Short { get; set; } = 73;
-        public DateTime DateTime { get; set; }
-        [FakerIgnore]
-        public double Double = 42.73;
-        public Guid Guid;
-        [FakerIgnore]
-        public string IgnoredString { get; set; } = "IGNORED";
-        [FakerIgnore]
-        public int IgnoredInt = 42;
-    }
 
-    public class WithIgnoreBaseFaker : BaseFaker<WithIgnore> 
-    {
-       public WithIgnoreBaseFaker()
-        {
-            FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
-        }
-    }
-
-    //public class WithIgnoreIgnoreFaker : IgnoreFaker<WithIgnore> { }
-
-
-    public class WithoutIgnore
-    {
-        public int Int;
-        public byte Byte;
-        public short Short { get; set; } = 73;
-        public DateTime DateTime { get; set; }
-        public double Double = 42.73;
-        public Guid Guid;
-        public string IgnoredString { get; set; } = "IGNORED";
-        public int IgnoredInt = 42;
-    }
-
-    public class WithoutIgnoreBaseFaker : BaseFaker<WithoutIgnore>
-    {
-        public WithoutIgnoreBaseFaker()
-        {
-            FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
-        }
-    }
 
     //public class WithoutIgnoreIgnoreFaker : IgnoreFaker<WithoutIgnore> { }
 
