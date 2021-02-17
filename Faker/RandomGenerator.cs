@@ -13,41 +13,46 @@ namespace Faker
         /// <summary>
         /// random letter, lower/upper case letter, digit, alphanumeric char, ASCII char...
         /// </summary>
-        public RandomChar Char { get; }
+        public RandomChar Char { get; private set; }
         /// <summary>
         /// random lower/upper case string, sequence of letters, alphanumeric string, string representation of hexadecimal number
         /// </summary>
-        public RandomString String { get; }
+        public RandomString String { get; private set; }
+    
         /// <summary>
         /// all C# basic types (int, double, decimal, sbyte...) DateTime, Guid, Bool, odd and even numbers...
         /// </summary>
-        public RandomBasicTypes Random { get; }
+        public RandomBasicTypes Random { get; private set; }
+
         /// <summary>
         /// enumerables of basic types
         /// </summary>
-        public RandomEnumerable Enumerable { get; }
+        public RandomEnumerable Enumerable { get; private set; }
         /// <summary>
         /// lists of basic types
         /// </summary>
-        public RandomList List { get; }
+        public RandomList List { get; private set; }
 
-        public RandomGenerator()
+        internal partial void RandomGeneratorInitializationGenerated();
+
+        internal void RandomGeneratorInitialization()
         {
-            this.RandomGeneratorAlg = new Xoshiro256starstar();
             this.Char = new RandomChar(this);
             this.String = new RandomString(this);
             this.Random = new RandomBasicTypes(this);
             this.Enumerable = new RandomEnumerable(this);
             this.List = new RandomList(this);
         }
+
+        public RandomGenerator()
+        {
+            this.RandomGeneratorAlg = new Xoshiro256starstar();
+            this.RandomGeneratorInitialization();
+        }
         public RandomGenerator(ulong seed)
         {
             this.RandomGeneratorAlg = new Xoshiro256starstar(seed);
-            this.Char = new RandomChar(this);
-            this.String = new RandomString(this);
-            this.Random = new RandomBasicTypes(this);
-            this.Enumerable = new RandomEnumerable(this);
-            this.List = new RandomList(this);
+            this.RandomGeneratorInitialization();
         }
         public ulong Seed => this.RandomGeneratorAlg.Seed;
         /// <summary>

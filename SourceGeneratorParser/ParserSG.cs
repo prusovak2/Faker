@@ -32,6 +32,7 @@ namespace Faker {
             sb.AppendLine($"{inMethodIndent}Console.WriteLine(\"DABRA\");");
             foreach (AdditionalText file in context.AdditionalFiles)
             {
+                AddFileRecord(file);
                 //Path.GetExtension(file.Path);
                 string dirName = new DirectoryInfo(Path.GetDirectoryName(file.Path)).Name;
                 string fileName = Path.GetFileNameWithoutExtension(file.Path);
@@ -105,7 +106,8 @@ using System;
 namespace Faker
 {
     public partial class RandomGenerator
-    {");
+    {
+");
 
             foreach (var pair in this.dirsWithFiles)
             {
@@ -114,6 +116,17 @@ namespace Faker
                 partialClassesBuilder.AppendLine($"{inClassIndent}public Random{dirName} {dirName} {{ get; private set; }}");
                 partialClassesBuilder.AppendLine($"{inClassIndent}public class Random{dirName}");
                 partialClassesBuilder.AppendLine($"{inClassIndent}{{");  //curly bracket opening partial class definition
+                partialClassesBuilder.Append(
+$@"            /// <summary>
+            /// reference to instance of Random generator that has reference to this instance of Random{dirName}
+            /// </summary>
+            internal RandomGenerator RG {{ get; }}
+            public Random{dirName}(RandomGenerator rg)
+            {{
+                this.RG = rg;
+            }}
+");
+
 
                 foreach (var fileName in pair.Value)
                 {
@@ -121,14 +134,15 @@ namespace Faker
                 }
 
                 partialClassesBuilder.AppendLine($"{inClassIndent}}}");  //curly bracket closing partial class definition
+                partialClassesBuilder.AppendLine();
             }
 
-            initBuilder.Append(@"    
-        }
+            initBuilder.Append(
+@"        }
     }
 }");
-            partialClassesBuilder.Append(@"
-    }
+            partialClassesBuilder.Append(
+@"   }
 }");
             return (initBuilder.ToString(), partialClassesBuilder.ToString()) ;
         }
