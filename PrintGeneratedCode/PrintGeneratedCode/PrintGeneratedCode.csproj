@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Faker">
+      <HintPath>..\..\Faker\bin\Debug\net5.0\Faker.dll</HintPath>
+    </Reference>
+    <Reference Include="SourceGeneratorParser">
+      <HintPath>..\..\SourceGeneratorParser\bin\Debug\netstandard2.0\SourceGeneratorParser.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
