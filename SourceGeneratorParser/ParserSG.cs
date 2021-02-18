@@ -11,6 +11,8 @@ namespace SourceGeneratorParser
     public class ParserSG : ISourceGenerator
     {
         internal const string inMethodIndent = "            ";
+        internal const string inNestedClassIndent = inMethodIndent;
+        internal const string inNestedClassMethodIndent = "                ";
         internal const string inClassIndent = "        ";
         internal const string inNameSpaceIndent = "    ";
         internal const string defaltCultureInfo = "en_us";
@@ -20,14 +22,26 @@ namespace SourceGeneratorParser
 
         public void Execute(GeneratorExecutionContext context)
         {
-            StringBuilder dataBuilder = new StringBuilder();
-           
-            dataBuilder.Append(@"
+            StringBuilder dataCtorBuilder = new StringBuilder();
+            dataCtorBuilder.Append(@"
 using System;
+using System.Collections.Generic;
+namespace Faker {
+    internal static partial class Data
+    {
+        static Data()
+        { 
+");
+
+            StringBuilder dataDictsBuilder = new StringBuilder();
+            dataDictsBuilder.Append(@"
+using System;
+using System.Collections.Generic;
 namespace Faker {
     internal static partial class Data
     {
 ");
+
             StringBuilder enumBuilder = new StringBuilder();
             enumBuilder.Append(@"
 using System;
@@ -37,8 +51,7 @@ namespace Faker {
             foreach (AdditionalText file in context.AdditionalFiles)
             {
                 AddFileRecord(file);
-                ParseFileToSourceCode(file, dataBuilder, enumBuilder, context);
-               
+                ParseFileToSourceCode(file, dataCtorBuilder,dataDictsBuilder, enumBuilder, context);
             }
 
             
@@ -47,10 +60,16 @@ namespace Faker {
 }");
 
             //end of Data class and Faker namespace
-            dataBuilder.Append(@"
+            dataDictsBuilder.Append(@"
     }
 }");
-            context.AddSource("GeneratedData.cs", SourceText.From(dataBuilder.ToString(), Encoding.UTF8));
+            dataCtorBuilder.Append(@"
+        }
+    }
+}");
+
+            context.AddSource("GeneratedDataCtor.cs", SourceText.From(dataCtorBuilder.ToString(), Encoding.UTF8));
+            context.AddSource("GeneratedDataDicts", SourceText.From(dataDictsBuilder.ToString(), Encoding.UTF8));
             context.AddSource("GeneratedEnums.cs", SourceText.From(enumBuilder.ToString(), Encoding.UTF8));
 
             string initMethodSource;
@@ -77,43 +96,50 @@ namespace Faker {
             return true;
         }
 
-        internal void ParseFileToSourceCode(AdditionalText file, StringBuilder dataBuilder, StringBuilder enumBuilder, GeneratorExecutionContext context)
+        internal void ParseFileToSourceCode(AdditionalText file, StringBuilder dataCtorBuilder, StringBuilder dataDictsBuilder, StringBuilder enumBuilder, GeneratorExecutionContext context)
         {
+            //per file
             string dirName = new DirectoryInfo(Path.GetDirectoryName(file.Path)).Name;
             string fileName = Path.GetFileNameWithoutExtension(file.Path);
 
-            //per file
-
-            //enum type for culture
+            //enum type for cultures from this file
             enumBuilder.Append($@"
     public enum {dirName}{fileName}Culture 
     {{
 ");
+            //read file and parse it to dictionary, where keys are culture strings and values are list containing data from file
             Dictionary<string, List<string>> culInfosAndData = ParseFileToDictionary(file, context);
+
+            dataDictsBuilder.AppendLine($@"{inClassIndent}internal static Dictionary<string, string[]> {dirName}{fileName} = new();");
+
             foreach (var pair in culInfosAndData)
             {
                 string culture = pair.Key;
+                //add new enum constant representing this culture
                 enumBuilder.AppendLine($"{inMethodIndent}{culture},");
 
-                dataBuilder.Append($@"{inClassIndent}internal static string[] {dirName}{fileName}{culture} = {{
+                //create array containing data belonging to this culture
+                dataCtorBuilder.Append($@"{inMethodIndent}string[] {dirName}{fileName}{culture} = {{
             ");
 
-                int counter = 0;
+                int counter = 0; 
                 foreach (var word in pair.Value)  //for each word
                 {
-                    dataBuilder.Append($"\"{word}\",");
+                    dataCtorBuilder.Append($"\"{word}\",");  //add word to array
                     counter++;
-                    if (counter == 10)
+                    if (counter == 10) // ten records per line in resulting source code to keep it readable
                     {
                         counter = 0;
-                        dataBuilder.AppendLine();
-                        dataBuilder.Append($"{inMethodIndent}");
+                        dataCtorBuilder.AppendLine();
+                        dataCtorBuilder.Append($"{inNestedClassMethodIndent}"); //indent on the new line
                     }
                 }
-                dataBuilder.AppendLine(" };");
-                dataBuilder.AppendLine();
+                dataCtorBuilder.AppendLine(" };"); //end of an array
+                dataCtorBuilder.AppendLine();
+                dataCtorBuilder.AppendLine($"{inMethodIndent}Data.{dirName}{fileName}.Add(\"{culture}\", {dirName}{fileName}{culture});"); //add array to dictionary
+                dataCtorBuilder.AppendLine();
             }
-            enumBuilder.AppendLine($@"{inNameSpaceIndent}}}");
+            enumBuilder.AppendLine($@"{inNameSpaceIndent}}}"); //end of enum type definition
         }
 
         internal Dictionary<string, List<string>> ParseFileToDictionary(AdditionalText file, GeneratorExecutionContext context)
@@ -210,6 +236,12 @@ $@"            /// <summary>
                 foreach (var fileName in pair.Value)
                 {
                     //TODO:generate method per file in the dir
+                    partialClassesBuilder.AppendLine($"{inNestedClassIndent}public string {fileName}({dirName}{fileName}Culture? culInfo = null)");
+                    partialClassesBuilder.AppendLine($"{inNestedClassIndent}{{");
+
+                    partialClassesBuilder.AppendLine($"{inNestedClassMethodIndent}return \"ABRAKA\";"); //TODO: add real method body
+
+                    partialClassesBuilder.AppendLine($"{inNestedClassIndent}}}");
                 }
 
                 partialClassesBuilder.AppendLine($"{inClassIndent}}}");  //curly bracket closing partial class definition
