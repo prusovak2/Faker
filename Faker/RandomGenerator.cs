@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Faker
@@ -10,6 +11,9 @@ namespace Faker
         /// underlying algorithm for generating random bit sequences that all other random entities are derived from
         /// </summary>
         internal IRandomGeneratorAlg RandomGeneratorAlg { get; set; }
+
+        public CultureInfo Culture { get; } = new CultureInfo("en-US");
+
         /// <summary>
         /// random letter, lower/upper case letter, digit, alphanumeric char, ASCII char...
         /// </summary>
@@ -48,11 +52,13 @@ namespace Faker
         {
             this.RandomGeneratorAlg = new Xoshiro256starstar();
             this.RandomGeneratorInitialization();
+            this.RandomGeneratorInitializationGenerated();
         }
         public RandomGenerator(ulong seed)
         {
             this.RandomGeneratorAlg = new Xoshiro256starstar(seed);
             this.RandomGeneratorInitialization();
+            this.RandomGeneratorInitializationGenerated();
         }
         public ulong Seed => this.RandomGeneratorAlg.Seed;
         /// <summary>

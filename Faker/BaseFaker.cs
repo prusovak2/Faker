@@ -39,6 +39,9 @@ namespace Faker
         /// Parameters for TClass constructor used when CtorUsageFlag = InnerFakerConstructorUsage.GivenParameters 
         /// </summary>
         public object[] CtorParameters { get; set; } = new object[] { };
+
+        public CultureInfo Culture { get; } = new CultureInfo("en-US");
+
         /// <summary>
         /// Generate call on a faker calls Generate on all its innerFakers 
         /// </summary>
@@ -68,6 +71,7 @@ namespace Faker
             this.Random = new RandomGenerator();
             
         }
+
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of RandomGenerator with a given seed
         /// </summary>

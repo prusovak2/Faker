@@ -63,6 +63,7 @@ namespace Faker {
             dataDictsBuilder.Append(@"
     }
 }");
+            //end of Data static ctor
             dataCtorBuilder.Append(@"
         }
     }
@@ -110,7 +111,8 @@ namespace Faker {
             //read file and parse it to dictionary, where keys are culture strings and values are list containing data from file
             Dictionary<string, List<string>> culInfosAndData = ParseFileToDictionary(file, context);
 
-            dataDictsBuilder.AppendLine($@"{inClassIndent}internal static Dictionary<string, string[]> {dirName}{fileName} = new();");
+            // add declaration of per file dictionary to Data class
+            dataDictsBuilder.AppendLine($@"{inClassIndent}internal static Dictionary<{dirName}{fileName}Culture, string[]> {dirName}{fileName} = new();");
 
             foreach (var pair in culInfosAndData)
             {
@@ -136,7 +138,7 @@ namespace Faker {
                 }
                 dataCtorBuilder.AppendLine(" };"); //end of an array
                 dataCtorBuilder.AppendLine();
-                dataCtorBuilder.AppendLine($"{inMethodIndent}Data.{dirName}{fileName}.Add(\"{culture}\", {dirName}{fileName}{culture});"); //add array to dictionary
+                dataCtorBuilder.AppendLine($"{inMethodIndent}Data.{dirName}{fileName}.Add({dirName}{fileName}Culture.{culture}, {dirName}{fileName}{culture});"); //add array to dictionary
                 dataCtorBuilder.AppendLine();
             }
             enumBuilder.AppendLine($@"{inNameSpaceIndent}}}"); //end of enum type definition
@@ -218,7 +220,9 @@ namespace Faker
             {
                 string dirName = pair.Key;
                 initBuilder.AppendLine($@"{inMethodIndent}this.{dirName} = new Random{dirName}(this);");
+
                 partialClassesBuilder.AppendLine($"{inClassIndent}public Random{dirName} {dirName} {{ get; private set; }}");
+                partialClassesBuilder.AppendLine();
                 partialClassesBuilder.AppendLine($"{inClassIndent}public class Random{dirName}");
                 partialClassesBuilder.AppendLine($"{inClassIndent}{{");  //curly bracket opening partial class definition
                 partialClassesBuilder.Append(
@@ -235,13 +239,23 @@ $@"            /// <summary>
 
                 foreach (var fileName in pair.Value)
                 {
-                    //TODO:generate method per file in the dir
-                    partialClassesBuilder.AppendLine($"{inNestedClassIndent}public string {fileName}({dirName}{fileName}Culture? culInfo = null)");
-                    partialClassesBuilder.AppendLine($"{inNestedClassIndent}{{");
 
-                    partialClassesBuilder.AppendLine($"{inNestedClassMethodIndent}return \"ABRAKA\";"); //TODO: add real method body
+                    partialClassesBuilder.AppendLine($@"
+            public string {fileName}({dirName}{fileName}Culture? culInfo = null)
+            {{
+                {dirName}{fileName}Culture culToUse;
+                if (culInfo.HasValue)
+                {{
+                    culToUse = culInfo.Value;
+                }}
+                else if(!Enum.TryParse(RG.Culture.SGFriendlyName(), true, out culToUse))
+                {{
+                    Enum.TryParse(RG.Culture.TwoLetterISOLanguageName, true, out culToUse);
+                }}
+                string[] toPickFrom = Faker.Data.{dirName}{fileName}[culToUse];
+                return RG.Pick(toPickFrom);
+            }}");
 
-                    partialClassesBuilder.AppendLine($"{inNestedClassIndent}}}");
                 }
 
                 partialClassesBuilder.AppendLine($"{inClassIndent}}}");  //curly bracket closing partial class definition

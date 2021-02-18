@@ -8,6 +8,6 @@ namespace Faker
 {
     internal static partial class Data
     {
-        
+
     }
 }

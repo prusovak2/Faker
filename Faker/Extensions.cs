@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Faker
@@ -247,6 +248,14 @@ namespace Faker
         {
             RandomGenerator random = new RandomGenerator();
             return random.Pick(pickFrom);
+        }
+    }
+
+    internal static class CultureInfoExtensions
+    {
+        public static string SGFriendlyName(this CultureInfo info)
+        {
+            return info.Name.Replace('-', '_');
         }
     }
 
