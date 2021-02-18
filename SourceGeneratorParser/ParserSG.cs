@@ -13,7 +13,7 @@ namespace SourceGeneratorParser
         internal const string inMethodIndent = "            ";
         internal const string inClassIndent = "        ";
         internal const string inNameSpaceIndent = "    ";
-        internal const string defaltCultureInfo = "en-us";
+        internal const string defaltCultureInfo = "en_us";
         internal Dictionary<string, HashSet<string>> dirsWithFiles = new();
 
         public void Initialize(GeneratorInitializationContext context) { }
@@ -84,18 +84,26 @@ namespace Faker {
 
         internal void ParseFileToSourceCode(AdditionalText file, StringBuilder dataBuilder, StringBuilder enumBuilder, GeneratorExecutionContext context)
         {
+            string dirName = new DirectoryInfo(Path.GetDirectoryName(file.Path)).Name;
+            string fileName = Path.GetFileNameWithoutExtension(file.Path);
 
+            enumBuilder.Append($@"
+    public enum {dirName}{fileName}Culture 
+    {{
+");
 
             Dictionary<string, List<string>> culInfosAndData = ParseFileToDictionary(file, context);
             foreach (var pair in culInfosAndData)
             {
+                enumBuilder.AppendLine($"{inMethodIndent}{pair.Key},");
+
                 dataBuilder.AppendLine(@$"{inMethodIndent}Console.WriteLine(""[CulInfo: {pair.Key} ], count {pair.Value.Count}"");");
                 foreach (var item in pair.Value)
                 {
                     dataBuilder.AppendLine(@$"{inMethodIndent}Console.WriteLine(""{item}"");");
                 }
             }
-
+            enumBuilder.AppendLine($@"{inNameSpaceIndent}}}");
 
 
         }
