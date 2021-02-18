@@ -12,50 +12,51 @@ namespace SourceGeneratorParser
     {
         internal const string inMethodIndent = "            ";
         internal const string inClassIndent = "        ";
+        internal const string inNameSpaceIndent = "    ";
+        internal const string defaltCultureInfo = "en-us";
         internal Dictionary<string, HashSet<string>> dirsWithFiles = new();
 
         public void Initialize(GeneratorInitializationContext context) { }
 
         public void Execute(GeneratorExecutionContext context)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder dataBuilder = new StringBuilder();
            
-            sb.Append(@"
+            dataBuilder.Append(@"
 using System;
 namespace Faker {
     public static partial class Data
     {
-        public static partial string GetFileText()
+");
+            StringBuilder enumBuilder = new StringBuilder();
+            enumBuilder.Append(@"
+using System;
+namespace Faker {
+");
+
+            dataBuilder.Append(@"
+        public static void SomeMethod()
         {
 ");
-            sb.AppendLine($"{inMethodIndent}Console.WriteLine(\"ABRAKA\");");
-            sb.AppendLine($"{inMethodIndent}Console.WriteLine(\"DABRA\");");
+
             foreach (AdditionalText file in context.AdditionalFiles)
             {
                 AddFileRecord(file);
-                //Path.GetExtension(file.Path);
-                string dirName = new DirectoryInfo(Path.GetDirectoryName(file.Path)).Name;
-                string fileName = Path.GetFileNameWithoutExtension(file.Path);
-                sb.AppendLine($@"{inMethodIndent}Console.WriteLine(""{dirName}"");");
-                sb.AppendLine($@"{inMethodIndent}Console.WriteLine(""{fileName}"");");
-
-                sb.AppendLine($@"{inMethodIndent}Console.WriteLine(""{file.Path.Replace('\\', '/')}"");");
-                var text = file.GetText(context.CancellationToken).ToString();
-                //char[] delims = { ' ', '\t', '\n' };
-                var words = text.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
-                foreach (var item in words)
-                {
-                    sb.AppendLine($@"{inMethodIndent}Console.WriteLine(""{item}"");");
-                }
-                
+                ParseFileToSourceCode(file, dataBuilder, enumBuilder, context);
                
             }
-            sb.AppendLine($"{inMethodIndent}return \"ABRAKA\";");
-            sb.Append(@"
-        }
+
+            dataBuilder.Append(@"
+        }");
+
+            enumBuilder.Append(@"
+}");
+
+            dataBuilder.Append(@"
     }
 }");
-            context.AddSource("Generated.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
+            context.AddSource("GeneratedData.cs", SourceText.From(dataBuilder.ToString(), Encoding.UTF8));
+            context.AddSource("GeneratedEnums.cs", SourceText.From(enumBuilder.ToString(), Encoding.UTF8));
 
             string initMethodSource;
             string partialClassesSource;
@@ -81,11 +82,73 @@ namespace Faker {
             return true;
         }
 
-        internal void ParseFileToSourceCode(AdditionalText file, StringBuilder sb, GeneratorExecutionContext context)
+        internal void ParseFileToSourceCode(AdditionalText file, StringBuilder dataBuilder, StringBuilder enumBuilder, GeneratorExecutionContext context)
         {
+
+
+            Dictionary<string, List<string>> culInfosAndData = ParseFileToDictionary(file, context);
+            foreach (var pair in culInfosAndData)
+            {
+                dataBuilder.AppendLine(@$"{inMethodIndent}Console.WriteLine(""[CulInfo: {pair.Key} ], count {pair.Value.Count}"");");
+                foreach (var item in pair.Value)
+                {
+                    dataBuilder.AppendLine(@$"{inMethodIndent}Console.WriteLine(""{item}"");");
+                }
+            }
+
+
+
+        }
+
+        internal Dictionary<string, List<string>> ParseFileToDictionary(AdditionalText file, GeneratorExecutionContext context)
+        {
+            Dictionary<string, List<string>> culInfosAndData = new();
+
             var text = file.GetText(context.CancellationToken).ToString();
-            var words = text.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
-            //TODO:parse file to dictionary
+            var words = text.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            string curCulInfo = defaltCultureInfo; //Default
+            List<string> curData = new();
+            for (int i = 0; i < words.Length; i++)
+            {
+                string curWord = words[i].Trim();
+                if (curWord.Length == 0)
+                {
+                    continue;
+                }
+                if ((curWord.StartsWith("[") && curWord.EndsWith("]")))
+                {
+                    AddDataToDictionaryIfNotNull(culInfosAndData, curCulInfo, curData);
+                    curCulInfo = curWord.Trim(new char[] { '[', ']' });
+                    curData = new List<string>();
+                }
+                else
+                {
+                    //ordinaryWord
+                    curData.Add(curWord);
+                }
+            }
+            if(curData is not null && curData.Count > 0)
+            {
+                AddDataToDictionaryIfNotNull(culInfosAndData, curCulInfo, curData);
+            }
+
+            return culInfosAndData;
+        }
+
+        internal void AddDataToDictionaryIfNotNull(Dictionary<string, List<string>> culInfosAndData, string curCulInfo, List<string> curData)
+        {
+            if (curCulInfo is not null && curData is not null)
+            {
+                if (culInfosAndData.ContainsKey(curCulInfo))
+                {
+                    culInfosAndData[curCulInfo].AddRange(curData);
+                }
+                else
+                {
+                    culInfosAndData.Add(curCulInfo, curData);
+                }
+            }
         }
 
         internal (string, string) CreateSourceForRGPartialClasses()

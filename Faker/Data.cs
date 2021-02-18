@@ -8,6 +8,6 @@ namespace Faker
 {
     public static partial class Data
     {
-        public static partial string GetFileText();
+        
     }
 }

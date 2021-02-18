@@ -15,8 +15,7 @@ namespace FakerTests
         [TestMethod]
         public void BasicTest()
         {
-            string s = Data.GetFileText();
-            Console.WriteLine(s);
+           
         }
     }
 }
