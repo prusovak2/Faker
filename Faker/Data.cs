@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Faker
 {
-    public static partial class Data
+    internal static partial class Data
     {
         
     }

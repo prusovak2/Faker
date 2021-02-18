@@ -25,18 +25,13 @@ namespace SourceGeneratorParser
             dataBuilder.Append(@"
 using System;
 namespace Faker {
-    public static partial class Data
+    internal static partial class Data
     {
 ");
             StringBuilder enumBuilder = new StringBuilder();
             enumBuilder.Append(@"
 using System;
 namespace Faker {
-");
-
-            dataBuilder.Append(@"
-        public static void SomeMethod()
-        {
 ");
 
             foreach (AdditionalText file in context.AdditionalFiles)
@@ -46,12 +41,12 @@ namespace Faker {
                
             }
 
-            dataBuilder.Append(@"
-        }");
-
+            
+            //end of Faker namespace in GeneratedEnums.cs
             enumBuilder.Append(@"
 }");
 
+            //end of Data class and Faker namespace
             dataBuilder.Append(@"
     }
 }");
@@ -87,25 +82,38 @@ namespace Faker {
             string dirName = new DirectoryInfo(Path.GetDirectoryName(file.Path)).Name;
             string fileName = Path.GetFileNameWithoutExtension(file.Path);
 
+            //per file
+
+            //enum type for culture
             enumBuilder.Append($@"
     public enum {dirName}{fileName}Culture 
     {{
 ");
-
             Dictionary<string, List<string>> culInfosAndData = ParseFileToDictionary(file, context);
             foreach (var pair in culInfosAndData)
             {
-                enumBuilder.AppendLine($"{inMethodIndent}{pair.Key},");
+                string culture = pair.Key;
+                enumBuilder.AppendLine($"{inMethodIndent}{culture},");
 
-                dataBuilder.AppendLine(@$"{inMethodIndent}Console.WriteLine(""[CulInfo: {pair.Key} ], count {pair.Value.Count}"");");
-                foreach (var item in pair.Value)
+                dataBuilder.Append($@"{inClassIndent}internal static string[] {dirName}{fileName}{culture} = {{
+            ");
+
+                int counter = 0;
+                foreach (var word in pair.Value)  //for each word
                 {
-                    dataBuilder.AppendLine(@$"{inMethodIndent}Console.WriteLine(""{item}"");");
+                    dataBuilder.Append($"\"{word}\",");
+                    counter++;
+                    if (counter == 10)
+                    {
+                        counter = 0;
+                        dataBuilder.AppendLine();
+                        dataBuilder.Append($"{inMethodIndent}");
+                    }
                 }
+                dataBuilder.AppendLine(" };");
+                dataBuilder.AppendLine();
             }
             enumBuilder.AppendLine($@"{inNameSpaceIndent}}}");
-
-
         }
 
         internal Dictionary<string, List<string>> ParseFileToDictionary(AdditionalText file, GeneratorExecutionContext context)
