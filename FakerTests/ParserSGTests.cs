@@ -14,7 +14,7 @@ namespace FakerTests
     public class ParserSGTests
     {
         [TestMethod]
-        public void BasicTest()
+        public void NOASSERTbasicTest()
         {
             RandomGenerator r = new();
             Console.WriteLine("NAME, DEFAULT CULTURE");

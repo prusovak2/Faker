@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FakerTests", "FakerTests\Fa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceGeneratorParser", "SourceGeneratorParser\SourceGeneratorParser.csproj", "{588C45B0-00D2-41CC-A6AF-4FB55063DFFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintGeneratedCode2", "PrintGeneratedCode2\PrintGeneratedCode2.csproj", "{DEEEE6E1-1452-4451-A0D2-5887BD23736D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{588C45B0-00D2-41CC-A6AF-4FB55063DFFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{588C45B0-00D2-41CC-A6AF-4FB55063DFFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{588C45B0-00D2-41CC-A6AF-4FB55063DFFA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEEEE6E1-1452-4451-A0D2-5887BD23736D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEEEE6E1-1452-4451-A0D2-5887BD23736D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEEEE6E1-1452-4451-A0D2-5887BD23736D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEEEE6E1-1452-4451-A0D2-5887BD23736D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
