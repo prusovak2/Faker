@@ -162,7 +162,7 @@ namespace Faker {
                 }
                 if ((curWord.StartsWith("[") && curWord.EndsWith("]")))
                 {
-                    AddDataToDictionaryIfNotNull(culInfosAndData, curCulInfo, curData);
+                    AddDataToDictionaryIfNotNullAndNonEmpty(culInfosAndData, curCulInfo, curData);
                     curCulInfo = curWord.Trim(new char[] { '[', ']' });
                     curData = new List<string>();
                 }
@@ -172,17 +172,16 @@ namespace Faker {
                     curData.Add(curWord);
                 }
             }
-            if(curData is not null && curData.Count > 0)
-            {
-                AddDataToDictionaryIfNotNull(culInfosAndData, curCulInfo, curData);
-            }
+            
+            AddDataToDictionaryIfNotNullAndNonEmpty(culInfosAndData, curCulInfo, curData);
+            
 
             return culInfosAndData;
         }
 
-        internal void AddDataToDictionaryIfNotNull(Dictionary<string, List<string>> culInfosAndData, string curCulInfo, List<string> curData)
+        internal void AddDataToDictionaryIfNotNullAndNonEmpty(Dictionary<string, List<string>> culInfosAndData, string curCulInfo, List<string> curData)
         {
-            if (curCulInfo is not null && curData is not null)
+            if (curCulInfo is not null && curData is not null && curData.Count > 0)
             {
                 if (culInfosAndData.ContainsKey(curCulInfo))
                 {
