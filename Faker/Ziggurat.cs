@@ -37,10 +37,11 @@ namespace Faker
             ulong uMantis = generatorAlg.Next();
             uMantis >>= 11; //throw away lower 11 bits of uncertain quality
 
-            //
+           
             ulong uSector = generatorAlg.Next();
             ulong uppermostBit = uSector & 0x8000_0000_0000_0000; //one and 63 zeros
-
+            ulong bitsOfDoubleOne = 0x3ff0_0000_0000_0000UL;
+            double sign = BitConverter.Int64BitsToDouble(unchecked((long)(bitsOfDoubleOne | uppermostBit)));
 
 
             Sign(42);
@@ -53,7 +54,7 @@ namespace Faker
 
         protected abstract double ProbabilytyDensityInverz(double y);
 
-        protected abstract double Sign(ulong random);
+        protected abstract double Sign(ulong random=0);
     }
 
     sealed class NormalDistribution : Ziggurat
