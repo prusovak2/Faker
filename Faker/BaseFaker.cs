@@ -39,9 +39,10 @@ namespace Faker
         /// Parameters for TClass constructor used when CtorUsageFlag = InnerFakerConstructorUsage.GivenParameters 
         /// </summary>
         public object[] CtorParameters { get; set; } = new object[] { };
-
-        public CultureInfo Culture { get; } = new CultureInfo("en-US");
-
+        /// <summary>
+        /// affects a behavior of some of the methods on RandomGenerator to produce more culturally adequate values (names, city names...)  
+        /// </summary>
+        public CultureInfo Culture => this.Random.Culture;
         /// <summary>
         /// Generate call on a faker calls Generate on all its innerFakers 
         /// </summary>
@@ -64,16 +65,25 @@ namespace Faker
         internal HashSet<MemberInfo> MembersToBeFilledDefaultly { get; set; } = null;
 
         /// <summary>
-        /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically
+        /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
+        /// this BaseFaker uses a default en-US culture
         /// </summary>
         public BaseFaker()
         {
             this.Random = new RandomGenerator();
             
         }
-
         /// <summary>
-        /// new instance of BaseFaker that creates a new instance of RandomGenerator with a given seed
+        /// new instance of BaseFaker customized to given culture that creates a new instance of the RandomGenerator and produces its seed automatically
+        /// </summary>
+        /// <param name="info"></param>
+        public BaseFaker(CultureInfo info)
+        {
+            this.Random = new RandomGenerator(info);
+        }
+        /// <summary>
+        /// new instance of BaseFaker that creates a new instance of RandomGenerator with a given seed <br/>
+        /// this BaseFaker uses a default en-US culture
         /// </summary>
         /// <param name="seed"></param>
         public BaseFaker(ulong seed)
@@ -81,7 +91,16 @@ namespace Faker
             this.Random = new RandomGenerator(seed);
         }
         /// <summary>
-        /// new instance of BaseFaker that uses existing instance of RandomGenerator <br/>
+        ///  new instance of BaseFaker customized to given culture that creates a new instance of RandomGenerator with a given seed
+        /// </summary>
+        /// <param name="seed"></param>
+        /// <param name="info"></param>
+        public BaseFaker(ulong seed, CultureInfo info)
+        {
+            this.Random = new RandomGenerator(seed, info);
+        }
+        /// <summary>
+        /// new instance of BaseFaker customized to given culture that uses existing instance of RandomGenerator <br/>
         /// one instance of random generator can be shared by multiple fakers to save memory <br/>
         /// recommended for innerFakers 
         /// </summary>
