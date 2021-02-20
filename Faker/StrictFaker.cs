@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -17,7 +18,15 @@ namespace Faker
         {
             InitializeListOfRandomlyFilledMembers();
         }
-
+        /// <summary>
+        /// new instance of StrictFaker customized to a given Culture that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
+        /// this Faker requires to have Rules or InnerFakers set for all TClass members before Generate method can be called
+        /// </summary>
+        /// <param name="info"></param>
+        public StrictFaker(CultureInfo info) : base(info)
+        {
+            InitializeListOfRandomlyFilledMembers();
+        }
         /// <summary>
         /// new instance of StrictFaker that creates a new instance of RandomGenerator with a given seed <br/>
         /// this Faker requires to have Rules or InnerFakers set for all TClass members before Generate method can be called
@@ -27,7 +36,16 @@ namespace Faker
         {
             InitializeListOfRandomlyFilledMembers();
         }
-
+        /// <summary>
+        /// new instance of StrictFaker customized to a given Culture that creates a new instance of RandomGenerator with a given seed <br/>
+        /// this Faker requires to have Rules or InnerFakers set for all TClass members before Generate method can be called
+        /// </summary>
+        /// <param name="seed"></param>
+        /// <param name="info"></param>
+        public StrictFaker(ulong seed, CultureInfo info) : base(seed, info)
+        {
+            InitializeListOfRandomlyFilledMembers();
+        }
         /// <summary>
         /// new instance of StrictFaker that uses existing instance of RandomGenerator <br/>
         /// one instance of random generator can be shared by multiple fakers to save memory <br/>
@@ -39,7 +57,6 @@ namespace Faker
         {
             InitializeListOfRandomlyFilledMembers();
         }
-
         /// <summary>
         /// indicates whether all members of this instance of TClass do have a Rule or an InnerFaker set for them <br/>
         /// does not recursively check all inner StrictFakers <br/>
@@ -50,7 +67,6 @@ namespace Faker
         {
             return !this.MembersToBeFilledDefaultly.Any();
         }
-
         /// <summary>
         /// Internal method to be called on InnerFakers  <br/>
         /// indicates whether all members of this instance of TClass as well as all members of members of TClass with a StrictFaker set for them <br/>
@@ -71,7 +87,6 @@ namespace Faker
             }
             return allFiled;
         }
-
         /// <summary>
         /// indicates whether all members of this instance of TClass as well as all members of members of TClass with a StrictFaker set for them <br/>
         /// do have a Rule or an InnerFaker set for them <br/>
@@ -82,7 +97,6 @@ namespace Faker
         {
             return ((IFaker) this).AllRulesSetDeep();
         }
-
         /// <summary>
         /// returns HashSet of the members of this instance of TClass that require a Rule or a InnerFaker to be set for them <br/>
         /// does not recursively scan all inner StrictFakers
@@ -113,7 +127,6 @@ namespace Faker
             }
             return members;
         }
-
         /// <summary>
         /// returns HashSet of the members of this instance of TClass that require a Rule or a InnerFaker to be set for them <br/>
         /// and scans all the members with StrictFaker set for them recursively for all other members requiring a Rule or an InnerFaker <br/>
@@ -124,7 +137,6 @@ namespace Faker
         {
             return ((IFaker)this).GetAllMembersRequiringRuleDeep();
         }
-
         /// <summary>
         /// Adds Rule for how to generate a random content of particular member <br/>
         /// selector and setter must have the same return type
@@ -146,7 +158,6 @@ namespace Faker
             base._internalRuleFor(memberInfo, setter);
             MembersToBeFilledDefaultly.Remove(memberInfo);
         }
-
         /// <summary>
         /// Sets member as Ignored - this member won't be filled by default random function by AutoFaker instances <br/>
         /// </summary>
@@ -180,7 +191,6 @@ namespace Faker
             base._internalSetFaker(memberInfo, faker);
             MembersToBeFilledDefaultly.Remove(memberInfo);
         }
-
         /// <summary>
         /// Use rules to fill the instance with a random content
         /// </summary>

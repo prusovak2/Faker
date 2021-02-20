@@ -1,7 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)\GeneratedFiles</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
 
-</Project>
+  <ItemGroup>
+    <None Remove="RandomData\Address\Country.fakd" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <AdditionalFiles Include="RandomData\Address\City.fakd" />
+    <AdditionalFiles Include="RandomData\Address\Country.fakd" />
+    <AdditionalFiles Include="RandomData\Person\Name.fakd" />
+    <ProjectReference Include="..\SourceGeneratorParser\SourceGeneratorParser.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  </Project>
