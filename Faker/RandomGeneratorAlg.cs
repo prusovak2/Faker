@@ -11,6 +11,8 @@ namespace Faker
     {
         public ulong Seed { get; }
         public ulong Next();
+        public double Next01Double();
+        public double Next01NonZeroDouble();
         public static ulong getCurrentUnixTime()
         {
             return (ulong)Environment.TickCount64;
@@ -21,6 +23,7 @@ namespace Faker
     /// </summary>
     internal class Xoshiro256starstar : IRandomGeneratorAlg
     {
+        const double oneStep = 1.0 / (1UL << 53);
         /// <summary>
         /// seed of this RNG, any instance created with the same value of seed is going to produce the same sequence of pseudo-random numbers
         /// </summary>
@@ -85,6 +88,25 @@ namespace Faker
 
             return result;
         }
+        /// <summary>
+        /// random double from interval [0, 1 - 1/2^53]
+        /// </summary>
+        /// <returns></returns>
+        public double Next01Double()
+        {
+            ulong next = this.Next();
+            double result = (next >> 11) * oneStep;
+            return result;
+        }
+        /// <summary>
+        /// random double from interval [1/2^53, 1]
+        /// </summary>
+        /// <returns></returns>
+        public double Next01NonZeroDouble()
+        {
+            double res = Next01Double() + oneStep;
+            return res;
+        }
 
     }
     /// <summary>
@@ -139,7 +161,16 @@ namespace Faker
             next = (next ^ (next >> 27)) * 0x94d049bb133111eb;
             return next ^ (next >> 31);
         }
-    }
 
+        double IRandomGeneratorAlg.Next01Double()
+        {
+            throw new NotImplementedException();
+        }
+
+        double IRandomGeneratorAlg.Next01NonZeroDouble()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
 
