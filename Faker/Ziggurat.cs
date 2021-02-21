@@ -10,6 +10,10 @@ namespace Faker
 {
     internal abstract class Ziggurat
     {
+        internal Ziggurat()
+        {
+            Initialize();
+        }
         /// <summary>
         /// num of rectangles to be used to cover a distribution
         /// </summary>
@@ -81,12 +85,9 @@ namespace Faker
                 xRatios[i] = (ulong)((x[i + 1] / x[i]) * (double)max53bitUlong);
             }
             xRatios[numBlocks - 1] = 0;  //unnecessary?
-
-            // Sanity check. Test that the top edge of the topmost rectangle is at y=1.0.
-            Debug.Assert(Math.Abs(1.0 - y[numBlocks - 1]) < 1e-10);
         }
 
-        protected double Generate(IRandomGeneratorAlg generatorAlg)
+        public double Generate(IRandomGeneratorAlg generatorAlg)
         {
             for(; ; ) //rejection sampling algorithm
             {
@@ -149,8 +150,16 @@ namespace Faker
         protected abstract double Sign(ulong random=0);
     }
 
-    sealed class NormalDistribution : Ziggurat
+    sealed internal class NormalZiggurat : Ziggurat
     {
+        //thread safe? implementation of a singleton pattern using behavior of static ctors in csharp 
+        private static readonly NormalZiggurat _instance = new NormalZiggurat();
+        private NormalZiggurat() { }
+
+        static NormalZiggurat() { }
+
+        public static NormalZiggurat Instance { get => _instance; }
+
         /// <summary>
         /// Right hand x coord of the base rectangle, thus also the left hand x coord of the tail
         /// precomputed, taken from https://www.researchgate.net/publication/5142790_The_Ziggurat_Method_for_Generating_Random_Variables
@@ -210,8 +219,16 @@ namespace Faker
         }
     }
 
-    sealed class ExponentialDistribution : Ziggurat
+    sealed internal class ExponentialZiggurat : Ziggurat
     {
+        //thread safe? implementation of a singleton pattern using behavior of static ctors in csharp 
+        private static readonly ExponentialZiggurat _instance = new ExponentialZiggurat();
+        private ExponentialZiggurat() { }
+
+        static ExponentialZiggurat() { }
+
+        public static ExponentialZiggurat Instance { get => _instance; }
+
         /// <summary>
         /// Right hand x coord of the base rectangle, thus also the left hand x coord of the tail
         /// precomputed, taken from https://www.researchgate.net/publication/5142790_The_Ziggurat_Method_for_Generating_Random_Variables
@@ -241,6 +258,23 @@ namespace Faker
         protected override double Sign(ulong random = 0)
         {
             return 1;
+        }
+    }
+
+    internal class NormalDistribution
+    {
+        internal NormalZiggurat ziggurat = NormalZiggurat.Instance;
+
+        internal IRandomGeneratorAlg GeneratorAlg { get; }
+
+        public NormalDistribution(IRandomGeneratorAlg generatorAlg)
+        {
+            this.GeneratorAlg = generatorAlg;
+        }
+        
+        public double Double(double mean = 0, double stdDev = 1)
+        {
+            return mean + (ziggurat.Generate(this.GeneratorAlg) * stdDev);
         }
     }
 }
