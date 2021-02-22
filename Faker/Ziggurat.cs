@@ -261,20 +261,29 @@ namespace Faker
         }
     }
 
-    internal class NormalDistribution
+    internal static class NormalDistribution
     {
-        internal NormalZiggurat ziggurat = NormalZiggurat.Instance;
-
-        internal IRandomGeneratorAlg GeneratorAlg { get; }
-
-        public NormalDistribution(IRandomGeneratorAlg generatorAlg)
+        internal static double Double(IRandomGeneratorAlg generatorAlg, double mean = 0, double stdDev = 1)
         {
-            this.GeneratorAlg = generatorAlg;
+            return mean + (NormalZiggurat.Instance.Generate(generatorAlg) * stdDev);
         }
-        
-        public double Double(double mean = 0, double stdDev = 1)
+    }
+
+    internal static class ExponentialDistribution
+    {
+        internal static double DoubleZiggurat(IRandomGeneratorAlg generatorAlg)
         {
-            return mean + (ziggurat.Generate(this.GeneratorAlg) * stdDev);
+            return ExponentialZiggurat.Instance.Generate(generatorAlg);
+        }
+
+        internal static double Double(IRandomGeneratorAlg generatorAlg)
+        {
+            return -Math.Log(generatorAlg.Next01NonZeroDouble());
+        }
+
+        internal static double Double(IRandomGeneratorAlg generatorAlg, double lambda)
+        {
+            return -Math.Log(generatorAlg.Next01NonZeroDouble()) / lambda;
         }
     }
 }

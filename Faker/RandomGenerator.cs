@@ -36,6 +36,10 @@ namespace Faker
         /// </summary>
         public RandomList List { get; private set; }
         /// <summary>
+        /// Non uniform random distributions
+        /// </summary>
+        public RandomDistributions Distribution { get; private set; }
+        /// <summary>
         /// Seed of this instance of RandomGenerator
         /// </summary>
         public ulong Seed => this.RandomGeneratorAlg.Seed;
@@ -52,6 +56,7 @@ namespace Faker
             this.Random = new RandomBasicTypes(this);
             this.Enumerable = new RandomEnumerable(this);
             this.List = new RandomList(this);
+            this.Distribution = new RandomDistributions(this);
         }
 
         public RandomGenerator()

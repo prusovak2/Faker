@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Faker;
 using System.Globalization;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace FakerTests
 {
@@ -56,6 +57,9 @@ namespace FakerTests
             string twoLetterName = info.TwoLetterISOLanguageName;
             Console.WriteLine(twoLetterName);
             Assert.AreEqual("en", twoLetterName);
+            //Debug.Assert(0 == 0);
+            double d = BitConverter.Int64BitsToDouble(unchecked((long)0xBFF0000000000000));
+            
             
         }
 

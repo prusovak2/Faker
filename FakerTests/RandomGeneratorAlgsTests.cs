@@ -62,6 +62,37 @@ namespace FakerTests
             }
         }
 
+        [TestMethod]
+        public void ZeroOneDoubleTest()
+        {
+            Xoshiro256starstar x = new();
+            Xoshiro256starstar x2 = new();
+            for (int i = 0; i < 30; i++)
+            {
+                double rd = x.Next01Double();
+                double rd2 = x.Next01Double();
+                Console.WriteLine("r:   {0}", rd);
+                Console.WriteLine("r2: {0}", rd2);
+                Assert.IsTrue(rd < 1 && rd >= 0);
+                Assert.IsTrue(rd2 < 1 && rd2 >= 0);
+            }
+        }
+
+        [TestMethod]
+        public void ZeroOneDoubleNonZeroTest()
+        {
+            Xoshiro256starstar x = new();
+            Xoshiro256starstar x2 = new();
+            for (int i = 0; i < 30; i++)
+            {
+                double rd = x.Next01NonZeroDouble();
+                double rd2 = x.Next01NonZeroDouble();
+                Console.WriteLine("r:   {0}", rd);
+                Console.WriteLine("r2: {0}", rd2);
+                Assert.IsTrue(rd < 1 && rd > 0);
+                Assert.IsTrue(rd2 < 1 && rd2 > 0);
+            }
+        }
     }
     class Job
     {
