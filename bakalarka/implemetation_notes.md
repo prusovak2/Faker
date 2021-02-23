@@ -20,6 +20,38 @@ https://github.com/peteroupc/peteroupc.github.io/blob/master/randomtest.md
 
 https://www.pcg-random.org/posts/how-to-test-with-practrand.html
 
+### Other distributions
+
+https://math.stackexchange.com/questions/788814/a-binomial-random-number-generating-algorithm-that-works-when-n-times-p-is
+
+http://www.randomnumbergenerator.com/distribution.asp
+
+https://towardsdatascience.com/6-ways-to-test-for-a-normal-distribution-which-one-to-use-9dcf47d8fa93
+
+https://docs.python.org/3/library/random.html
+
+The art of computer programming. Vol.2. Seminumerical algorithms by Knuth, Donald E (z-lib.org)
+
+#### Ziggurat
+
+https://www.researchgate.net/publication/5142790_The_Ziggurat_Method_for_Generating_Random_Variables
+
+https://en.wikipedia.org/wiki/Ziggurat_algorithm
+
+https://heliosphan.org/zigguratalgorithm/zigguratalgorithm.html
+
+https://github.com/colgreen/Redzen/blob/master/Redzen/Numerics/Distributions/Double/ZigguratGaussian.cs
+
+https://github.com/BartMassey/ziggurat/blob/master/exponential.c
+
+
+
+### Source Generators
+
+https://sourcegen.dev/
+
+https://github.com/davidwengier/SourceGeneratorTemplate
+
 ## IgnoreFaker class
 
 Volat z ctoru `BaseFakeru` metodu, co používá reflexion, aby ososala případné `FakerIgnore` atributy z položek třídy plněné pseudonáhodným obsahem, ctor zpomalí 100x (viz benchmarks). 
