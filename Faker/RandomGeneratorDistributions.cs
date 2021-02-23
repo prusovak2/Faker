@@ -72,6 +72,10 @@ namespace Faker
             //TODO: add arg check
             public int Binomial(int n, double p)
             {
+                if ((p > 1) || (p < 0) || (n<1))
+                {
+                    throw new ArgumentException("Argument p must be a probability eg. a number from interval [0,1] and n must be greater than or equal to one.");
+                }
                 int count = 0;
                 for (; ; )
                 {
@@ -95,6 +99,22 @@ namespace Faker
                 return counter;
             }
 
+            public int BinomialClever(int n, double p)
+            {
+                
+                int a = 1 + n / 2;
+                int b = n + 1 - a;
+                double x = Beta(a, b);
+                if (x > p)
+                {
+                    return Binomial(a - 1, p / x);
+                }
+                else
+                {
+                    return a + Binomial(b - 1, (p - x)*(1 - x));
+                }
+            }
+                    
             public double Gamma(double a)
             {
                 if (a <= 1)
@@ -171,7 +191,6 @@ namespace Faker
                     double y = Gamma((double)v / 2d);
                     return 2 * y;
                 }
-                
             }
         }
     }

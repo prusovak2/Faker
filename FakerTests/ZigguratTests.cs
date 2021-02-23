@@ -149,6 +149,21 @@ namespace FakerTests
         }
 
         [TestMethod]
+        public void BinomialClever()
+        {
+            StreamWriter writer = new("D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\BinomialClever.csv", append: false);
+            RandomGenerator rg = new();
+            for (int i = 0; i < 2000; i++)
+            {
+                int x = rg.Distribution.BinomialClever(100, 0.5);
+                Console.WriteLine(x);
+                writer.WriteLine(x);
+            }
+            writer.Flush();
+            writer.Dispose();
+        }
+
+        [TestMethod]
         public void Gamma()
         {
             StreamWriter writer = new("D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\Gamma.csv", append: false);
