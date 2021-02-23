@@ -52,6 +52,26 @@ https://sourcegen.dev/
 
 https://github.com/davidwengier/SourceGeneratorTemplate
 
+https://devblogs.microsoft.com/dotnet/introducing-c-source-generators/
+
+[https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.cookbook.md](https://l.messenger.com/l.php?u=https%3A%2F%2Fgithub.com%2Fdotnet%2Froslyn%2Fblob%2Fmaster%2Fdocs%2Ffeatures%2Fsource-generators.cookbook.md&h=AT3ACFalO0lCQFWQqqAQYv0LzNG_KZ6SL44pxO1WTdxaG0mVW3YTpWnoq67ZetG9lSnPRDtOD99svhkYABZFyH7_sC9EWpMhK9Zf5hdboAbcv_o7aUv8aQgpXTwarm-IX4tYdRwkIH6ahysIwZhx_w)
+
+[https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.md](https://l.messenger.com/l.php?u=https%3A%2F%2Fgithub.com%2Fdotnet%2Froslyn%2Fblob%2Fmaster%2Fdocs%2Ffeatures%2Fsource-generators.md&h=AT3ACFalO0lCQFWQqqAQYv0LzNG_KZ6SL44pxO1WTdxaG0mVW3YTpWnoq67ZetG9lSnPRDtOD99svhkYABZFyH7_sC9EWpMhK9Zf5hdboAbcv_o7aUv8aQgpXTwarm-IX4tYdRwkIH6ahysIwZhx_w)
+
+[https://www.youtube.com/watch?v=3YwwdoRg2F4&t=862s](https://l.messenger.com/l.php?u=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D3YwwdoRg2F4%26t%3D862s&h=AT3ACFalO0lCQFWQqqAQYv0LzNG_KZ6SL44pxO1WTdxaG0mVW3YTpWnoq67ZetG9lSnPRDtOD99svhkYABZFyH7_sC9EWpMhK9Zf5hdboAbcv_o7aUv8aQgpXTwarm-IX4tYdRwkIH6ahysIwZhx_w)
+
+[https://www.youtube.com/watch?v=zHYd9o7-wlw](https://l.messenger.com/l.php?u=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DzHYd9o7-wlw&h=AT3ACFalO0lCQFWQqqAQYv0LzNG_KZ6SL44pxO1WTdxaG0mVW3YTpWnoq67ZetG9lSnPRDtOD99svhkYABZFyH7_sC9EWpMhK9Zf5hdboAbcv_o7aUv8aQgpXTwarm-IX4tYdRwkIH6ahysIwZhx_w)
+
+[https://sergvasiliev.medium.com/introduction-to-roslyn-and-its-use-in-program-development-bce2043fc45d#.2k8fxxg3p](https://l.messenger.com/l.php?u=https%3A%2F%2Fsergvasiliev.medium.com%2Fintroduction-to-roslyn-and-its-use-in-program-development-bce2043fc45d%23.2k8fxxg3p&h=AT3ACFalO0lCQFWQqqAQYv0LzNG_KZ6SL44pxO1WTdxaG0mVW3YTpWnoq67ZetG9lSnPRDtOD99svhkYABZFyH7_sC9EWpMhK9Zf5hdboAbcv_o7aUv8aQgpXTwarm-IX4tYdRwkIH6ahysIwZhx_w)
+
+[https://medium.com/rocket-mortgage-technology-blog/generating-code-in-c-1868ebbe52c5](https://l.messenger.com/l.php?u=https%3A%2F%2Fmedium.com%2Frocket-mortgage-technology-blog%2Fgenerating-code-in-c-1868ebbe52c5&h=AT3ACFalO0lCQFWQqqAQYv0LzNG_KZ6SL44pxO1WTdxaG0mVW3YTpWnoq67ZetG9lSnPRDtOD99svhkYABZFyH7_sC9EWpMhK9Zf5hdboAbcv_o7aUv8aQgpXTwarm-IX4tYdRwkIH6ahysIwZhx_w)
+
+[https://devblogs.microsoft.com/dotnet/introducing-c-source-generators/](https://l.messenger.com/l.php?u=https%3A%2F%2Fdevblogs.microsoft.com%2Fdotnet%2Fintroducing-c-source-generators%2F&h=AT3ACFalO0lCQFWQqqAQYv0LzNG_KZ6SL44pxO1WTdxaG0mVW3YTpWnoq67ZetG9lSnPRDtOD99svhkYABZFyH7_sC9EWpMhK9Zf5hdboAbcv_o7aUv8aQgpXTwarm-IX4tYdRwkIH6ahysIwZhx_w)
+
+[https://devblogs.microsoft.com/dotnet/using-c-source-generators-to-create-an-external-dsl/](https://l.messenger.com/l.php?u=https%3A%2F%2Fdevblogs.microsoft.com%2Fdotnet%2Fusing-c-source-generators-to-create-an-external-dsl%2F&h=AT3ACFalO0lCQFWQqqAQYv0LzNG_KZ6SL44pxO1WTdxaG0mVW3YTpWnoq67ZetG9lSnPRDtOD99svhkYABZFyH7_sC9EWpMhK9Zf5hdboAbcv_o7aUv8aQgpXTwarm-IX4tYdRwkIH6ahysIwZhx_w)
+
+[https://github.com/dotnet/roslyn-sdk/blob/master/samples/CSharp/SourceGenerators/SourceGeneratorSamples/CsvGenerator.cs](https://l.messenger.com/l.php?u=https%3A%2F%2Fgithub.com%2Fdotnet%2Froslyn-sdk%2Fblob%2Fmaster%2Fsamples%2FCSharp%2FSourceGenerators%2FSourceGeneratorSamples%2FCsvGenerator.cs&h=AT3ACFalO0lCQFWQqqAQYv0LzNG_KZ6SL44pxO1WTdxaG0mVW3YTpWnoq67ZetG9lSnPRDtOD99svhkYABZFyH7_sC9EWpMhK9Zf5hdboAbcv_o7aUv8aQgpXTwarm-IX4tYdRwkIH6ahysIwZhx_w)
+
 ## IgnoreFaker class
 
 Volat z ctoru `BaseFakeru` metodu, co používá reflexion, aby ososala případné `FakerIgnore` atributy z položek třídy plněné pseudonáhodným obsahem, ctor zpomalí 100x (viz benchmarks). 
