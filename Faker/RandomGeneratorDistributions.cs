@@ -55,7 +55,11 @@ namespace Faker
                 }
                 return 0;
             }
-
+            /// <summary>
+            /// https://math.stackexchange.com/questions/788814/a-binomial-random-number-generating-algorithm-that-works-when-n-times-p-is
+            /// </summary>
+            /// <param name="p"></param>
+            /// <returns></returns>
             public int Geometric(double p)
             {
                 if ((p > 1) || (p < 0))
@@ -64,6 +68,31 @@ namespace Faker
                 }
 
                 return (int)Math.Ceiling(Math.Log(RG.RandomGeneratorAlg.Next01Double()) / Math.Log(1 - p));
+            }
+            //TODO: add arg check
+            public int Binomial(int n, double p)
+            {
+                int count = 0;
+                for (; ; )
+                {
+                    int wait = Geometric(p);
+                    if (wait > n)
+                    {
+                        return count;
+                    }
+                    count++;
+                    n -= wait;
+                }
+            }
+
+            public int BinomialNaive(int n, double p)
+            {
+                int counter = 0;
+                for (int i = 0; i < n; i++)
+                {
+                    counter += BernoulliInt(p);
+                }
+                return counter;
             }
         }
     }
