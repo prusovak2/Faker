@@ -147,6 +147,82 @@ namespace FakerTests
             writer.Flush();
             writer.Dispose();
         }
+
+        [TestMethod]
+        public void Gamma()
+        {
+            StreamWriter writer = new("D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\Gamma.csv", append: false);
+            RandomGenerator rg = new();
+            for (int i = 0; i < 2000; i++)
+            {
+                double d = rg.Distribution.Gamma(10);
+                Console.WriteLine(d);
+                writer.WriteLine(d.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            }
+            writer.Flush();
+            writer.Dispose();
+        }
+
+        [TestMethod]
+        public void Beta()
+        {
+            StreamWriter writer = new("D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\Beta.csv", append: false);
+            RandomGenerator rg = new();
+            for (int i = 0; i < 2000; i++)
+            {
+                double d = rg.Distribution.Beta(10, 5);
+                Console.WriteLine(d);
+                writer.WriteLine(d.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            }
+            writer.Flush();
+            writer.Dispose();
+        }
+
+        [TestMethod]
+        public void ChiSquare1()
+        {
+            StreamWriter writer = new("D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\ChiSquare1.csv", append: false);
+            RandomGenerator rg = new();
+            for (int i = 0; i < 2000; i++)
+            {
+                double d = rg.Distribution.ChiSquare(1);
+                Console.WriteLine(d);
+                writer.WriteLine(d.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            }
+            writer.Flush();
+            writer.Dispose();
+        }
+
+
+        [TestMethod]
+        public void ChiSquare2()
+        {
+            StreamWriter writer = new("D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\ChiSquare2.csv", append: false);
+            RandomGenerator rg = new();
+            for (int i = 0; i < 2000; i++)
+            {
+                double d = rg.Distribution.ChiSquare(2);
+                Console.WriteLine(d);
+                writer.WriteLine(d.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            }
+            writer.Flush();
+            writer.Dispose();
+        }
+
+        [TestMethod]
+        public void ChiSquare3()
+        {
+            StreamWriter writer = new("D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\ChiSquare3.csv", append: false);
+            RandomGenerator rg = new();
+            for (int i = 0; i < 2000; i++)
+            {
+                double d = rg.Distribution.ChiSquare(3);
+                Console.WriteLine(d);
+                writer.WriteLine(d.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            }
+            writer.Flush();
+            writer.Dispose();
+        }
     }
 }
 
