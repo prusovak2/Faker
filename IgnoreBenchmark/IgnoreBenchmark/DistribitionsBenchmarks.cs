@@ -17,21 +17,39 @@ namespace FakerBenchmark
         RandomGenerator rg = new();
 
         [Benchmark]
-        public void NormalZiggurat()
+        public void Normal()
         {
             rg.Distribution.Normal();
         }
 
         [Benchmark]
-        public void ExponentialZiggurat()
+        public void Exponential()
         {
             rg.Distribution.Exponential();
         }
 
         [Benchmark]
-        public void ExponentialStrightforward()
+        public void Bernoulli()
         {
-            rg.Distribution.Exponential(5);
+            rg.Distribution.Bernoulli(0.3);
+        }
+
+        [Benchmark]
+        public void Geometric()
+        {
+            rg.Distribution.Geometric(0.3);
+        }
+
+        [Benchmark]
+        public void Binomial()
+        {
+            rg.Distribution.Binomial(40, 0.3);
+        }
+
+        [Benchmark]
+        public void BinomialNaive()
+        {
+            rg.Distribution.BinomialNaive(40, 0.3);
         }
     }
 }
