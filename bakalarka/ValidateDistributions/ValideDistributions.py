@@ -41,6 +41,24 @@ binomial.columns = ["Binomial"]
 binomial_naive = pd.read_csv(filepath_or_buffer="D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\BinomialNaive.csv")
 binomial_naive.columns = ["Binomial naive"]
 
+binomial_clever = pd.read_csv(filepath_or_buffer="D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\BinomialClever.csv")
+binomial_clever.columns = ["Binomial  clever"]
+
+gamma = pd.read_csv(filepath_or_buffer="D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\Gamma.csv")
+gamma.columns = ["Gamma"]
+
+beta = pd.read_csv(filepath_or_buffer="D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\Beta.csv")
+beta.columns = ["Beta"]
+
+chiSquare1 = pd.read_csv(filepath_or_buffer="D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\ChiSquare1.csv")
+chiSquare1.columns = ["ChiSquare 1"]
+
+chiSquare2 = pd.read_csv(filepath_or_buffer="D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\ChiSquare2.csv")
+chiSquare2.columns = ["ChiSquare 2"]
+
+chiSquare3 = pd.read_csv(filepath_or_buffer="D:\\MFF\\LS_2020\\cSharp\\Faker\\bakalarka\\ValidateDistributions\\ChiSquare3.csv")
+chiSquare3.columns = ["ChiSquare 3"]
+
 normal.hist(bins=100)
 exponential.hist(bins=100)
 normal_shifted.hist(bins=100)
@@ -50,6 +68,12 @@ exponential_shifting_not_shifted.hist(bins=100)
 geometric.hist(bins=100)
 binomial.hist(bins=100)
 binomial_naive.hist(bins=100)
+binomial_clever.hist(bins=100)
+gamma.hist(bins=100)
+beta.hist(bins=100)
+chiSquare1.hist(bins=100)
+chiSquare2.hist(bins=100)
+chiSquare3.hist(bins=100)
 plt.show()
 
 sm.qqplot(normal, line='45')
