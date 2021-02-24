@@ -58,7 +58,7 @@ namespace Faker
             {
                 if( (p > 1) || (p < 0))
                 {
-                    throw new ArgumentException("Argument p must be a probability eg. a number from interval [0,1].");
+                    throw new ArgumentException("Argument p must be a probability ergo a number from interval [0,1].");
                 }
                 return RG.RandomGeneratorAlg.Next01Double() < p;
             }
@@ -71,7 +71,7 @@ namespace Faker
             {
                 if ((p > 1) || (p < 0))
                 {
-                    throw new ArgumentException("Argument p must be a probability eg. a number from interval [0,1].");
+                    throw new ArgumentException("Argument p must be a probability ergo a number from interval [0,1].");
                 }
                 if(RG.RandomGeneratorAlg.Next01Double() < p)
                 {
@@ -88,7 +88,7 @@ namespace Faker
             {
                 if ((p > 1) || (p < 0))
                 {
-                    throw new ArgumentException("Argument p must be a probability eg. a number from interval [0,1].");
+                    throw new ArgumentException("Argument p must be a probability ergo a number from interval [0,1].");
                 }
 
                 return (int)Math.Ceiling(Math.Log(RG.RandomGeneratorAlg.Next01Double()) / Math.Log(1 - p));
@@ -104,7 +104,7 @@ namespace Faker
             {
                 if ((p > 1) || (p < 0) || (n<1))
                 {
-                    throw new ArgumentException("Argument p must be a probability eg. a number from interval [0,1] and n must be greater than or equal to one.");
+                    throw new ArgumentException("Argument p must be a probability ergo a number from interval [0,1] and n must be greater than or equal to one.");
                 }
                 int count = 0;
                 for (; ; )
@@ -123,7 +123,7 @@ namespace Faker
             {
                 if ((p > 1) || (p < 0) || (n < 1))
                 {
-                    throw new ArgumentException("Argument p must be a probability eg. a number from interval [0,1] and n must be greater than or equal to one.");
+                    throw new ArgumentException("Argument p must be a probability ergo a number from interval [0,1] and n must be greater than or equal to one.");
                 }
                 int counter = 0;
                 for (int i = 0; i < n; i++)
@@ -146,7 +146,7 @@ namespace Faker
                 }
                 if ((p > 1) || (p < 0))
                 {
-                    throw new ArgumentException("Argument p must be a probability eg. a number from interval [0,1].");
+                    throw new ArgumentException("Argument p must be a probability ergo a number from interval [0,1].");
                 }
                 int a = 1 + n / 2;
                 int b = n + 1 - a;
@@ -249,6 +249,17 @@ namespace Faker
                     double y = Gamma((double)v / 2d);
                     return 2 * y;
                 }
+            }
+
+            public TLabel Discrete<TLabel>(DiscreteDistribution<TLabel> distribution)
+            {
+                return distribution.Next(RG.RandomGeneratorAlg);
+            }
+
+            public TLabel Discrete<TLabel>(double[] probabilities, TLabel[] labels)
+            {
+                DiscreteDistribution<TLabel> distribution = new(probabilities, labels);
+                return distribution.Next(RG.RandomGeneratorAlg);
             }
         }
     }
