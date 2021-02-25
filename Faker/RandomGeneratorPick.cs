@@ -59,7 +59,15 @@ namespace Faker
             throw new NotImplementedException("Unexpected");
         }
 
-
+        /// <summary>
+        /// Returns a list of given number of randomly selected items from the pickFrom list <br/>
+        /// items may be picked multiple times <br/>
+        /// does not copy items, if Titem is reference type, returned list contains references to the same items as contained in the source list 
+        /// </summary>
+        /// <typeparam name="Titem"></typeparam>
+        /// <param name="howMany">count of items in returned list</param>
+        /// <param name="pickFrom">list to pick from</param>
+        /// <returns></returns>
         public IList<Titem> PickMultiple<Titem>(int howMany, IList<Titem> pickFrom)
         {
             if(howMany < 0)
@@ -78,12 +86,26 @@ namespace Faker
             }
             return picked;
         }
-
+        /// <summary>
+        /// Randomly picks several of items passed as arguments, item might be picked multiple times
+        /// </summary>
+        /// <typeparam name="Titem"></typeparam>
+        /// <param name="howMany"></param>
+        /// <param name="pickFrom"></param>
+        /// <returns></returns>
         public IList<Titem> PickMultiple<Titem>(int howMany, params Titem[] pickFrom)
         {
             return PickMultiple(howMany, (IList<Titem>)pickFrom);
         }
-
+        /// <summary>
+        /// Returns a list of given number of randomly selected items from the pickFrom list <br/>
+        /// each item can be picked only one, if items repeat themselves in the source array, they may be repeated in the result as well <br/>
+        /// does not copy items, if Titem is reference type, returned list contains references to the same items as contained in the source list 
+        /// </summary>
+        /// <typeparam name="Titem"></typeparam>
+        /// <param name="howMany"></param>
+        /// <param name="pickFrom"></param>
+        /// <returns></returns>
         public IList<Titem> PickMultipleNoRepeat<Titem>(int howMany, IList<Titem> pickFrom)
         {
             if (howMany < 0)
@@ -119,12 +141,22 @@ namespace Faker
             }
             return picked;
         }
-
+        /// <summary>
+        /// Randomly picks several of items passed as arguments, each item might be picked only once
+        /// </summary>
+        /// <typeparam name="Titem"></typeparam>
+        /// <param name="howMany"></param>
+        /// <param name="pickFrom"></param>
+        /// <returns></returns>
         public IList<Titem> PickMultipleNoRepeat<Titem>(int howMany, params Titem[] pickFrom)
         {
             return PickMultipleNoRepeat(howMany, (IList<Titem>)pickFrom);
         }
-
+        /// <summary>
+        /// Shuffles (modifies) a given list
+        /// </summary>
+        /// <typeparam name="Titem"></typeparam>
+        /// <param name="toShuffle"></param>
         public void Shuffle<Titem>(IList<Titem> toShuffle)
         {
             for (int i = 0; i < toShuffle.Count; i++)

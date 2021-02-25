@@ -31,32 +31,78 @@ namespace Faker
         {
             return RG.Pick(pickFrom);
         }
-
+        /// <summary>
+        /// Returns a list of given number of randomly selected items from this list <br/>
+        /// items may be picked multiple times <br/>
+        /// does not copy items, if Titem is reference type, returned list contains references to the same items as contained in the source list 
+        /// </summary>
+        /// <typeparam name="Titem"></typeparam>
+        /// <param name="pickFrom"></param>
+        /// <param name="howMany"></param>
+        /// <returns></returns>
         public static IList<Titem> PickRandomMultiple<Titem>(this IList<Titem> pickFrom, int howMany)
         {
             return RG.PickMultiple(howMany, pickFrom);
         }
-
+        /// <summary>
+        /// Returns a list of given number of randomly selected items from this list <br/>
+        /// items may be picked multiple times <br/>
+        /// does not copy items, if Titem is reference type, returned list contains references to the same items as contained in the source list <br/>
+        /// uses randomGenerator instance passed as the argument
+        /// </summary>
+        /// <typeparam name="Titem"></typeparam>
+        /// <param name="pickFrom"></param>
+        /// <param name="howMany"></param>
+        /// <param name="random"></param>
+        /// <returns></returns>
         public static IList<Titem> PickRandomMultiple<Titem>(this IList<Titem> pickFrom, int howMany, RandomGenerator random)
         {
             return random.PickMultiple(howMany, pickFrom);
         }
-
+        /// <summary>
+        /// Returns a list of given number of randomly selected items from this list <br/>
+        /// each item might be picked only once <br/>
+        /// does not copy items, if Titem is reference type, returned list contains references to the same items as contained in the source list <br/>
+        /// </summary>
+        /// <typeparam name="Titem"></typeparam>
+        /// <param name="pickFrom"></param>
+        /// <param name="howMany"></param>
+        /// <returns></returns>
         public static IList<Titem> PickRandomMultipleNoRepeat<Titem>(this IList<Titem> pickFrom, int howMany)
         {
             return RG.PickMultipleNoRepeat(howMany, pickFrom);
         }
-
+        /// <summary>
+        /// Returns a list of given number of randomly selected items from this list <br/>
+        /// each item might be picked only once <br/>
+        /// does not copy items, if Titem is reference type, returned list contains references to the same items as contained in the source list <br/>
+        /// uses randomGenerator instance passed as the second argument
+        /// </summary>
+        /// <typeparam name="Titem"></typeparam>
+        /// <param name="pickFrom"></param>
+        /// <param name="howMany"></param>
+        /// <param name="random"></param>
+        /// <returns></returns>
         public static IList<Titem> PickRandomMultipleNoRepeat<Titem>(this IList<Titem> pickFrom, int howMany, RandomGenerator random)
         {
             return random.PickMultipleNoRepeat(howMany, pickFrom);
         }
-
+        /// <summary>
+        /// Shuffles (modifies) this list
+        /// </summary>
+        /// <typeparam name="Titem"></typeparam>
+        /// <param name="toShuffle"></param>
         public static void Shuffle<Titem>(this IList<Titem> toShuffle)
         {
             RG.Shuffle(toShuffle);
         }
-
+        /// <summary>
+        /// Shuffles (modifies) this list <br/>
+        /// uses randomGenerator instance passed as the argument
+        /// </summary>
+        /// <typeparam name="Titem"></typeparam>
+        /// <param name="toShuffle"></param>
+        /// <param name="random"></param>
         public static void Shuffle<Titem>(this IList<Titem> toShuffle, RandomGenerator random)
         {
             random.Shuffle(toShuffle);
