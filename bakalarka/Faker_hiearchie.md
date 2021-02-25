@@ -430,6 +430,10 @@ Markovovské texty *(4/5)* *Generování náhodného textu napodobujícího text
 
 ### Generování náhodných čísel s jinou pravděpodobnostní distribucí než rovnoměrným rozložením.
 
+* non standard discrete distribution represented by an array of probabilities and array of labels corresponding to the probabilities
+
+https://github.com/colgreen/Redzen/blob/master/Redzen/Numerics/Distributions/Double/DiscreteDistribution.cs
+
 - [ ] 
 
 **Priorita: 3**
@@ -500,7 +504,7 @@ Všechny typy, jejichž položky se ve vyplňované třídě (i ve třídách tv
 
 **Vynutí stanovení pravidel pro všechny veřejné položky.**
 
-- [ ] 
+- [x] 
 
 **Priorita: 3**
 
