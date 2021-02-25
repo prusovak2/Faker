@@ -101,6 +101,11 @@ namespace Faker
 
             Titem[] picked = new Titem[howMany];
             int[] indices = new int[pickFrom.Count];
+            for (int i = 0; i < indices.Length; i++)
+            {
+                indices[i] = i;
+            }
+
             for (int i = 0; i < howMany; i++)
             {
                 // pick only from the part of indices array that had not yet been reordered to contain resulting indices  
@@ -113,7 +118,6 @@ namespace Faker
                 picked[i] = pickFrom[indices[i]];
             }
             return picked;
-
         }
 
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Faker;
+using System.Linq;
 
 namespace FakerTests
 {
@@ -190,6 +191,65 @@ namespace FakerTests
                 {
                     Assert.IsTrue(floats.Contains(item));
                     Console.Write($"{item} ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        [TestMethod]
+        public void BasicnoRepeatTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            List<int> list = new();
+            for (int i = 0; i < 10; i++)
+            {
+                list.Add(i);
+            }
+            IList<int> picked = rg.PickMultipleNoRepeat(8, list);
+            foreach (var item in picked)
+            {
+                Console.WriteLine(item);
+            }
+        }
+
+        [TestMethod]
+        public void PickMultipleNoRepeatIListTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            int lower = 0;
+            int upper = 100;
+            int count = 50;
+            HashSet<int>  set = new(rg.List.Int(count, lower, upper));
+            IList<int> list = set.ToList();
+            for (int i = 0; i < 20; i++)
+            {
+                IList<int> picked = rg.PickMultipleNoRepeat(i, list);
+                HashSet<int> control = new();
+
+                foreach (int item in picked)
+                {
+                    Console.Write($"{item} ");
+                    Assert.IsTrue(list.Contains(item));
+                    Assert.IsTrue(control.Add(item));
+                    
+                }
+                Console.WriteLine();
+            }
+
+            DateTime lower2 = new DateTime(2010, 1, 1);
+            DateTime upper2 = new DateTime(2020, 3, 3);
+            HashSet<DateTime> set2 = new(rg.List.DateTime(count, lower2, upper2));
+            IList<DateTime> list2 = set2.ToList();
+            for (int i = 0; i < 20; i++)
+            {
+                IList<DateTime> picked = rg.PickMultipleNoRepeat(i, list2);
+                HashSet<DateTime> control = new();
+
+                foreach (DateTime item in picked)
+                {
+                    Assert.IsTrue(list2.Contains(item));
+                    Console.Write($"{item} ");
+                    Assert.IsTrue(control.Add(item));
                 }
                 Console.WriteLine();
             }
