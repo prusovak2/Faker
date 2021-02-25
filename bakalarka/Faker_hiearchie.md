@@ -434,7 +434,7 @@ Markovovské texty *(4/5)* *Generování náhodného textu napodobujícího text
 
 https://github.com/colgreen/Redzen/blob/master/Redzen/Numerics/Distributions/Double/DiscreteDistribution.cs
 
-- [ ] 
+- [x] 
 
 **Priorita: 3**
 
@@ -655,7 +655,7 @@ Možná trochu overkill v rámci toho, že většina využití fakeru nemá tak 
 
 **Zpermutuje položky v poli / v listu.**
 
-- [ ] 
+- [x] 
 
 **Priorita: 5**
 
