@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Faker;
+using System.Linq;
 
 namespace FakerTests
 {
@@ -99,6 +100,215 @@ namespace FakerTests
                 Assert.IsTrue(floats.Contains(picked));
             }
         }
+
+        [TestMethod]
+        public void PickMultipleIListTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            int lower = 0;
+            int upper = 100;
+            int count = 50;
+            IList<int> list = rg.List.Int(count, lower, upper);
+            for (int i = 0; i < 20; i++)
+            {
+                IList<int> picked = rg.PickMultiple(i, list);
+
+                foreach (int item in picked)
+                {
+                    Assert.IsTrue(list.Contains(item));
+                    Console.Write($"{item} ");
+                }
+                Console.WriteLine();
+            }
+
+            DateTime lower2 = new DateTime(2010, 1, 1);
+            DateTime upper2 = new DateTime(2020, 3, 3);
+            IList<DateTime> list2 = rg.List.DateTime(count, lower2, upper2);
+            for (int i = 0; i < 20; i++)
+            {
+                IList<DateTime> picked = rg.PickMultiple(i, list2);
+
+                foreach (DateTime item in picked)
+                {
+                    Assert.IsTrue(list2.Contains(item));
+                    Console.Write($"{item} ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        [TestMethod]
+        public void PickMultipleParamsTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            List<int> items = new List<int> { 55, 43, 43, 74, 121, 13, 17, 666, 1000001010, 8, 4 };
+            for (int i = 0; i < 20; i++)
+            {
+                IList<int> picked = rg.PickMultiple(i, 55, 43, 43, 74, 121, 13, 17, 666, 1000001010, 8, 4);
+
+                foreach (int item in picked)
+                {
+                    Assert.IsTrue(items.Contains(item));
+                    Console.Write($"{item} ");
+                }
+                Console.WriteLine();
+            }
+
+            List<char> items2 = new List<char> { 'a', 'b', 'r', 'a', 'k', 'a', 'd', 'a', 'b', 'r', 'a' };
+            for (int i = 0; i < 20; i++)
+            {
+                IList<char> picked = rg.PickMultiple(i, 'a', 'b', 'r', 'a', 'k', 'a', 'd', 'a', 'b', 'r', 'a');
+                foreach (var item in picked)
+                {
+                    Assert.IsTrue(items2.Contains(item));
+                    Console.Write($"{item} ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        [TestMethod]
+        public void PickMultipleIListExtensionsTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            List<Guid> guids = (List<Guid>)rg.List.Guid(50);
+            for (int i = 0; i < 20; i++)
+            {
+                IList<Guid> picked = guids.PickRandomMultiple(i);
+                foreach (var item in picked)
+                {
+                    Assert.IsTrue(guids.Contains(item));
+                    Console.Write($"{item} ");
+                }
+                Console.WriteLine();
+            }
+
+            List<float> floats = (List<float>)rg.List.Float(50);
+            for (int i = 0; i < 100; i++)
+            {
+                IList<float> picked = floats.PickRandomMultiple(i, rg);
+                foreach (var item in picked)
+                {
+                    Assert.IsTrue(floats.Contains(item));
+                    Console.Write($"{item} ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        [TestMethod]
+        public void PickMultipleNoRepeatIListTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            int lower = 0;
+            int upper = 100;
+            int count = 100;
+            HashSet<int>  set = new(rg.List.Int(count, lower, upper));
+            IList<int> list = set.ToList();
+            for (int i = 0; i < 20; i++)
+            {
+                IList<int> picked = rg.PickMultipleNoRepeat(i, list);
+                HashSet<int> control = new();
+
+                foreach (int item in picked)
+                {
+                    Console.Write($"{item} ");
+                    Assert.IsTrue(list.Contains(item));
+                    Assert.IsTrue(control.Add(item));
+                    
+                }
+                Console.WriteLine();
+            }
+
+            DateTime lower2 = new DateTime(2010, 1, 1);
+            DateTime upper2 = new DateTime(2020, 3, 3);
+            HashSet<DateTime> set2 = new(rg.List.DateTime(count, lower2, upper2));
+            IList<DateTime> list2 = set2.ToList();
+            for (int i = 0; i < 20; i++)
+            {
+                IList<DateTime> picked = rg.PickMultipleNoRepeat(i, list2);
+                HashSet<DateTime> control = new();
+
+                foreach (DateTime item in picked)
+                {
+                    Assert.IsTrue(list2.Contains(item));
+                    Console.Write($"{item} ");
+                    Assert.IsTrue(control.Add(item));
+                }
+                Console.WriteLine();
+            }
+        }
+
+        [TestMethod]
+        public void PickMultipleNoRepeatParamsTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            List<int> items = new List<int> { 55, 43, 74, 121, 13, 17, 666, 1000001010, 8, 4 };
+            for (int i = 0; i < items.Count; i++)
+            {
+                IList<int> picked = rg.PickMultipleNoRepeat(i, 55, 43, 74, 121, 13, 17, 666, 1000001010, 8, 4);
+                HashSet<int> control = new();
+
+                foreach (int item in picked)
+                {
+                    Console.Write($"{item} ");
+                    Assert.IsTrue(items.Contains(item));
+                    Assert.IsTrue(control.Add(item));
+                }
+                Console.WriteLine();
+            }
+
+            List<char> items2 = new List<char> { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
+            for (int i = 0; i < items2.Count; i++)
+            {
+                IList<char> picked = rg.PickMultipleNoRepeat(i, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' );
+                HashSet<int> control = new();
+
+                foreach (var item in picked)
+                {
+                    Console.Write($"{item} ");
+                    Assert.IsTrue(items2.Contains(item));
+                    Assert.IsTrue(control.Add(item));
+                }
+                Console.WriteLine();
+            }
+        }
+
+        [TestMethod]
+        public void PickMultipleNoRepeatIListExtensionsTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            HashSet<Guid> set = new(rg.List.Guid(100));
+            List<Guid> guids = set.ToList();
+            for (int i = 0; i < 20; i++)
+            {
+                IList<Guid> picked = guids.PickRandomMultipleNoRepeat(i);
+                HashSet<Guid> control = new();
+                foreach (var item in picked)
+                {
+                    Console.Write($"{item} ");
+                    Assert.IsTrue(guids.Contains(item));
+                    Assert.IsTrue(control.Add(item));
+                }
+                Console.WriteLine();
+            }
+
+            HashSet<float> set2 = new(rg.List.Float(100));
+            List<float> floats = set2.ToList();
+            for (int i = 0; i < 100; i++)
+            {
+                IList<float> picked = floats.PickRandomMultipleNoRepeat(i, rg);
+                HashSet<float> control = new();
+                foreach (var item in picked)
+                {
+                    Console.Write($"{item} ");
+                    Assert.IsTrue(floats.Contains(item));
+                    Assert.IsTrue(control.Add(item));
+                }
+                Console.WriteLine();
+            }
+        }
+
         [TestMethod]
         public void PickIcollectionTest()
         {
@@ -142,6 +352,84 @@ namespace FakerTests
                 float picked = floats.PickRandom(rg);
                 Console.WriteLine(picked);
                 Assert.IsTrue(floats.Contains(picked));
+            }
+        }
+
+        [TestMethod]
+        public void ShuffleTest()
+        {
+            RandomGenerator rg = new();
+            int num = 1000;
+            int[] arr = new int[num];
+            int samePosotion = 0;
+            for (int i = 0; i < num; i++)
+            {
+                arr[i] = i;
+            }
+            rg.Shuffle(arr);
+            for (int i = 0; i < num; i++)
+            {
+                Assert.IsTrue(arr.Contains(i));
+                if(i== arr[i])
+                {
+                    samePosotion++;
+                }
+            }
+            Console.WriteLine(samePosotion);
+            Assert.IsTrue(samePosotion < num /10);
+
+            Console.WriteLine();
+
+            List<char> items2 = new List<char> { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
+            rg.Shuffle(items2);
+            foreach (var item in items2)
+            {
+                Console.Write(item);
+            }
+        }
+
+        [TestMethod]
+        public void ShuffleExtensionTest()
+        {
+            RandomGenerator rg = new();
+            int num = 1000;
+            int[] arr = new int[num];
+            int[] arr2 = new int[num];
+            int samePosotion1 = 0;
+            int samePosotion2 = 0;
+            for (int i = 0; i < num; i++)
+            {
+                arr[i] = i;
+                arr2[i] = i;
+            }
+            arr.Shuffle();
+            arr2.Shuffle(rg);
+            for (int i = 0; i < num; i++)
+            {
+                Assert.IsTrue(arr.Contains(i));
+                Assert.IsTrue(arr2.Contains(i));
+                if (i == arr[i])
+                {
+                    samePosotion1++;
+                }
+                if (i == arr2[i])
+                {
+                    samePosotion2++;
+                }
+            }
+            Console.WriteLine(samePosotion1);
+            Assert.IsTrue(samePosotion1 < num / 10);
+
+            Console.WriteLine(samePosotion2);
+            Assert.IsTrue(samePosotion2 < num / 10);
+
+            Console.WriteLine();
+
+            List<char> items2 = new List<char> { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
+            items2.Shuffle(rg);
+            foreach (var item in items2)
+            {
+                Console.Write(item);
             }
         }
 

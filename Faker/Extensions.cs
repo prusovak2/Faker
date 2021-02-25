@@ -194,63 +194,6 @@ namespace Faker
         }
     }
 
-    public static class IListExtensions
-    {
-        /// <summary>
-        /// Randomly picks one item from the IList <br/>
-        /// uses randomGenerator instance passed as the second argument
-        /// </summary>
-        /// <typeparam name="Titem"></typeparam>
-        /// <param name="pickFrom"></param>
-        /// <param name="random"></param>
-        /// <returns></returns>
-        public static Titem PickRandom<Titem>(this IList<Titem> pickFrom, RandomGenerator random)
-        {
-            return random.Pick(pickFrom);
-        }
-        /// <summary>
-        /// Randomly picks one item from the IList <br/>
-        /// Uses newly created instance of the RandomGenerator
-        /// </summary>
-        /// <typeparam name="Titem"></typeparam>
-        /// <param name="pickFrom"></param>
-        /// <returns></returns>
-        public static Titem PickRandom<Titem>(this IList<Titem> pickFrom)
-        {
-            RandomGenerator random = new RandomGenerator();
-            return random.Pick(pickFrom);
-        }
-    }
-    public static class ICollectionExtensions
-    {
-        /// <summary>
-        /// Randomly picks item from the ICollection <br/>
-        /// LINEAR TIME COMPLEXITY! <br/>
-        /// uses randomGenerator instance passed as the second argument
-        /// </summary>
-        /// <typeparam name="Titem"></typeparam>
-        /// <param name="pickFrom"></param>
-        /// <param name="random"></param>
-        /// <returns></returns>
-        public static Titem PickRandom<Titem>(this ICollection<Titem> pickFrom, RandomGenerator random)
-        {
-            return random.Pick(pickFrom);
-        }
-        /// <summary>
-        /// Randomly picks item from the ICollection <br/>
-        /// LINEAR TIME COMPLEXITY! <br/>
-        /// Uses newly created instance of the RandomGenerator
-        /// </summary>
-        /// <typeparam name="Titem"></typeparam>
-        /// <param name="pickFrom"></param>
-        /// <returns></returns>
-        public static Titem PickRandom<Titem>(this ICollection<Titem> pickFrom)
-        {
-            RandomGenerator random = new RandomGenerator();
-            return random.Pick(pickFrom);
-        }
-    }
-
     internal static class CultureInfoExtensions
     {
         public static string SGFriendlyName(this CultureInfo info)

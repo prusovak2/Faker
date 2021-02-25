@@ -151,47 +151,6 @@ namespace Faker
                 }
             }
         }
-        /// <summary>
-        /// Randomly picks one item from the IList
-        /// </summary>
-        /// <typeparam name="Titem"></typeparam>
-        /// <param name="pickFrom"></param>
-        /// <returns></returns>
-        public Titem Pick<Titem>(IList<Titem> pickFrom)
-        {
-            int randomIndex = this.Random.Int(0, pickFrom.Count-1);
-            return pickFrom[randomIndex];
-        }
-        /// <summary>
-        /// Randomly picks one of items passed as arguments
-        /// </summary>
-        /// <typeparam name="Titem"></typeparam>
-        /// <param name="pickFrom"></param>
-        /// <returns></returns>
-        public Titem Pick<Titem>(params Titem[] pickFrom)
-        {
-            return Pick((IList<Titem>)pickFrom);
-        }
-        /// <summary>
-        /// Randomly picks item from the ICollection <br/>
-        /// LINEAR TIME COMPLEXITY!
-        /// </summary>
-        /// <typeparam name="Titem"></typeparam>
-        /// <param name="pickFrom"></param>
-        /// <returns></returns>
-        public Titem Pick<Titem>(ICollection<Titem> pickFrom)
-        {
-            int randomIndex = this.Random.Int(0, pickFrom.Count - 1);
-            int counter = 0;
-            foreach (Titem item in pickFrom)
-            {
-                if (counter == randomIndex)
-                {
-                    return item;
-                }
-                counter++;
-            }
-            throw new NotImplementedException("Unexpected");
-        }
+        
     }
 }
