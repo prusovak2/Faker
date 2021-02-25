@@ -197,22 +197,6 @@ namespace FakerTests
         }
 
         [TestMethod]
-        public void BasicnoRepeatTest()
-        {
-            RandomGenerator rg = new RandomGenerator();
-            List<int> list = new();
-            for (int i = 0; i < 10; i++)
-            {
-                list.Add(i);
-            }
-            IList<int> picked = rg.PickMultipleNoRepeat(8, list);
-            foreach (var item in picked)
-            {
-                Console.WriteLine(item);
-            }
-        }
-
-        [TestMethod]
         public void PickMultipleNoRepeatIListTest()
         {
             RandomGenerator rg = new RandomGenerator();
@@ -249,6 +233,76 @@ namespace FakerTests
                 {
                     Assert.IsTrue(list2.Contains(item));
                     Console.Write($"{item} ");
+                    Assert.IsTrue(control.Add(item));
+                }
+                Console.WriteLine();
+            }
+        }
+
+        [TestMethod]
+        public void PickMultipleNoRepeatParamsTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            List<int> items = new List<int> { 55, 43, 74, 121, 13, 17, 666, 1000001010, 8, 4 };
+            for (int i = 0; i < items.Count; i++)
+            {
+                IList<int> picked = rg.PickMultipleNoRepeat(i, 55, 43, 74, 121, 13, 17, 666, 1000001010, 8, 4);
+                HashSet<int> control = new();
+
+                foreach (int item in picked)
+                {
+                    Console.Write($"{item} ");
+                    Assert.IsTrue(items.Contains(item));
+                    Assert.IsTrue(control.Add(item));
+                }
+                Console.WriteLine();
+            }
+
+            List<char> items2 = new List<char> { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
+            for (int i = 0; i < items2.Count; i++)
+            {
+                IList<char> picked = rg.PickMultipleNoRepeat(i, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' );
+                HashSet<int> control = new();
+
+                foreach (var item in picked)
+                {
+                    Console.Write($"{item} ");
+                    Assert.IsTrue(items2.Contains(item));
+                    Assert.IsTrue(control.Add(item));
+                }
+                Console.WriteLine();
+            }
+        }
+
+        [TestMethod]
+        public void PickMultipleNoRepeatIListExtensionsTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            HashSet<Guid> set = new(rg.List.Guid(100));
+            List<Guid> guids = set.ToList();
+            for (int i = 0; i < 20; i++)
+            {
+                IList<Guid> picked = guids.PickRandomMultipleNoRepeat(i);
+                HashSet<Guid> control = new();
+                foreach (var item in picked)
+                {
+                    Console.Write($"{item} ");
+                    Assert.IsTrue(guids.Contains(item));
+                    Assert.IsTrue(control.Add(item));
+                }
+                Console.WriteLine();
+            }
+
+            HashSet<float> set2 = new(rg.List.Float(100));
+            List<float> floats = set2.ToList();
+            for (int i = 0; i < 100; i++)
+            {
+                IList<float> picked = floats.PickRandomMultipleNoRepeat(i, rg);
+                HashSet<float> control = new();
+                foreach (var item in picked)
+                {
+                    Console.Write($"{item} ");
+                    Assert.IsTrue(floats.Contains(item));
                     Assert.IsTrue(control.Add(item));
                 }
                 Console.WriteLine();

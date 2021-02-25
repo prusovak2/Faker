@@ -120,5 +120,9 @@ namespace Faker
             return picked;
         }
 
+        public IList<Titem> PickMultipleNoRepeat<Titem>(int howMany, params Titem[] pickFrom)
+        {
+            return PickMultipleNoRepeat(howMany, (IList<Titem>)pickFrom);
+        }
     }
 }

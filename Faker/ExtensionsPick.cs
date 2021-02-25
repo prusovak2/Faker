@@ -41,6 +41,16 @@ namespace Faker
         {
             return random.PickMultiple(howMany, pickFrom);
         }
+
+        public static IList<Titem> PickRandomMultipleNoRepeat<Titem>(this IList<Titem> pickFrom, int howMany)
+        {
+            return RG.PickMultipleNoRepeat(howMany, pickFrom);
+        }
+
+        public static IList<Titem> PickRandomMultipleNoRepeat<Titem>(this IList<Titem> pickFrom, int howMany, RandomGenerator random)
+        {
+            return random.PickMultipleNoRepeat(howMany, pickFrom);
+        }
     }
     public static class ICollectionExtensions
     {
