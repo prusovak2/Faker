@@ -14,7 +14,9 @@ namespace Faker
 
             public TLabel[] Labels { get; }
 
-            internal Lazy<IRandomGeneratorAlg> generatorAlgLazy;
+            public int Count => Probabilities.Length;
+
+            internal Lazy<Xoshiro256starstar> generatorAlgLazy = new Lazy<Xoshiro256starstar>();
 
             public DiscreteDistribution(double[] probabilities, TLabel[] labels)
             {
@@ -103,7 +105,7 @@ namespace Faker
                 int labelIndex = Array.IndexOf(this.Labels, label);
                 if(labelIndex < 0)
                 {
-                    throw new ArithmeticException("Non existing label");
+                    throw new ArgumentException("Non existing label");
                 }
                 double[] newProbs = new double[this.Probabilities.Length - 1];
                 TLabel[] newLabels = new TLabel[this.Labels.Length - 1];
@@ -128,7 +130,7 @@ namespace Faker
                 int labelIndex = Array.IndexOf(this.Labels, label);
                 if (labelIndex != -1)
                 {
-                    throw new ArithmeticException("Label is already present in this distribution.");
+                    throw new ArgumentException("Label is already present in this distribution.");
                 }
                 double[] newProbs = new double[this.Probabilities.Length + 1];
                 TLabel[] newLabels = new TLabel[this.Labels.Length + 1];
@@ -142,6 +144,23 @@ namespace Faker
 
                 // ctor will normalize probabilities
                 return new DiscreteDistribution<TLabel>(newProbs, newLabels);
+            }
+
+            internal bool AreNormalized(out double ProbSum)
+            {
+                if (this.Probabilities.Length == 0)
+                {
+                    throw new ArgumentException("Array of probabilities must be non empty.");
+                }
+
+                // add up all probabilities
+                double sum = 0;
+                for (int i = 0; i < this.Probabilities.Length; i++)
+                {
+                    sum += this.Probabilities[i];
+                }
+                ProbSum = sum;
+                return sum.EpsilonEquals(1d);
             }
         }
     }

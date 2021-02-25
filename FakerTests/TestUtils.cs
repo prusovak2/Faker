@@ -75,5 +75,11 @@ namespace FakerTests
                 }
             }
         }
+
+        public static void CheckPropotion<T>(Dictionary<T, int> dic, int numIterations, double proportion, T index, double variance = 10d)
+        {
+            Console.WriteLine($"{index}: {dic[index]}");
+            Assert.IsTrue(Math.Abs(dic[index] - numIterations * proportion) < numIterations / variance);
+        }
     }
 }
