@@ -251,11 +251,23 @@ namespace Faker
                 }
             }
 
+            /// <summary>
+            /// Returns a random value from user defined discrete distribution
+            /// </summary>
+            /// <typeparam name="TLabel"></typeparam>
+            /// <param name="distribution"></param>
+            /// <returns></returns>
             public TLabel Discrete<TLabel>(DiscreteDistribution<TLabel> distribution)
             {
                 return distribution.Next(RG.RandomGeneratorAlg);
             }
-
+            /// <summary>
+            /// Returns a random value from user defined discrete distribution represented by an array of probabilities and an array of labels
+            /// </summary>
+            /// <typeparam name="TLabel"></typeparam>
+            /// <param name="probabilities"></param>
+            /// <param name="labels"></param>
+            /// <returns></returns>
             public TLabel Discrete<TLabel>(double[] probabilities, TLabel[] labels)
             {
                 DiscreteDistribution<TLabel> distribution = new(probabilities, labels);

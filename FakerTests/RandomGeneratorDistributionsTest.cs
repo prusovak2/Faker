@@ -210,8 +210,8 @@ namespace FakerTests
             Console.WriteLine();
             Assert.IsTrue(normalized);
             Assert.IsTrue(sum.EpsilonEquals(1));
-            Assert.IsTrue((dist.Probabilities.Length - 1) == (distWithout.Probabilities.Length));
-            Assert.IsTrue(Array.IndexOf<byte>(distWithout.Labels, 42) == -1);
+            Assert.IsTrue((dist.Probabilities.Count - 1) == (distWithout.Probabilities.Count));
+            Assert.IsFalse(distWithout.Labels.Contains<byte>(42));
             
 
             double[] probs2 = { 0.2, 0.4 };
@@ -232,8 +232,8 @@ namespace FakerTests
             Console.WriteLine();
             Assert.IsTrue(normalized);
             Assert.IsTrue(sum.EpsilonEquals(1));
-            Assert.IsTrue((dist2.Probabilities.Length - 1) == (dist2Without.Probabilities.Length));
-            Assert.IsTrue(Array.IndexOf<string>(dist2Without.Labels, "abraka") == -1);
+            Assert.IsTrue((dist2.Probabilities.Count - 1) == (dist2Without.Probabilities.Count));
+            Assert.IsFalse(dist2Without.Labels.Contains<string>("abraka"));
 
 
 
@@ -255,8 +255,8 @@ namespace FakerTests
             Console.WriteLine();
             Assert.IsTrue(normalized);
             Assert.IsTrue(sum.EpsilonEquals(1));
-            Assert.IsTrue((dist2.Probabilities.Length - 1) == (dist2Without.Probabilities.Length));
-            Assert.IsTrue(Array.IndexOf<string>(dist2Without.Labels, "remove") == -1);
+            Assert.IsTrue((dist2.Probabilities.Count - 1) == (dist2Without.Probabilities.Count));
+            Assert.IsFalse(dist2Without.Labels.Contains<string>("remove"));
 
 
             Assert.ThrowsException<ArgumentException>(() => { dist2.WithoutLabel("non existent label"); });
@@ -286,8 +286,8 @@ namespace FakerTests
             Console.WriteLine();
             Assert.IsTrue(normalized);
             Assert.IsTrue(sum.EpsilonEquals(1));
-            Assert.IsTrue((dist.Probabilities.Length + 1) == (distWith.Probabilities.Length));
-            Assert.IsTrue(Array.IndexOf<byte>(distWith.Labels, 42) != -1);
+            Assert.IsTrue((dist.Probabilities.Count + 1) == (distWith.Probabilities.Count));
+            Assert.IsTrue(distWith.Labels.Contains<byte>(42));
 
 
             double[] probs2 = { 0.2, 0.4 };
@@ -308,9 +308,8 @@ namespace FakerTests
             Console.WriteLine();
             Assert.IsTrue(normalized);
             Assert.IsTrue(sum.EpsilonEquals(1));
-            Assert.IsTrue((dist2.Probabilities.Length + 1) == (dist2With.Probabilities.Length));
-            Assert.IsTrue(Array.IndexOf<string>(dist2With.Labels, "added") != -1);
-
+            Assert.IsTrue((dist2.Probabilities.Count + 1) == (dist2With.Probabilities.Count));
+            Assert.IsTrue(dist2With.Labels.Contains<string>("added"));
 
 
             double[] probs3 = { 133211, 197129, 42000 };
@@ -331,8 +330,8 @@ namespace FakerTests
             Console.WriteLine();
             Assert.IsTrue(normalized);
             Assert.IsTrue(sum.EpsilonEquals(1));
-            Assert.IsTrue((dist2.Probabilities.Length + 1) == (dist2With.Probabilities.Length));
-            Assert.IsTrue(Array.IndexOf<string>(dist2With.Labels, "added") != -1);
+            Assert.IsTrue((dist2.Probabilities.Count + 1) == (dist2With.Probabilities.Count));
+            Assert.IsTrue(dist2With.Labels.Contains<string>("added"));
 
 
             Assert.ThrowsException<ArgumentException>(() => { dist2.WithLabel("abraka", 73); });
@@ -344,6 +343,7 @@ namespace FakerTests
             double[] probs = { 0.5, 0.1, 0.2, 0.2 };
             string[] labels= { "half", "0.1", "0.2", "0.2 second" };
             RandomGenerator.DiscreteDistribution<string> dist = new(probs, labels);
+
             Dictionary<string, int> counter = new();
 
             int numIterations = 1000;
@@ -352,7 +352,7 @@ namespace FakerTests
                 string label = dist.Next();
                 TestUtils.IncInDic(counter, label);
             }
-            for (int i = 0; i < dist.Probabilities.Length; i++)
+            for (int i = 0; i < dist.Probabilities.Count; i++)
             {
                 TestUtils.CheckPropotion(counter, numIterations, dist.Probabilities[i], dist.Labels[i]);
             }
@@ -377,7 +377,7 @@ namespace FakerTests
                 int label = dist3.Next();
                 TestUtils.IncInDic(counter2, label);
             }
-            for (int i = 0; i < dist3.Probabilities.Length; i++)
+            for (int i = 0; i < dist3.Probabilities.Count; i++)
             {
                 TestUtils.CheckPropotion(counter2, numIterations, dist3.Probabilities[i], dist3.Labels[i]);
             }
@@ -411,7 +411,7 @@ namespace FakerTests
                 string label = rg.Distribution.Discrete(dist);
                 TestUtils.IncInDic(counter, label);
             }
-            for (int i = 0; i < dist.Probabilities.Length; i++)
+            for (int i = 0; i < dist.Probabilities.Count; i++)
             {
                 TestUtils.CheckPropotion(counter, numIterations, dist.Probabilities[i], dist.Labels[i]);
             }
