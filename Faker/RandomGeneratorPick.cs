@@ -124,5 +124,16 @@ namespace Faker
         {
             return PickMultipleNoRepeat(howMany, (IList<Titem>)pickFrom);
         }
+
+        public void Shuffle<Titem>(IList<Titem> toShuffle)
+        {
+            for (int i = 0; i < toShuffle.Count; i++)
+            {
+                int randomIndex = this.Random.Int(i, toShuffle.Count - 1);
+                Titem tmp = toShuffle[i];
+                toShuffle[i] = toShuffle[randomIndex];
+                toShuffle[randomIndex] = tmp;
+            }
+        }
     }
 }

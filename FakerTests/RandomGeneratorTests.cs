@@ -202,7 +202,7 @@ namespace FakerTests
             RandomGenerator rg = new RandomGenerator();
             int lower = 0;
             int upper = 100;
-            int count = 50;
+            int count = 100;
             HashSet<int>  set = new(rg.List.Int(count, lower, upper));
             IList<int> list = set.ToList();
             for (int i = 0; i < 20; i++)
@@ -352,6 +352,84 @@ namespace FakerTests
                 float picked = floats.PickRandom(rg);
                 Console.WriteLine(picked);
                 Assert.IsTrue(floats.Contains(picked));
+            }
+        }
+
+        [TestMethod]
+        public void ShuffleTest()
+        {
+            RandomGenerator rg = new();
+            int num = 1000;
+            int[] arr = new int[num];
+            int samePosotion = 0;
+            for (int i = 0; i < num; i++)
+            {
+                arr[i] = i;
+            }
+            rg.Shuffle(arr);
+            for (int i = 0; i < num; i++)
+            {
+                Assert.IsTrue(arr.Contains(i));
+                if(i== arr[i])
+                {
+                    samePosotion++;
+                }
+            }
+            Console.WriteLine(samePosotion);
+            Assert.IsTrue(samePosotion < num /10);
+
+            Console.WriteLine();
+
+            List<char> items2 = new List<char> { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
+            rg.Shuffle(items2);
+            foreach (var item in items2)
+            {
+                Console.Write(item);
+            }
+        }
+
+        [TestMethod]
+        public void ShuffleExtensionTest()
+        {
+            RandomGenerator rg = new();
+            int num = 1000;
+            int[] arr = new int[num];
+            int[] arr2 = new int[num];
+            int samePosotion1 = 0;
+            int samePosotion2 = 0;
+            for (int i = 0; i < num; i++)
+            {
+                arr[i] = i;
+                arr2[i] = i;
+            }
+            arr.Shuffle();
+            arr2.Shuffle(rg);
+            for (int i = 0; i < num; i++)
+            {
+                Assert.IsTrue(arr.Contains(i));
+                Assert.IsTrue(arr2.Contains(i));
+                if (i == arr[i])
+                {
+                    samePosotion1++;
+                }
+                if (i == arr2[i])
+                {
+                    samePosotion2++;
+                }
+            }
+            Console.WriteLine(samePosotion1);
+            Assert.IsTrue(samePosotion1 < num / 10);
+
+            Console.WriteLine(samePosotion2);
+            Assert.IsTrue(samePosotion2 < num / 10);
+
+            Console.WriteLine();
+
+            List<char> items2 = new List<char> { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
+            items2.Shuffle(rg);
+            foreach (var item in items2)
+            {
+                Console.Write(item);
             }
         }
 
