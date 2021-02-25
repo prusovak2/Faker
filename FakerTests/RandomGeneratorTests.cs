@@ -99,6 +99,102 @@ namespace FakerTests
                 Assert.IsTrue(floats.Contains(picked));
             }
         }
+
+        [TestMethod]
+        public void PickMultipleIListTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            int lower = 0;
+            int upper = 100;
+            int count = 50;
+            IList<int> list = rg.List.Int(count, lower, upper);
+            for (int i = 0; i < 20; i++)
+            {
+                IList<int> picked = rg.PickMultiple(i, list);
+
+                foreach (int item in picked)
+                {
+                    Assert.IsTrue(list.Contains(item));
+                    Console.Write($"{item} ");
+                }
+                Console.WriteLine();
+            }
+
+            DateTime lower2 = new DateTime(2010, 1, 1);
+            DateTime upper2 = new DateTime(2020, 3, 3);
+            IList<DateTime> list2 = rg.List.DateTime(count, lower2, upper2);
+            for (int i = 0; i < 20; i++)
+            {
+                IList<DateTime> picked = rg.PickMultiple(i, list2);
+
+                foreach (DateTime item in picked)
+                {
+                    Assert.IsTrue(list2.Contains(item));
+                    Console.Write($"{item} ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        [TestMethod]
+        public void PickMultipleParamsTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            List<int> items = new List<int> { 55, 43, 43, 74, 121, 13, 17, 666, 1000001010, 8, 4 };
+            for (int i = 0; i < 20; i++)
+            {
+                IList<int> picked = rg.PickMultiple(i, 55, 43, 43, 74, 121, 13, 17, 666, 1000001010, 8, 4);
+
+                foreach (int item in picked)
+                {
+                    Assert.IsTrue(items.Contains(item));
+                    Console.Write($"{item} ");
+                }
+                Console.WriteLine();
+            }
+
+            List<char> items2 = new List<char> { 'a', 'b', 'r', 'a', 'k', 'a', 'd', 'a', 'b', 'r', 'a' };
+            for (int i = 0; i < 20; i++)
+            {
+                IList<char> picked = rg.PickMultiple(i, 'a', 'b', 'r', 'a', 'k', 'a', 'd', 'a', 'b', 'r', 'a');
+                foreach (var item in picked)
+                {
+                    Assert.IsTrue(items2.Contains(item));
+                    Console.Write($"{item} ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        [TestMethod]
+        public void PickMultipleIListExtensionsTest()
+        {
+            RandomGenerator rg = new RandomGenerator();
+            List<Guid> guids = (List<Guid>)rg.List.Guid(50);
+            for (int i = 0; i < 20; i++)
+            {
+                IList<Guid> picked = guids.PickRandomMultiple(i);
+                foreach (var item in picked)
+                {
+                    Assert.IsTrue(guids.Contains(item));
+                    Console.Write($"{item} ");
+                }
+                Console.WriteLine();
+            }
+
+            List<float> floats = (List<float>)rg.List.Float(50);
+            for (int i = 0; i < 100; i++)
+            {
+                IList<float> picked = floats.PickRandomMultiple(i, rg);
+                foreach (var item in picked)
+                {
+                    Assert.IsTrue(floats.Contains(item));
+                    Console.Write($"{item} ");
+                }
+                Console.WriteLine();
+            }
+        }
+
         [TestMethod]
         public void PickIcollectionTest()
         {
