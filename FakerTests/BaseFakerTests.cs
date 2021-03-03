@@ -125,6 +125,25 @@ namespace FakerTests
             return $"Value={this.Value}, AnotherVal={this.AnotherVal}";
         }
     }
+    public class Base { }
+    public class Derived : Base { }
+
+    public class ConvertClass
+    {
+        public int Int { get; set; }
+        public byte Byte;
+        public long Long { get; set; }
+        public Base Base { get; set; }
+    }
+
+    public class ConvertClassFaker : BaseFaker<ConvertClass>
+    {
+        public ConvertClassFaker()
+        {
+            RuleFor(x => x.Int, rg => rg.Random.Long());
+        }
+    }
+
     public class ValueClassFakerParams : BaseFaker<ValueClass>
     {
         public ValueClassFakerParams()
@@ -314,6 +333,13 @@ namespace FakerTests
     [TestClass]
     public class BaseFakerTests
     {
+        [TestMethod]
+        public void ConvertTest()
+        {
+            ConvertClassFaker faker = new();
+            ConvertClass c = faker.Generate();
+        }
+
         [TestMethod]
         public void NestedTest()
         {
