@@ -25,7 +25,7 @@ namespace Faker
     }
     public class BaseFaker<TClass> : IFaker where TClass : class
     {
-        internal protected static Dictionary<MemberInfo, object> Setters; 
+        internal protected static Dictionary<MemberInfo, Action<TClass, object>> Setters = new(); 
         /// <summary>
         /// source of pseudo-random entities
         /// </summary>
@@ -145,6 +145,7 @@ namespace Faker
             {
                 throw new FakerException("You cannot state multiple rules for the same member.");
             }
+            AddSetterIfNew<TMember>(memberInfo);
         }
 
         /// <summary>
@@ -178,7 +179,7 @@ namespace Faker
         public void SetFaker<TInnerClass>(Expression<Func<TClass, TInnerClass>> selector,
             BaseFaker<TInnerClass> faker) where TInnerClass : class
         {
-            MemberInfo memberInfo = this.GetMemberFromExpression(selector);
+            MemberInfo memberInfo= this.GetMemberFromExpression(selector);
             _internalSetFaker(memberInfo, faker);
         }
 
@@ -209,6 +210,7 @@ namespace Faker
             {
                 throw new FakerException("You cannot set multiple InnerFakers for the same member.");
             }
+            AddSetterIfNew<TInnerClass>(memberInfo);
         }
         /// <summary>
         /// Called when faker is used as an innerFaker
@@ -329,13 +331,15 @@ namespace Faker
         /// <param name="RandomFunc">Function, that generates a content to be used as the member value</param>
         internal void UseRule(TClass instance, MemberInfo MemberInfo, Func<object> RandomFunc)
         {
+            var memberSetter = Setters[MemberInfo];
             //member is a property
             if(MemberInfo is PropertyInfo propertyInfo)
             {
                 Type propertyType = propertyInfo.PropertyType;
                 var o = RandomFunc();
                 var value = Convert.ChangeType(o, propertyType);
-                propertyInfo.SetValue(instance, value);
+                //propertyInfo.SetValue(instance, value);
+                memberSetter(instance, value);
             }
             //member is a field
             else if(MemberInfo is FieldInfo fieldInfo)
@@ -343,7 +347,8 @@ namespace Faker
                 Type fieldType = fieldInfo.FieldType;
                 var o = RandomFunc();
                 var value = Convert.ChangeType(o, fieldType);
-                fieldInfo.SetValue(instance, value);
+                //fieldInfo.SetValue(instance, value);
+                memberSetter(instance, value);
             }
             else
             {
@@ -410,7 +415,7 @@ namespace Faker
                 throw new ArgumentException();
             }
 
-            return (MemberInfo)expression.Member;
+            return expression.Member;
         }
 
         /// <summary>
@@ -426,14 +431,14 @@ namespace Faker
             }
         }
 
-        internal Action<TClass, TMember> GetMemberSetter<TMember>(MemberInfo memberInfo)
+        /*static internal Action<TClass, TMember> GetMemberSetter<TMember>(MemberInfo memberInfo)
         {
-            object untypedAction;
+            Action<TClass, object> untypedAction;
             if (!Setters.TryGetValue(memberInfo, out untypedAction))
             {
                 // Setter action for this member was not created yet
                 // create it, store it for future use, return it
-                Action<TClass, TMember> newSetter = CreateSetterAction<TMember>(memberInfo);
+                Action<TClass, object> newSetter = CreateSetterAction<TMember>(memberInfo);
                 Setters.Add(memberInfo, newSetter);
                 return newSetter;
             }
@@ -442,9 +447,16 @@ namespace Faker
                 // return already created setter
                 return (Action<TClass, TMember>)untypedAction;
             }
+        }*/
+        static internal void AddSetterIfNew<TMember>(MemberInfo memberInfo)
+        {
+            if (!Setters.ContainsKey(memberInfo))
+            {
+                Setters.Add(memberInfo, CreateSetterAction<TMember>(memberInfo));
+            }
         }
 
-        internal Action<TClass, TMember> CreateSetterAction<TMember>(MemberInfo memberInfo)
+        static internal Action<TClass, object> CreateSetterAction<TMember>(MemberInfo memberInfo)
         {
             //expression representing an instance which member is to  be set
             ParameterExpression targetObjExpr = Expression.Parameter(typeof(TClass), "targetObjParam");
@@ -452,23 +464,26 @@ namespace Faker
             ParameterExpression valueToSetExpr = Expression.Parameter(typeof(TMember), "valueToSet");
             //expression representing a member
             MemberExpression memberExpression;
-            if(memberInfo is PropertyInfo propertyInfo)
+            UnaryExpression convertedValue;
+            if (memberInfo is PropertyInfo propertyInfo)
             {
                 memberExpression = Expression.Property(targetObjExpr, propertyInfo);
+                convertedValue = Expression.Convert(valueToSetExpr, propertyInfo.PropertyType);
             }
-            else if(memberInfo is FieldInfo fieldInfo)
+            else if (memberInfo is FieldInfo fieldInfo)
             {
                 memberExpression = Expression.Field(targetObjExpr, fieldInfo);
+                convertedValue = Expression.Convert(valueToSetExpr, fieldInfo.FieldType);
             }
             else
             {
                 throw new NotImplementedException("Unexpected");
             }
-            BinaryExpression assignExpr = Expression.Assign(memberExpression, valueToSetExpr);
+            BinaryExpression assignExpr = Expression.Assign(memberExpression, convertedValue);
 
             Action<TClass, TMember> setter = Expression.Lambda<Action<TClass, TMember>>
                 (assignExpr, targetObjExpr, valueToSetExpr).Compile();
-            return setter;
+            return (inst, val) => setter(inst, (TMember)Convert.ChangeType(val, typeof(TMember)));
         }
 
         /// <summary>
