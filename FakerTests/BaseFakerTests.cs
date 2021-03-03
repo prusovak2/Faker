@@ -134,13 +134,22 @@ namespace FakerTests
         public byte Byte;
         public long Long { get; set; }
         public Base Base { get; set; }
+
+        public override string ToString()
+        {
+            return TestUtils.InstanceToString(this);
+        }
     }
 
     public class ConvertClassFaker : BaseFaker<ConvertClass>
     {
         public ConvertClassFaker()
         {
-            RuleFor(x => x.Int, rg => rg.Random.Long());
+            Derived d = new();
+            //RuleFor(x => x.Int, rg => rg.Random.Double());
+            RuleFor(x => x.Long, rg => rg.Random.Int());
+            RuleFor(x=> x.Int, rg => rg.Random.Byte());
+            RuleFor(x => x.Base, _ => d);
         }
     }
 
@@ -338,6 +347,7 @@ namespace FakerTests
         {
             ConvertClassFaker faker = new();
             ConvertClass c = faker.Generate();
+            Console.WriteLine(c);
         }
 
         [TestMethod]

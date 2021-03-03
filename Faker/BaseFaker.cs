@@ -337,18 +337,18 @@ namespace Faker
             {
                 Type propertyType = propertyInfo.PropertyType;
                 var o = RandomFunc();
-                var value = Convert.ChangeType(o, propertyType);
+                //var value = Convert.ChangeType(o, propertyType);
                 //propertyInfo.SetValue(instance, value);
-                memberSetter(instance, value);
+                memberSetter(instance, o);
             }
             //member is a field
             else if(MemberInfo is FieldInfo fieldInfo)
             {
                 Type fieldType = fieldInfo.FieldType;
                 var o = RandomFunc();
-                var value = Convert.ChangeType(o, fieldType);
+                //var value = Convert.ChangeType(o, fieldType);
                 //fieldInfo.SetValue(instance, value);
-                memberSetter(instance, value);
+                memberSetter(instance, o);
             }
             else
             {
