@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>FakerBenchmark.IgnoreWithoutIgnoreFakerBenchmark-20210303-220704</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>              Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Rank</th><th>Gen 0</th><th>Gen 1</th><th>Gen 2</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>BaseFakerNoAttributes</td><td>843.8 ns</td><td>8.44 ns</td><td>6.59 ns</td><td>845.1 ns</td><td>1</td><td>0.7906</td><td>-</td><td>-</td><td>1.21 KB</td>
+</tr><tr><td>BaseFakerAttributes</td><td>933.9 ns</td><td>25.13 ns</td><td>73.32 ns</td><td>911.7 ns</td><td>2</td><td>0.7906</td><td>-</td><td>-</td><td>1.21 KB</td>
+</tr><tr><td>BaseFakerAttributesRuleFor</td><td>2,576.3 ns</td><td>45.87 ns</td><td>42.90 ns</td><td>2,566.0 ns</td><td>3</td><td>1.2741</td><td>-</td><td>-</td><td>1.95 KB</td>
+</tr><tr><td>AutoFakerAttributes</td><td>4,028.8 ns</td><td>79.55 ns</td><td>85.12 ns</td><td>3,987.2 ns</td><td>4</td><td>1.7700</td><td>-</td><td>-</td><td>2.71 KB</td>
+</tr><tr><td>AutoFakerAttributesRuleFor</td><td>7,216.8 ns</td><td>180.40 ns</td><td>523.38 ns</td><td>7,060.4 ns</td><td>5</td><td>2.1820</td><td>-</td><td>-</td><td>3.34 KB</td>
+</tr><tr><td>AutoFakerNoAttributes</td><td>16,987.2 ns</td><td>308.49 ns</td><td>442.43 ns</td><td>16,851.5 ns</td><td>6</td><td>8.3618</td><td>-</td><td>-</td><td>12.81 KB</td>
+</tr></tbody></table>
+</body>
+</html>

@@ -10,7 +10,7 @@ Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cor
 ```
 |        Method |       Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
 |-------------- |-----------:|----------:|----------:|-----:|-------:|------:|------:|----------:|
-|     OneMember |   259.3 ns |   4.97 ns |   4.65 ns |    1 | 0.1173 |     - |     - |     184 B |
-|    TwoMembers |   437.2 ns |   6.23 ns |   5.82 ns |    2 | 0.1631 |     - |     - |     256 B |
-|        Nested | 1,249.8 ns |  23.13 ns |  22.72 ns |    3 | 0.2899 |     - |     - |     456 B |
-| LotOfMemebers | 6,924.8 ns | 134.03 ns | 125.37 ns |    4 | 3.3951 |     - |     - |    5336 B |
+|     OneMember |   215.7 ns |   3.99 ns |   3.74 ns |    1 | 0.1018 |     - |     - |     160 B |
+|    TwoMembers |   374.4 ns |   5.10 ns |   4.78 ns |    2 | 0.1326 |     - |     - |     208 B |
+|        Nested | 1,032.6 ns |  20.69 ns |  20.32 ns |    3 | 0.2594 |     - |     - |     408 B |
+| LotOfMemebers | 6,612.0 ns | 116.12 ns | 108.62 ns |    4 | 3.2959 |     - |     - |    5180 B |
