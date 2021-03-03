@@ -435,7 +435,7 @@ namespace FakerTests
             }
             Console.WriteLine();
             StorageFakerParamlessAuto s = new StorageFakerParamlessAuto();
-            HashSet<MemberInfo> memberInfos = s.MembersToBeFilledDefaultly;
+            HashSet<MemberInfo> memberInfos = s.MembersToBeFilledInstance;
 
             foreach (var item in memberInfos)
             {

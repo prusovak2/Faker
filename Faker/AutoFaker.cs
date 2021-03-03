@@ -16,6 +16,13 @@ namespace Faker
     /// <typeparam name="TClass"></typeparam>
     public class AutoFaker<TClass> : BaseFaker<TClass>, IFaker where TClass : class
     {
+        internal HashSet<MemberInfo> MembersToBeFilledInstance = new HashSet<MemberInfo>(MembersToBeFilledDefaultly);
+
+        static AutoFaker()
+        {
+            InitializeListOfRandomlyFilledMembers();
+        }
+
         /// <summary>
         /// new instance of AutoFaker that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
         /// fills all members of TClass of basic types with no RuleFor set for them by default random function for particular type
@@ -82,7 +89,7 @@ namespace Faker
         protected internal sealed override void _internalRuleFor<TMember>(MemberInfo memberInfo, Func<RandomGenerator, TMember> setter)
         {
             base._internalRuleFor(memberInfo, setter);
-            MembersToBeFilledDefaultly.Remove(memberInfo);
+            MembersToBeFilledInstance.Remove(memberInfo);
         }
         /// <summary>
         /// Sets member as Ignored - this member won't be filled by default random function by AutoFaker instances <br/>
@@ -93,7 +100,7 @@ namespace Faker
         public void Ignore<TMember>(Expression<Func<TClass, TMember>> selector)
         {
             MemberInfo memberInfo = this.GetMemberFromExpression(selector);
-            MembersToBeFilledDefaultly.Remove(memberInfo);
+            MembersToBeFilledInstance.Remove(memberInfo);
             base._internalIgnore<TMember>(memberInfo);
         }
         /// <summary>
@@ -114,7 +121,7 @@ namespace Faker
         protected internal sealed override void _internalSetFaker<TInnerClass>(MemberInfo memberInfo, BaseFaker<TInnerClass> faker)
         {
             base._internalSetFaker(memberInfo, faker);
-            MembersToBeFilledDefaultly.Remove(memberInfo);
+            MembersToBeFilledInstance.Remove(memberInfo);
         }
 
         /// <summary>
@@ -139,7 +146,7 @@ namespace Faker
         /// <param name="instance"></param>
         internal void RandomlyFillRemainingMembers(TClass instance)
         {
-            HashSet<MemberInfo> membersToFill = this.MembersToBeFilledDefaultly;
+            HashSet<MemberInfo> membersToFill = this.MembersToBeFilledInstance;
             foreach (var member in membersToFill)
             {
                 if (member is PropertyInfo propertyInfo)

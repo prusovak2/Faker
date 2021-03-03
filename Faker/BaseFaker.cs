@@ -25,7 +25,10 @@ namespace Faker
     }
     public class BaseFaker<TClass> : IFaker where TClass : class
     {
-        internal protected static Dictionary<MemberInfo, Action<TClass, object>> Setters = new(); 
+        internal protected static Dictionary<MemberInfo, Action<TClass, object>> Setters = new();
+        
+        static internal HashSet<MemberInfo> MembersToBeFilledDefaultly { get; set; } = null;
+
         /// <summary>
         /// source of pseudo-random entities
         /// </summary>
@@ -58,12 +61,7 @@ namespace Faker
         /// once member is Ignored, it cannot have a RuleFor or InnnerFaker set for it in the same instance of the AutoFaker
         /// </summary>
         internal HashSet<MemberInfo> Ignored { get; } = new HashSet<MemberInfo>();
-        /// <summary>
-        /// Set of not ignored (not by Ignore method call nor by using FakerIgnore attribute) members with not RuleFor or InnerFaker set for them
-        /// that are to be filled by default random function in AutoFaker instances
-        /// not null only in AutoFaker instance
-        /// </summary>
-        internal HashSet<MemberInfo> MembersToBeFilledDefaultly { get; set; } = null;
+       
 
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
@@ -422,32 +420,15 @@ namespace Faker
         /// Used by AutoFaker and StrictFaker (called in their ctors), scans for all members of TClass not decorated with FakerIgnore attribute <br/>
         /// and stores them in MembersToBeFilledDefaultly HashSet
         /// </summary>
-        internal void InitializeListOfRandomlyFilledMembers()
+        static internal void InitializeListOfRandomlyFilledMembers()
         {
-            if (this.MembersToBeFilledDefaultly is null)
+            if (MembersToBeFilledDefaultly is null)
             {
                 Type type = typeof(TClass);
                 MembersToBeFilledDefaultly = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && !memberInfo.GetCustomAttributes<FakerIgnoreAttribute>().Any())).ToHashSet();
             }
         }
 
-        /*static internal Action<TClass, TMember> GetMemberSetter<TMember>(MemberInfo memberInfo)
-        {
-            Action<TClass, object> untypedAction;
-            if (!Setters.TryGetValue(memberInfo, out untypedAction))
-            {
-                // Setter action for this member was not created yet
-                // create it, store it for future use, return it
-                Action<TClass, object> newSetter = CreateSetterAction<TMember>(memberInfo);
-                Setters.Add(memberInfo, newSetter);
-                return newSetter;
-            }
-            else
-            {
-                // return already created setter
-                return (Action<TClass, TMember>)untypedAction;
-            }
-        }*/
         static internal void AddSetterIfNew<TMember>(MemberInfo memberInfo)
         {
             if (!Setters.ContainsKey(memberInfo))
