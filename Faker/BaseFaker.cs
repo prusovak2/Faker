@@ -25,10 +25,14 @@ namespace Faker
     }
     public class BaseFaker<TClass> : IFaker where TClass : class
     {
+        /// <summary>
+        /// Setters for members of TClass compiled in runtime by Expression.Lambda.Compile
+        /// </summary>
         internal protected static Dictionary<MemberInfo, Action<TClass, object>> Setters = new();
-        
+        /// <summary>
+        /// Not ignored (by ignore attribute) members of TClass type, used by Strict and Auto Faker instances
+        /// </summary>
         static internal HashSet<MemberInfo> MembersToBeFilledDefaultly { get; set; } = null;
-
         /// <summary>
         /// source of pseudo-random entities
         /// </summary>
@@ -430,7 +434,11 @@ namespace Faker
                 MembersToBeFilledDefaultly = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && !memberInfo.GetCustomAttributes<FakerIgnoreAttribute>().Any())).ToHashSet();
             }
         }
-
+        /// <summary>
+        /// If the member does not have a setter compiled for it yet, compiles it and adds it to Setters dictionary 
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="memberInfo"></param>
         static internal void AddSetterIfNew<TMember>(MemberInfo memberInfo)
         {
             if (!Setters.ContainsKey(memberInfo))
@@ -438,7 +446,12 @@ namespace Faker
                 Setters.Add(memberInfo, CreateSetterAction<TMember>(memberInfo));
             }
         }
-
+        /// <summary>
+        /// Compiles a Setter for given member of TClass and returns it
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="memberInfo"></param>
+        /// <returns></returns>
         static internal Action<TClass, object> CreateSetterAction<TMember>(MemberInfo memberInfo)
         {
             //expression representing an instance which member is to  be set

@@ -16,6 +16,9 @@ namespace Faker
     /// <typeparam name="TClass"></typeparam>
     public class AutoFaker<TClass> : BaseFaker<TClass>, IFaker where TClass : class
     {
+        /// <summary>
+        /// Member to be filled by a default random function
+        /// </summary>
         internal HashSet<MemberInfo> MembersToBeFilledInstance = new HashSet<MemberInfo>(MembersToBeFilledDefaultly);
 
         static AutoFaker()

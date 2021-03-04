@@ -10,6 +10,9 @@ namespace Faker
 {
     public class StrictFaker<TClass> : BaseFaker<TClass>, IFaker where TClass : class
     {
+        /// <summary>
+        /// Members requiring a Rule or InnerFaker set for them
+        /// </summary>
         internal HashSet<MemberInfo> MembersToBeFilledInstance = new HashSet<MemberInfo>(MembersToBeFilledDefaultly); 
 
         static StrictFaker()
