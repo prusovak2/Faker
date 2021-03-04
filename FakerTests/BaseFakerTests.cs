@@ -125,6 +125,34 @@ namespace FakerTests
             return $"Value={this.Value}, AnotherVal={this.AnotherVal}";
         }
     }
+    public class Base { }
+    public class Derived : Base { }
+
+    public class ConvertClass
+    {
+        public int Int { get; set; }
+        public byte Byte;
+        public long Long { get; set; }
+        public Base Base { get; set; }
+
+        public override string ToString()
+        {
+            return TestUtils.InstanceToString(this);
+        }
+    }
+
+    public class ConvertClassFaker : BaseFaker<ConvertClass>
+    {
+        public ConvertClassFaker()
+        {
+            Derived d = new();
+            //RuleFor(x => x.Int, rg => rg.Random.Double());
+            RuleFor(x => x.Long, rg => rg.Random.Int());
+            RuleFor(x=> x.Int, rg => rg.Random.Byte());
+            RuleFor(x => x.Base, _ => d);
+        }
+    }
+
     public class ValueClassFakerParams : BaseFaker<ValueClass>
     {
         public ValueClassFakerParams()
@@ -315,6 +343,14 @@ namespace FakerTests
     public class BaseFakerTests
     {
         [TestMethod]
+        public void ConvertTest()
+        {
+            ConvertClassFaker faker = new();
+            ConvertClass c = faker.Generate();
+            Console.WriteLine(c);
+        }
+
+        [TestMethod]
         public void NestedTest()
         {
             AwesomeFakerNested f = new AwesomeFakerNested();
@@ -343,7 +379,7 @@ namespace FakerTests
             Console.WriteLine(a);
             Assert.AreEqual("text", a.Text);
             Assert.AreEqual(10, a.Value.Value);
-            Assert.ThrowsException<ArgumentException>(() => { Storage b = s.Generate(new object[] { "dabra" }); });
+            Assert.ThrowsException<FakerException>(() => { Storage b = s.Generate(new object[] { "dabra" }); });
             Storage b = s.Generate();
             Assert.AreEqual(10, b.Value.Value);
             Console.WriteLine(b);
@@ -384,7 +420,7 @@ namespace FakerTests
             Assert.ThrowsException<FakerException>(() => { StorageFakerMultipleSetFaker s = new StorageFakerMultipleSetFaker(); });
             Assert.ThrowsException<FakerException>(() => { StorageFakerRuleForAndSetFaker s = new StorageFakerRuleForAndSetFaker(); });
             StorageFakerFlawedParams sf = new StorageFakerFlawedParams();
-            Assert.ThrowsException<ArgumentException>(() => { Storage s = sf.Generate(); });
+            Assert.ThrowsException<FakerException>(() => { Storage s = sf.Generate(); });
 
         }
         [TestMethod]
@@ -399,7 +435,7 @@ namespace FakerTests
             }
             Console.WriteLine();
             StorageFakerParamlessAuto s = new StorageFakerParamlessAuto();
-            HashSet<MemberInfo> memberInfos = s.MembersToBeFilledDefaultly;
+            HashSet<MemberInfo> memberInfos = s.MembersToBeFilledInstance;
 
             foreach (var item in memberInfos)
             {

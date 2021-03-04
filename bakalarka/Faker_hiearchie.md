@@ -416,6 +416,8 @@ Doplnit `public Func<object> GetDefaultRandomFuncForType(object o)`  a `TypeExte
 
 **Priorita: 2**
 
+do not implement
+
 Náhodný string který četností výskytu písmen připomíná text v daném jazyce.
 
 Markovovské texty *(4/5)* *Generování náhodného textu napodobujícího text zadaný (řekněme se stejnými pravděpodobnostmi výskytu znaku v závislosti na předchozích k znacích). Případně totéž pro slova. [Lze též řešit způsobem připomínajícím Huffmanovu kompresní metodu, na požádání předvedu.]*  http://mj.ucw.cz/vyuka/zap/

@@ -46,7 +46,7 @@ namespace FakerBenchmark
             rg.Distribution.Binomial(40, 0.3);
         }
 
-        [Benchmark]
+        /*[Benchmark]
         public void BinomialNaive()
         {
             rg.Distribution.BinomialNaive(40, 0.3);
@@ -56,7 +56,7 @@ namespace FakerBenchmark
         public void BinomialClever()
         {
             rg.Distribution.BinomialClever(40, 0.3);
-        }
+        }*/
 
         [Benchmark]
         public void Gamma()

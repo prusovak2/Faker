@@ -11,6 +11,15 @@ namespace Faker
     public class StrictFaker<TClass> : BaseFaker<TClass>, IFaker where TClass : class
     {
         /// <summary>
+        /// Members requiring a Rule or InnerFaker set for them
+        /// </summary>
+        internal HashSet<MemberInfo> MembersToBeFilledInstance = new HashSet<MemberInfo>(MembersToBeFilledDefaultly); 
+
+        static StrictFaker()
+        {
+            InitializeListOfRandomlyFilledMembers();
+        }
+        /// <summary>
         /// new instance of StrictFaker that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
         /// this Faker requires to have Rules or InnerFakers set for all TClass members before Generate method can be called
         /// </summary>
@@ -65,7 +74,7 @@ namespace Faker
         /// <returns></returns>
         public bool AllRulesSetShallow()
         {
-            return !this.MembersToBeFilledDefaultly.Any();
+            return !this.MembersToBeFilledInstance.Any();
         }
         /// <summary>
         /// Internal method to be called on InnerFakers  <br/>
@@ -105,7 +114,7 @@ namespace Faker
         public HashSet<MemberInfo> GetAllMembersRequiringRuleShallow()
         {
             HashSet<MemberInfo> toReturn = new HashSet<MemberInfo>();
-            foreach (var item in this.MembersToBeFilledDefaultly)
+            foreach (var item in this.MembersToBeFilledInstance)
             {
                 toReturn.Add(item);
             }
@@ -156,7 +165,7 @@ namespace Faker
         protected internal sealed override void _internalRuleFor<TMember>(MemberInfo memberInfo, Func<RandomGenerator, TMember> setter)
         {
             base._internalRuleFor(memberInfo, setter);
-            MembersToBeFilledDefaultly.Remove(memberInfo);
+            MembersToBeFilledInstance.Remove(memberInfo);
         }
         /// <summary>
         /// Sets member as Ignored - this member won't be filled by default random function by AutoFaker instances <br/>
@@ -167,7 +176,7 @@ namespace Faker
         public void Ignore<TMember>(Expression<Func<TClass, TMember>> selector)
         {
             MemberInfo memberInfo = GetMemberFromExpression(selector);
-            MembersToBeFilledDefaultly.Remove(memberInfo);
+            MembersToBeFilledInstance.Remove(memberInfo);
             base._internalIgnore<TMember>(memberInfo);
         }
 
@@ -189,7 +198,7 @@ namespace Faker
         protected internal sealed override void _internalSetFaker<TInnerClass>(MemberInfo memberInfo, BaseFaker<TInnerClass> faker)
         {
             base._internalSetFaker(memberInfo, faker);
-            MembersToBeFilledDefaultly.Remove(memberInfo);
+            MembersToBeFilledInstance.Remove(memberInfo);
         }
         /// <summary>
         /// Use rules to fill the instance with a random content

@@ -26,6 +26,14 @@ namespace Faker
     public class BaseFaker<TClass> : IFaker where TClass : class
     {
         /// <summary>
+        /// Setters for members of TClass compiled in runtime by Expression.Lambda.Compile
+        /// </summary>
+        internal protected static Dictionary<MemberInfo, Action<TClass, object>> Setters = new();
+        /// <summary>
+        /// Not ignored (by ignore attribute) members of TClass type, used by Strict and Auto Faker instances
+        /// </summary>
+        static internal HashSet<MemberInfo> MembersToBeFilledDefaultly { get; set; } = null;
+        /// <summary>
         /// source of pseudo-random entities
         /// </summary>
         public RandomGenerator Random { get; }
@@ -57,12 +65,7 @@ namespace Faker
         /// once member is Ignored, it cannot have a RuleFor or InnnerFaker set for it in the same instance of the AutoFaker
         /// </summary>
         internal HashSet<MemberInfo> Ignored { get; } = new HashSet<MemberInfo>();
-        /// <summary>
-        /// Set of not ignored (not by Ignore method call nor by using FakerIgnore attribute) members with not RuleFor or InnerFaker set for them
-        /// that are to be filled by default random function in AutoFaker instances
-        /// not null only in AutoFaker instance
-        /// </summary>
-        internal HashSet<MemberInfo> MembersToBeFilledDefaultly { get; set; } = null;
+       
 
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
@@ -144,6 +147,7 @@ namespace Faker
             {
                 throw new FakerException("You cannot state multiple rules for the same member.");
             }
+            AddSetterIfNew<TMember>(memberInfo);
         }
 
         /// <summary>
@@ -177,7 +181,7 @@ namespace Faker
         public void SetFaker<TInnerClass>(Expression<Func<TClass, TInnerClass>> selector,
             BaseFaker<TInnerClass> faker) where TInnerClass : class
         {
-            MemberInfo memberInfo = this.GetMemberFromExpression(selector);
+            MemberInfo memberInfo= this.GetMemberFromExpression(selector);
             _internalSetFaker(memberInfo, faker);
         }
 
@@ -208,6 +212,7 @@ namespace Faker
             {
                 throw new FakerException("You cannot set multiple InnerFakers for the same member.");
             }
+            AddSetterIfNew<TInnerClass>(memberInfo);
         }
         /// <summary>
         /// Called when faker is used as an innerFaker
@@ -250,13 +255,15 @@ namespace Faker
         public TClass Generate()
         {
             Type type = typeof(TClass);
-            ConstructorInfo ctor = type.GetConstructor(Type.EmptyTypes);
-            if(ctor is null)
+            TClass instance;
+            try
             {
-                throw new ArgumentException("Your class does not have a parameterless constructor, use other overload of generate");
+                instance = (TClass)Activator.CreateInstance(type);
             }
-            //call constructor
-            TClass instance = (TClass)ctor.Invoke(null);
+            catch(Exception e)
+            {
+                throw new FakerException($"Problem with parameterless constructor on {typeof(TClass)} type, use other overload of generate" + e.Message);
+            }
 
             // Use rules
             instance = this.Populate(instance);
@@ -281,7 +288,7 @@ namespace Faker
             ConstructorInfo ctor = type.GetConstructor(paramTypes);
             if (ctor is null)
             {
-                throw new ArgumentException("Your class does not have a constructor with corresponding parameters");
+                throw new FakerException("Your class does not have a constructor with corresponding parameters");
             }
             TClass instance = (TClass)ctor.Invoke(CtorParams);
             //apply rules
@@ -325,24 +332,27 @@ namespace Faker
         /// </summary>
         /// <param name="instance">instance, whose member is to be filled</param>
         /// <param name="MemberInfo">info about member to be filled</param>
-        /// <param name="setter">Function, that generates a content to be used as the member value</param>
-        internal void UseRule(TClass instance, MemberInfo MemberInfo, Func<object> setter)
+        /// <param name="RandomFunc">Function, that generates a content to be used as the member value</param>
+        internal void UseRule(TClass instance, MemberInfo MemberInfo, Func<object> RandomFunc)
         {
+            var memberSetter = Setters[MemberInfo];
             //member is a property
             if(MemberInfo is PropertyInfo propertyInfo)
             {
                 Type propertyType = propertyInfo.PropertyType;
-                var o = setter();
-                var value = Convert.ChangeType(o, propertyType);
-                propertyInfo.SetValue(instance, value);
+                var o = RandomFunc();
+                //var value = Convert.ChangeType(o, propertyType);
+                //propertyInfo.SetValue(instance, value);
+                memberSetter(instance, o);
             }
             //member is a field
             else if(MemberInfo is FieldInfo fieldInfo)
             {
                 Type fieldType = fieldInfo.FieldType;
-                var o = setter();
-                var value = Convert.ChangeType(o, fieldType);
-                fieldInfo.SetValue(instance, value);
+                var o = RandomFunc();
+                //var value = Convert.ChangeType(o, fieldType);
+                //fieldInfo.SetValue(instance, value);
+                memberSetter(instance, o);
             }
             else
             {
@@ -409,20 +419,67 @@ namespace Faker
                 throw new ArgumentException();
             }
 
-            return (MemberInfo)expression.Member;
+            return expression.Member;
         }
 
         /// <summary>
         /// Used by AutoFaker and StrictFaker (called in their ctors), scans for all members of TClass not decorated with FakerIgnore attribute <br/>
         /// and stores them in MembersToBeFilledDefaultly HashSet
         /// </summary>
-        internal void InitializeListOfRandomlyFilledMembers()
+        static internal void InitializeListOfRandomlyFilledMembers()
         {
-            if (this.MembersToBeFilledDefaultly is null)
+            if (MembersToBeFilledDefaultly is null)
             {
                 Type type = typeof(TClass);
                 MembersToBeFilledDefaultly = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && !memberInfo.GetCustomAttributes<FakerIgnoreAttribute>().Any())).ToHashSet();
             }
+        }
+        /// <summary>
+        /// If the member does not have a setter compiled for it yet, compiles it and adds it to Setters dictionary 
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="memberInfo"></param>
+        static internal void AddSetterIfNew<TMember>(MemberInfo memberInfo)
+        {
+            if (!Setters.ContainsKey(memberInfo))
+            {
+                Setters.Add(memberInfo, CreateSetterAction<TMember>(memberInfo));
+            }
+        }
+        /// <summary>
+        /// Compiles a Setter for given member of TClass and returns it
+        /// </summary>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="memberInfo"></param>
+        /// <returns></returns>
+        static internal Action<TClass, object> CreateSetterAction<TMember>(MemberInfo memberInfo)
+        {
+            //expression representing an instance which member is to  be set
+            ParameterExpression targetObjExpr = Expression.Parameter(typeof(TClass), "targetObjParam");
+            //expression representing a value to be set to the member
+            ParameterExpression valueToSetExpr = Expression.Parameter(typeof(TMember), "valueToSet");
+            //expression representing a member
+            MemberExpression memberExpression;
+            UnaryExpression convertedValue;
+            if (memberInfo is PropertyInfo propertyInfo)
+            {
+                memberExpression = Expression.Property(targetObjExpr, propertyInfo);
+                convertedValue = Expression.Convert(valueToSetExpr, propertyInfo.PropertyType);
+            }
+            else if (memberInfo is FieldInfo fieldInfo)
+            {
+                memberExpression = Expression.Field(targetObjExpr, fieldInfo);
+                convertedValue = Expression.Convert(valueToSetExpr, fieldInfo.FieldType);
+            }
+            else
+            {
+                throw new NotImplementedException("Unexpected");
+            }
+            BinaryExpression assignExpr = Expression.Assign(memberExpression, convertedValue);
+
+            Action<TClass, TMember> setter = Expression.Lambda<Action<TClass, TMember>>
+                (assignExpr, targetObjExpr, valueToSetExpr).Compile();
+            return (inst, val) => setter(inst, (TMember)Convert.ChangeType(val, typeof(TMember)));
         }
 
         /// <summary>

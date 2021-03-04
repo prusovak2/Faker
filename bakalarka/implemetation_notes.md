@@ -474,6 +474,33 @@ Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cor
 | AutoFakerAttributesRuleFor | 19,819.9 ns | 308.68 ns | 288.74 ns |    5 | 3.9368 |     - |     - |    6203 B |
 | AutoFakerNoAttributes      | 21,823.6 ns | 427.07 ns | 555.31 ns |    6 | 9.6436 |     - |     - |   15165 B |
 
+##### Scannning was moved to static ctor of Auto or Strict Faker
+
+`HashSet` of members to be filled defaultly is now static member of  `BaseFaker` (therefore it should exists once per specialization of Faker), static ctor of Auto and Strict Fakers first checks whether the `HashSet` is null, if so it initializes it via reflection. If already initialized for this user defined type, no scanning occurs again.  Instance ctor of `Auto` and `Strict` `Faker`  copies the static `HashSet` to per instance copy that can be modified in `Auto` and `Strict` `Faker` instances as necessary. Copying the `HashSet` is still much quicker than reflection based scanning -  as following benchmark shows - AutoFaker related benchmark results improved significantly. I suppose that `BaseFaker` relaed benchmark are slower because of other change (using Expressions to compile setters instead of using .SetValue based on reflection). thought I'm not sure why.   
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method                     |        Mean |     Error |    StdDev |      Median | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| -------------------------- | ----------: | --------: | --------: | ----------: | ---: | -----: | ----: | ----: | --------: |
+| BaseFakerNoAttributes      |    843.8 ns |   8.44 ns |   6.59 ns |    845.1 ns |    1 | 0.7906 |     - |     - |   1.21 KB |
+| BaseFakerAttributes        |    933.9 ns |  25.13 ns |  73.32 ns |    911.7 ns |    2 | 0.7906 |     - |     - |   1.21 KB |
+| BaseFakerAttributesRuleFor |  2,576.3 ns |  45.87 ns |  42.90 ns |  2,566.0 ns |    3 | 1.2741 |     - |     - |   1.95 KB |
+| AutoFakerAttributes        |  4,028.8 ns |  79.55 ns |  85.12 ns |  3,987.2 ns |    4 | 1.7700 |     - |     - |   2.71 KB |
+| AutoFakerAttributesRuleFor |  7,216.8 ns | 180.40 ns | 523.38 ns |  7,060.4 ns |    5 | 2.1820 |     - |     - |   3.34 KB |
+| AutoFakerNoAttributes      | 16,987.2 ns | 308.49 ns | 442.43 ns | 16,851.5 ns |    6 | 8.3618 |     - |     - |  12.81 KB |
+
+
+
+
+
 ### Floating point types boarders problem - default values of parameteres for floating point  random methods
 
 [0,1) default range, when lower specified and greater than 1 and upper not specified, borders gonna get swapped, 1 is gonna become lower boarder and lower boarder specified by user is gonna be treated as upper border. BUG! Solve somehow.
@@ -659,4 +686,341 @@ For every found invocation if was checked (latter on in the Execute method) whet
 The problem with this designed which made it impossible for me to carry on with Source Generator based implementation as I was unable to bypass it was that current design of the Faker API makes it possible to have a various instances of the same Faker type each of whom may have its  Rules configured differently (instances might have either been created using different `ctors` on user defined Faker type or (not exclusive or) other Rules might have been added for some of the instances latter on outside of `ctor` body -  can I make it impossible to call `RuleFor` from outside of the `ctor` by making `RuleFor` method protected? (respectively from outside of methods defined on `Faker` derived type) and would it even be desirable?). I, however didn't figure out any simple enough way to track something like a notion of instances via Roslyn API in compile time. There is `IInvocationOperation.Instance` that allows me to get a Type on which the method was invoked but I don't reckon that it actually hold some notion of the instance. (Jezek suggested that data flow analysis would be required to achieve desirable effect). 
 
 It is therefore impossible for me at the moment to store a Rules per Faker instance during compile time via Roslyn API (and would that even be desirable as a new method would be generated per `.Generate` call on each instance of user defined `Faker`?) and at the same time storing Rules per user defined Faker type is not sufficient to preserve current API design as well as its behavior.
+
+### Setters
+
+[3.3.2021]
+
+Originally, `propertyInfo.SetValue()` (or `fieldInfo.SetValue()`) was used to set values to the members of user defined types. This required to use the reflection to carry out each assignment to the member of user defined class instance, which was inefficient. I opted for using `Linq.Expression` instead. That way a setter delegate capable of setting value to the user defined member can be once compiled using `Expression.Lambda.Compile` (e.i. using reflection) and then stored and called multiple times to set values without any other reflection overhead (invoking a function via delegate is still a bit slower than invoking it directly, it is, however, much (how many times?) faster than invoking it via reflection).  
+
+This change of an approach meant some (though not as significant as expected) improvement in Fakers performance, see following benchmark.
+
+```csharp
+ [MemoryDiagnoser]
+    [RankColumn]
+    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    public class SetterBenchmarks
+    {
+        private LotOfMembers lotOfMembers;
+        private LotOfMembersFaker lotOfMembersFaker;
+        private OneMember oneMember;
+        private OneMemberFaker oneMemberFaker;
+        private TwoMember twoMember;
+        private TwoMemberFaker twoMemberFaker;
+        private NestedClass nestedClass;
+        private NestedClassFaker nestedClassFaker;
+
+        [GlobalSetup]
+        public void GlobalSetup()
+        {
+            Console.WriteLine("setup started");
+            lotOfMembers = new();
+            lotOfMembersFaker = new();
+            oneMember = new();
+            oneMemberFaker = new();
+            twoMember = new();
+            twoMemberFaker = new();
+            nestedClass = new();
+            nestedClassFaker = new();
+            Console.WriteLine("setup done");
+        }
+
+        [Benchmark]
+        public void LotOfMemebers()
+        {
+            lotOfMembers = lotOfMembersFaker.Generate();
+        }
+        [Benchmark]
+        public void OneMember()
+        {
+            oneMember = oneMemberFaker.Populate(oneMember);
+        }
+        [Benchmark]
+        public void TwoMembers()
+        {
+            twoMember = twoMemberFaker.Populate(twoMember);
+        }
+        [Benchmark]
+        public void Nested()
+        {
+            nestedClass = nestedClassFaker.Populate(nestedClass);
+        }
+    }
+
+    public class LotOfMembers
+    {
+        public int Int;
+        public byte Byte;
+        public short Short { get; set; }
+        public DateTime DateTime { get; set; }
+        public double Double;
+        public Guid Guid;
+        public string String { get; set; } = "IGNORED";
+        public int IgnoredInt = 42;
+
+    }
+    public class OneMember
+    {
+        public int Int { get; set; }
+    }
+
+    public class TwoMember
+    {
+        public int Int { get; set; }
+        public byte Byte;
+    }
+    public class InnerClass
+    {
+        public int InnerInt { get; set; }
+    }
+
+    public class NestedClass
+    {
+        public InnerClass Inner { get; set; }
+        public byte OuterByte;
+    }
+    public class LotOfMembersFaker : BaseFaker<LotOfMembers>
+    {
+        public LotOfMembersFaker()
+        {
+            RuleFor(x => x.Int, rg => rg.Random.Int(upper: 42));
+            RuleFor(x => x.Byte, rg => rg.Random.Byte());
+            RuleFor(x => x.Short, rg => rg.Random.Short());
+            RuleFor(x => x.DateTime, rg => rg.Random.DateTime());
+            RuleFor(x => x.Double, rg => rg.Random.Double());
+            RuleFor(x => x.Guid, rg => rg.Random.Guid());
+            RuleFor(x => x.String, rg => rg.Random.String());
+            RuleFor(x => x.IgnoredInt, rg => rg.Random.Int());
+        }
+    }    
+
+    public class OneMemberFaker : BaseFaker<OneMember>
+    {
+        public OneMemberFaker()
+        {
+            RuleFor(x => x.Int, rg => rg.Random.Int(upper: 42));
+        }
+    }
+    public class TwoMemberFaker : BaseFaker<TwoMember>
+    {
+        public TwoMemberFaker()
+        {
+            RuleFor(x => x.Int, rg => rg.Random.Int(upper:42));
+            RuleFor(x => x.Byte, rg => rg.Random.Byte());
+        }
+    }
+
+    public class InnerClassFaker : BaseFaker<InnerClass>
+    {
+        public InnerClassFaker()
+        {
+            RuleFor(x => x.InnerInt, rg => rg.Random.Int(upper: 42));
+        }
+    } 
+    public class NestedClassFaker : BaseFaker<NestedClass>
+    {
+        public NestedClassFaker()
+        {
+            SetFaker(x => x.Inner, new InnerClassFaker());
+            RuleFor(x => x.OuterByte, rg => rg.Random.Byte());
+        }
+    }
+```
+
+ **RESULT USING .SETVALUE()**
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method        |       Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| ------------- | ---------: | --------: | --------: | ---: | -----: | ----: | ----: | --------: |
+| OneMember     |   434.8 ns |   8.30 ns |   8.16 ns |    1 | 0.1426 |     - |     - |     224 B |
+| TwoMembers    |   600.4 ns |  11.49 ns |  10.75 ns |    2 | 0.1726 |     - |     - |     272 B |
+| Nested        | 1,446.4 ns |  28.35 ns |  30.33 ns |    3 | 0.2995 |     - |     - |     472 B |
+| LotOfMemebers | 7,295.1 ns | 116.49 ns | 103.26 ns |    4 | 3.4256 |     - |     - |    5378 B |
+
+**RESULT USING EXPRESSION.COMPILE**
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method        |       Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| ------------- | ---------: | --------: | --------: | ---: | -----: | ----: | ----: | --------: |
+| OneMember     |   215.7 ns |   3.99 ns |   3.74 ns |    1 | 0.1018 |     - |     - |     160 B |
+| TwoMembers    |   374.4 ns |   5.10 ns |   4.78 ns |    2 | 0.1326 |     - |     - |     208 B |
+| Nested        | 1,032.6 ns |  20.69 ns |  20.32 ns |    3 | 0.2594 |     - |     - |     408 B |
+| LotOfMemebers | 6,612.0 ns | 116.12 ns | 108.62 ns |    4 | 3.2959 |     - |     - |    5180 B |
+
+ `static Dictionary<MemberInfo, Action<TClass, object>>` was added to `BaseFaker` to store compiled 'setters'. Once a Rule or `InnerFaker` is set for a member in any instance of `Faker` (`Base`, `Strict` or `Auto`) specialized on given type, this static dictionary (it should exist once per Faker's specialization) is checked whether it contains a record with corresponding `MemberInfo` key (and thus a setter delagete capable of filling that particular member). If not, such setter is compiled using reflection and added to the dictionary. This compilation (and reflection overhead related with it) therefore occurs when `RuleFor` and `SetFaker` methods are called. As these methods are supposed to be mostly called from user's custom Faker's ctor, overhead is moved to Faker's creation rather than to Generate calls (when `SetValue` via reflection was happening before this adjustment). This seems valid to me as supposed usage is that one Faker instance is created (and configured) and subsequently used to fill a lot of instances of user defined class. It therefore make sense to improve the performance of Generate method at the expense of making a Faker configuration a bit slower than it used to be. A reflection overhead is now moreover encountered only once per a member of user defined class (across all Faker instance specialized on particular user defined type.) 
+
+I don't know (carry out some benchmark) whether one `.Compile` call is more expensive than one `.SetValue` call (but I suppose so).  I have, however, came across a weird decline in the performance of other benchmark that also includes call to BaseFaker's ctor.  (benchmark in a section *Scannning was moved to static ctor of Auto or Strict Faker* compared with benchmark above that section). `AutoFaker` performance improved as the scanning was moved to its static ctor, but `BaseFaker` performance (that should not be effected by the changes in scanning mechanisms any more as scanning was (hopefully) completely excluded from the `BaseFaker`  and it should not occur within a `BaseFaker` instances any more) got worse, probably due to changes in Setters that were introduced in between these two benchmarks run. **Ask Jezek about this and run more benchmarks comparing `.Compile` and `.SetValue`**. It is probably too late to run benchmark comparing  ctor performance before and after `Expression.Compile` was introduced, though the previous version maybe could be accessed via git somehow.
+
+Benchmark above, however, proves that `.Generate` calls are faster when Setter had already been compiled via reflection in `RuleFor` (`SetFaker`) methods, therefore I suppose that a change discussed in this section is rather beneficial for overall performance of the program.    
+
+### Create instance
+
+[4. 3. 2021]
+
+The question is, how to call constructor of user defined types the most efficiently. It is clear that Populate method that is given already constructed instance of user defined type is the most efficient approach as the instance is created directly and therefore we avoid using reflection to invoke the ctor.  To provide better API, however, also .Generate methods that do create instance of user defined type themselves are provided.  Two overloads of .Generate have been implemented. Parametless overload invokes a parametless ctor. Overload with object[] param invokes an  ctor with corresponding types of params. (If such ctors are present, otherwise .Generate throws an exception) 
+
+Originally ctors were located via `type.GetConstructor` and invoked via `ConstructorInfo.Invoke`.
+
+```csharp
+//the part paramless .Generate()
+Type type = typeof(TClass);
+ConstructorInfo ctor = type.GetConstructor(Type.EmptyTypes);
+if(ctor is null)
+{
+    throw new ArgumentException("Your class does not have a parameterless constructor, use other overload of generate");
+}
+//call constructor
+TClass instance = (TClass)ctor.Invoke(null);
+```
+
+   ```csharp
+//the part of .Generate(objet[])
+Type[] paramTypes = new Type[CtorParams.Length];
+for (int i = 0; i < CtorParams.Length; i++)
+{
+    paramTypes[i] = CtorParams[i].GetType();
+}
+Type type = typeof(TClass);
+//check whether the class has corresponding constructor 
+ConstructorInfo ctor = type.GetConstructor(paramTypes);
+if (ctor is null)
+{
+    throw new ArgumentException("Your class does not have a constructor with corresponding parameters");
+}
+TClass instance = (TClass)ctor.Invoke(CtorParams);
+   ```
+
+**BenchMark**
+
+```csharp
+ public class EmptyClass 
+    {
+        public EmptyClass() { }
+        public EmptyClass(int val) { }
+
+    }
+
+    public class EmptyClassFaker : BaseFaker<EmptyClass> { }
+
+    [MemoryDiagnoser]
+    [RankColumn]
+    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    public class CreateInstanceBenchamark
+    {
+        private EmptyClass emptyClass { get; set; }
+
+        private EmptyClassFaker faker { get; set; }
+        [GlobalSetup]
+        public void GlobalSetup()
+        {
+            emptyClass = new();
+            faker = new();
+        }
+
+        [Benchmark]
+        public void Populate()
+        {
+            emptyClass = new();
+            emptyClass = faker.Populate(emptyClass);
+        }
+        [Benchmark]
+        public void GenerateParamless()
+        {
+            emptyClass = faker.Generate();
+        }
+        [Benchmark]
+        public void GenerateParam()
+        {
+            emptyClass = faker.Generate(42);
+        }
+    }
+```
+
+**Benchmark results for `.GetConstructor`, `.Invoke`**
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method            |      Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| ----------------- | --------: | --------: | --------: | ---: | -----: | ----: | ----: | --------: |
+| Populate          |  70.45 ns |  1.397 ns |  1.238 ns |    1 | 0.0867 |     - |     - |     136 B |
+| GenerateParamless | 255.60 ns |  4.752 ns |  6.344 ns |    2 | 0.0858 |     - |     - |     136 B |
+| GenerateParam     | 527.40 ns | 10.365 ns | 11.090 ns |    3 | 0.2241 |     - |     - |     352 B |
+
+During reflection lecture I found out about `Activator.CreateInstace` as a way of invoking user defined ctors.  
+
+```csharp
+TClass instance;
+try
+{
+    instance = (TClass)Activator.CreateInstance(type, CtorParams);
+}
+catch(Exception e)
+{
+    throw new FakerException($"Problem with constructor on {typeof(TClass)} type with given parameter" + e.Message);
+}
+```
+
+**Benchmark - `Activator.CreateInstance` used for .Generate and .Generate(object[])**
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method            |      Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| ----------------- | --------: | --------: | --------: | ---: | -----: | ----: | ----: | --------: |
+| Populate          |  74.71 ns |  1.541 ns |  2.575 ns |    1 | 0.0867 |     - |     - |     136 B |
+| GenerateParamless | 145.21 ns |  2.940 ns |  4.401 ns |    2 | 0.0865 |     - |     - |     136 B |
+| GenerateParam     | 813.99 ns | 16.286 ns | 28.524 ns |    3 | 0.3567 |     - |     - |     560 B |
+
+Even though this approach seem beneficial for parametless variant, the performance of Generate(object[]) seems to get worse. 
+
+That's why I decided to use `Activator.CreateInstance` for parametless overload and keep the overload with params the way it was -  `using type.GetConstructor` and `constructorInfo.Invoke` .
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method            |      Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| ----------------- | --------: | --------: | --------: | ---: | -----: | ----: | ----: | --------: |
+| Populate          |  75.15 ns |  0.748 ns |  0.663 ns |    1 | 0.0867 |     - |     - |     136 B |
+| GenerateParamless | 140.19 ns |  2.795 ns |  4.009 ns |    2 | 0.0865 |     - |     - |     136 B |
+| GenerateParam     | 551.59 ns | 10.869 ns | 12.939 ns |    3 | 0.2222 |     - |     - |     352 B |
 
