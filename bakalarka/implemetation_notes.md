@@ -687,3 +687,186 @@ The problem with this designed which made it impossible for me to carry on with 
 
 It is therefore impossible for me at the moment to store a Rules per Faker instance during compile time via Roslyn API (and would that even be desirable as a new method would be generated per `.Generate` call on each instance of user defined `Faker`?) and at the same time storing Rules per user defined Faker type is not sufficient to preserve current API design as well as its behavior.
 
+### Setters
+
+[3.3.2021]
+
+Originally, `propertyInfo.SetValue()` (or `fieldInfo.SetValue()`) was used to set values to the members of user defined types. This required to use the reflection to carry out each assignment to the member of user defined class instance, which was inefficient. I opted for using `Linq.Expression` instead. That way a setter delegate capable of setting value to the user defined member can be once compiled using `Expression.Lambda.Compile` (e.i. using reflection) and then stored and called multiple times to set values without any other reflection overhead (invoking a function via delegate is still a bit slower than invoking it directly, it is, however, much (how many times?) faster than invoking it via reflection).  
+
+This change of an approach meant some (though not as significant as expected) improvement in Fakers performance, see following benchmark.
+
+```csharp
+ [MemoryDiagnoser]
+    [RankColumn]
+    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    public class SetterBenchmarks
+    {
+        private LotOfMembers lotOfMembers;
+        private LotOfMembersFaker lotOfMembersFaker;
+        private OneMember oneMember;
+        private OneMemberFaker oneMemberFaker;
+        private TwoMember twoMember;
+        private TwoMemberFaker twoMemberFaker;
+        private NestedClass nestedClass;
+        private NestedClassFaker nestedClassFaker;
+
+        [GlobalSetup]
+        public void GlobalSetup()
+        {
+            Console.WriteLine("setup started");
+            lotOfMembers = new();
+            lotOfMembersFaker = new();
+            oneMember = new();
+            oneMemberFaker = new();
+            twoMember = new();
+            twoMemberFaker = new();
+            nestedClass = new();
+            nestedClassFaker = new();
+            Console.WriteLine("setup done");
+        }
+
+        [Benchmark]
+        public void LotOfMemebers()
+        {
+            lotOfMembers = lotOfMembersFaker.Generate();
+        }
+        [Benchmark]
+        public void OneMember()
+        {
+            oneMember = oneMemberFaker.Populate(oneMember);
+        }
+        [Benchmark]
+        public void TwoMembers()
+        {
+            twoMember = twoMemberFaker.Populate(twoMember);
+        }
+        [Benchmark]
+        public void Nested()
+        {
+            nestedClass = nestedClassFaker.Populate(nestedClass);
+        }
+    }
+
+    public class LotOfMembers
+    {
+        public int Int;
+        public byte Byte;
+        public short Short { get; set; }
+        public DateTime DateTime { get; set; }
+        public double Double;
+        public Guid Guid;
+        public string String { get; set; } = "IGNORED";
+        public int IgnoredInt = 42;
+
+    }
+    public class OneMember
+    {
+        public int Int { get; set; }
+    }
+
+    public class TwoMember
+    {
+        public int Int { get; set; }
+        public byte Byte;
+    }
+    public class InnerClass
+    {
+        public int InnerInt { get; set; }
+    }
+
+    public class NestedClass
+    {
+        public InnerClass Inner { get; set; }
+        public byte OuterByte;
+    }
+    public class LotOfMembersFaker : BaseFaker<LotOfMembers>
+    {
+        public LotOfMembersFaker()
+        {
+            RuleFor(x => x.Int, rg => rg.Random.Int(upper: 42));
+            RuleFor(x => x.Byte, rg => rg.Random.Byte());
+            RuleFor(x => x.Short, rg => rg.Random.Short());
+            RuleFor(x => x.DateTime, rg => rg.Random.DateTime());
+            RuleFor(x => x.Double, rg => rg.Random.Double());
+            RuleFor(x => x.Guid, rg => rg.Random.Guid());
+            RuleFor(x => x.String, rg => rg.Random.String());
+            RuleFor(x => x.IgnoredInt, rg => rg.Random.Int());
+        }
+    }    
+
+    public class OneMemberFaker : BaseFaker<OneMember>
+    {
+        public OneMemberFaker()
+        {
+            RuleFor(x => x.Int, rg => rg.Random.Int(upper: 42));
+        }
+    }
+    public class TwoMemberFaker : BaseFaker<TwoMember>
+    {
+        public TwoMemberFaker()
+        {
+            RuleFor(x => x.Int, rg => rg.Random.Int(upper:42));
+            RuleFor(x => x.Byte, rg => rg.Random.Byte());
+        }
+    }
+
+    public class InnerClassFaker : BaseFaker<InnerClass>
+    {
+        public InnerClassFaker()
+        {
+            RuleFor(x => x.InnerInt, rg => rg.Random.Int(upper: 42));
+        }
+    } 
+    public class NestedClassFaker : BaseFaker<NestedClass>
+    {
+        public NestedClassFaker()
+        {
+            SetFaker(x => x.Inner, new InnerClassFaker());
+            RuleFor(x => x.OuterByte, rg => rg.Random.Byte());
+        }
+    }
+```
+
+ **RESULT USING .SETVALUE()**
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method        |       Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| ------------- | ---------: | --------: | --------: | ---: | -----: | ----: | ----: | --------: |
+| OneMember     |   434.8 ns |   8.30 ns |   8.16 ns |    1 | 0.1426 |     - |     - |     224 B |
+| TwoMembers    |   600.4 ns |  11.49 ns |  10.75 ns |    2 | 0.1726 |     - |     - |     272 B |
+| Nested        | 1,446.4 ns |  28.35 ns |  30.33 ns |    3 | 0.2995 |     - |     - |     472 B |
+| LotOfMemebers | 7,295.1 ns | 116.49 ns | 103.26 ns |    4 | 3.4256 |     - |     - |    5378 B |
+
+**RESULT USING EXPRESSION.COMPILE**
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method        |       Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| ------------- | ---------: | --------: | --------: | ---: | -----: | ----: | ----: | --------: |
+| OneMember     |   215.7 ns |   3.99 ns |   3.74 ns |    1 | 0.1018 |     - |     - |     160 B |
+| TwoMembers    |   374.4 ns |   5.10 ns |   4.78 ns |    2 | 0.1326 |     - |     - |     208 B |
+| Nested        | 1,032.6 ns |  20.69 ns |  20.32 ns |    3 | 0.2594 |     - |     - |     408 B |
+| LotOfMemebers | 6,612.0 ns | 116.12 ns | 108.62 ns |    4 | 3.2959 |     - |     - |    5180 B |
+
+ `static Dictionary<MemberInfo, Action<TClass, object>>` was added to `BaseFaker` to store compiled 'setters'. Once a Rule or `InnerFaker` is set for a member in any instance of `Faker` (`Base`, `Strict` or `Auto`) specialized on given type, this static dictionary (it should exist once per Faker's specialization) is checked whether it contains a record with corresponding `MemberInfo` key (and thus a setter delagete capable of filling that particular member). If not, such setter is compiled using reflection and added to the dictionary. This compilation (and reflection overhead related with it) therefore occurs when `RuleFor` and `SetFaker` methods are called. As these methods are supposed to be mostly called from user's custom Faker's ctor, overhead is moved to Faker's creation rather than to Generate calls (when `SetValue` via reflection was happening before this adjustment). This seems valid to me as supposed usage is that one Faker instance is created (and configured) and subsequently used to fill a lot of instances of user defined class. It therefore make sense to improve the performance of Generate method at the expense of making a Faker configuration a bit slower than it used to be. A reflection overhead is now moreover encountered only once per a member of user defined class (across all Faker instance specialized on particular user defined type.) 
+
+I don't know (carry out some benchmark) whether one `.Compile` call is more expensive than one `.SetValue` call (but I suppose so).  I have, however, came across a weird decline in the performance of other benchmark that also includes call to BaseFaker's ctor.  (benchmark in a section *Scannning was moved to static ctor of Auto or Strict Faker* compared with benchmark above that section). `AutoFaker` performance improved as the scanning was moved to its static ctor, but `BaseFaker` performance (that should not be effected by the changes in scanning mechanisms any more as scanning was (hopefully) completely excluded from the `BaseFaker`  and it should not occur within a `BaseFaker` instances any more) got worse, probably due to changes in Setters that were introduced in between these two benchmarks run. **Ask Jezek about this and run more benchmarks comparing `.Compile` and `.SetValue`**. It is probably too late to run benchmark comparing  ctor performance before and after `Expression.Compile` was introduced, though the previous version maybe could be accessed via git somehow.
+
+Benchmark above, however, proves that `.Generate` calls are faster when Setter had already been compiled via reflection in `RuleFor` (`SetFaker`) methods, therefore I suppose that a change discussed in this section is rather beneficial for overall performance of the program.    
