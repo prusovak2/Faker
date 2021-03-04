@@ -251,13 +251,15 @@ namespace Faker
         public TClass Generate()
         {
             Type type = typeof(TClass);
-            ConstructorInfo ctor = type.GetConstructor(Type.EmptyTypes);
-            if(ctor is null)
+            TClass instance;
+            try
             {
-                throw new ArgumentException("Your class does not have a parameterless constructor, use other overload of generate");
+                instance = (TClass)Activator.CreateInstance(type);
             }
-            //call constructor
-            TClass instance = (TClass)ctor.Invoke(null);
+            catch(Exception e)
+            {
+                throw new FakerException($"Problem with parameterless constructor on {typeof(TClass)} type, use other overload of generate" + e.Message);
+            }
 
             // Use rules
             instance = this.Populate(instance);
@@ -282,7 +284,7 @@ namespace Faker
             ConstructorInfo ctor = type.GetConstructor(paramTypes);
             if (ctor is null)
             {
-                throw new ArgumentException("Your class does not have a constructor with corresponding parameters");
+                throw new FakerException("Your class does not have a constructor with corresponding parameters");
             }
             TClass instance = (TClass)ctor.Invoke(CtorParams);
             //apply rules

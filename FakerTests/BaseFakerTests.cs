@@ -379,7 +379,7 @@ namespace FakerTests
             Console.WriteLine(a);
             Assert.AreEqual("text", a.Text);
             Assert.AreEqual(10, a.Value.Value);
-            Assert.ThrowsException<ArgumentException>(() => { Storage b = s.Generate(new object[] { "dabra" }); });
+            Assert.ThrowsException<FakerException>(() => { Storage b = s.Generate(new object[] { "dabra" }); });
             Storage b = s.Generate();
             Assert.AreEqual(10, b.Value.Value);
             Console.WriteLine(b);
@@ -420,7 +420,7 @@ namespace FakerTests
             Assert.ThrowsException<FakerException>(() => { StorageFakerMultipleSetFaker s = new StorageFakerMultipleSetFaker(); });
             Assert.ThrowsException<FakerException>(() => { StorageFakerRuleForAndSetFaker s = new StorageFakerRuleForAndSetFaker(); });
             StorageFakerFlawedParams sf = new StorageFakerFlawedParams();
-            Assert.ThrowsException<ArgumentException>(() => { Storage s = sf.Generate(); });
+            Assert.ThrowsException<FakerException>(() => { Storage s = sf.Generate(); });
 
         }
         [TestMethod]
