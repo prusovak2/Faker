@@ -870,3 +870,157 @@ Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cor
 I don't know (carry out some benchmark) whether one `.Compile` call is more expensive than one `.SetValue` call (but I suppose so).  I have, however, came across a weird decline in the performance of other benchmark that also includes call to BaseFaker's ctor.  (benchmark in a section *Scannning was moved to static ctor of Auto or Strict Faker* compared with benchmark above that section). `AutoFaker` performance improved as the scanning was moved to its static ctor, but `BaseFaker` performance (that should not be effected by the changes in scanning mechanisms any more as scanning was (hopefully) completely excluded from the `BaseFaker`  and it should not occur within a `BaseFaker` instances any more) got worse, probably due to changes in Setters that were introduced in between these two benchmarks run. **Ask Jezek about this and run more benchmarks comparing `.Compile` and `.SetValue`**. It is probably too late to run benchmark comparing  ctor performance before and after `Expression.Compile` was introduced, though the previous version maybe could be accessed via git somehow.
 
 Benchmark above, however, proves that `.Generate` calls are faster when Setter had already been compiled via reflection in `RuleFor` (`SetFaker`) methods, therefore I suppose that a change discussed in this section is rather beneficial for overall performance of the program.    
+
+### Create instance
+
+[4. 3. 2021]
+
+The question is, how to call constructor of user defined types the most efficiently. It is clear that Populate method that is given already constructed instance of user defined type is the most efficient approach as the instance is created directly and therefore we avoid using reflection to invoke the ctor.  To provide better API, however, also .Generate methods that do create instance of user defined type themselves are provided.  Two overloads of .Generate have been implemented. Parametless overload invokes a parametless ctor. Overload with object[] param invokes an  ctor with corresponding types of params. (If such ctors are present, otherwise .Generate throws an exception) 
+
+Originally ctors were located via `type.GetConstructor` and invoked via `ConstructorInfo.Invoke`.
+
+```csharp
+//the part paramless .Generate()
+Type type = typeof(TClass);
+ConstructorInfo ctor = type.GetConstructor(Type.EmptyTypes);
+if(ctor is null)
+{
+    throw new ArgumentException("Your class does not have a parameterless constructor, use other overload of generate");
+}
+//call constructor
+TClass instance = (TClass)ctor.Invoke(null);
+```
+
+   ```csharp
+//the part of .Generate(objet[])
+Type[] paramTypes = new Type[CtorParams.Length];
+for (int i = 0; i < CtorParams.Length; i++)
+{
+    paramTypes[i] = CtorParams[i].GetType();
+}
+Type type = typeof(TClass);
+//check whether the class has corresponding constructor 
+ConstructorInfo ctor = type.GetConstructor(paramTypes);
+if (ctor is null)
+{
+    throw new ArgumentException("Your class does not have a constructor with corresponding parameters");
+}
+TClass instance = (TClass)ctor.Invoke(CtorParams);
+   ```
+
+**BenchMark**
+
+```csharp
+ public class EmptyClass 
+    {
+        public EmptyClass() { }
+        public EmptyClass(int val) { }
+
+    }
+
+    public class EmptyClassFaker : BaseFaker<EmptyClass> { }
+
+    [MemoryDiagnoser]
+    [RankColumn]
+    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    public class CreateInstanceBenchamark
+    {
+        private EmptyClass emptyClass { get; set; }
+
+        private EmptyClassFaker faker { get; set; }
+        [GlobalSetup]
+        public void GlobalSetup()
+        {
+            emptyClass = new();
+            faker = new();
+        }
+
+        [Benchmark]
+        public void Populate()
+        {
+            emptyClass = new();
+            emptyClass = faker.Populate(emptyClass);
+        }
+        [Benchmark]
+        public void GenerateParamless()
+        {
+            emptyClass = faker.Generate();
+        }
+        [Benchmark]
+        public void GenerateParam()
+        {
+            emptyClass = faker.Generate(42);
+        }
+    }
+```
+
+**Benchmark results for `.GetConstructor`, `.Invoke`**
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method            |      Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| ----------------- | --------: | --------: | --------: | ---: | -----: | ----: | ----: | --------: |
+| Populate          |  70.45 ns |  1.397 ns |  1.238 ns |    1 | 0.0867 |     - |     - |     136 B |
+| GenerateParamless | 255.60 ns |  4.752 ns |  6.344 ns |    2 | 0.0858 |     - |     - |     136 B |
+| GenerateParam     | 527.40 ns | 10.365 ns | 11.090 ns |    3 | 0.2241 |     - |     - |     352 B |
+
+During reflection lecture I found out about `Activator.CreateInstace` as a way of invoking user defined ctors.  
+
+```csharp
+TClass instance;
+try
+{
+    instance = (TClass)Activator.CreateInstance(type, CtorParams);
+}
+catch(Exception e)
+{
+    throw new FakerException($"Problem with constructor on {typeof(TClass)} type with given parameter" + e.Message);
+}
+```
+
+**Benchmark - `Activator.CreateInstance` used for .Generate and .Generate(object[])**
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method            |      Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| ----------------- | --------: | --------: | --------: | ---: | -----: | ----: | ----: | --------: |
+| Populate          |  74.71 ns |  1.541 ns |  2.575 ns |    1 | 0.0867 |     - |     - |     136 B |
+| GenerateParamless | 145.21 ns |  2.940 ns |  4.401 ns |    2 | 0.0865 |     - |     - |     136 B |
+| GenerateParam     | 813.99 ns | 16.286 ns | 28.524 ns |    3 | 0.3567 |     - |     - |     560 B |
+
+Even though this approach seem beneficial for parametless variant, the performance of Generate(object[]) seems to get worse. 
+
+That's why I decided to use `Activator.CreateInstance` for parametless overload and keep the overload with params the way it was -  `using type.GetConstructor` and `constructorInfo.Invoke` .
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method            |      Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| ----------------- | --------: | --------: | --------: | ---: | -----: | ----: | ----: | --------: |
+| Populate          |  75.15 ns |  0.748 ns |  0.663 ns |    1 | 0.0867 |     - |     - |     136 B |
+| GenerateParamless | 140.19 ns |  2.795 ns |  4.009 ns |    2 | 0.0865 |     - |     - |     136 B |
+| GenerateParam     | 551.59 ns | 10.869 ns | 12.939 ns |    3 | 0.2222 |     - |     - |     352 B |
+
