@@ -23,7 +23,7 @@ namespace Faker
         internal bool AllRulesSetDeep();
         HashSet<MemberInfo> GetAllMembersRequiringRuleDeep();
     }
-    public class BaseFaker<TClass> : IFaker where TClass : class
+    public partial class BaseFaker<TClass> : IFaker where TClass : class
     {
         /// <summary>
         /// Setters for members of TClass compiled in runtime by Expression.Lambda.Compile
@@ -112,6 +112,41 @@ namespace Faker
         {
             this.Random = randomGenerator;
         }
+
+        internal MemberInfo pendingMember = null;
+
+        //TODO: resolve management of MembersToBeFilledInstance in derived Fakers
+        public RefMemberFluent<TInnerClass> SetFakerFor<TInnerClass>(Expression<Func<TClass, TInnerClass>> selector) where TInnerClass: class
+        {
+            //TODO: add messages
+            MemberInfo memberInfo = this.GetMemberFromExpression(selector);
+            if (this.InnerFakers.ContainsKey(memberInfo))
+            {
+                throw new FakerException("SOME MESSAGE");
+            }
+            if (this.Ignored.Contains(memberInfo))
+            {
+                throw new FakerException("SOME MESSAGE");
+            }
+
+            this.pendingMember = memberInfo;
+            AddSetterIfNew<TInnerClass>(memberInfo);
+
+            return new RefMemberFluent<TInnerClass>(this);
+        }
+
+        private void _faker<TInnerClass>(BaseFaker<TInnerClass> faker) where TInnerClass : class
+        {
+            if(this.pendingMember is null)
+            {
+                //TODO: delete when tested
+                throw new NotImplementedException("this should never happen");
+            }
+            MemberInfo memberInfo = this.pendingMember;
+            this.InnerFakers.Add(memberInfo, faker);
+        }
+
+
         /// <summary>
         /// Adds Rule for how to generate a random content of particular member <br/>
         /// selector and setter must have the same return type
@@ -367,15 +402,17 @@ namespace Faker
         /// <param name="innerFaker"></param>
         internal void UseInnerFaker(TClass instance, MemberInfo memberInfo, IFaker innerFaker)
         {
-            if(memberInfo is PropertyInfo propertyInfo)
+            var memberSetter = Setters[memberInfo];
+            if (memberInfo is PropertyInfo propertyInfo)
             {
                 Type propertyType = propertyInfo.PropertyType;
                 var instanceInProperty =  propertyInfo.GetValue(instance);
                 // null is valid value of instanceInProperty when innerFaker does not have CtorUsageFlag set to PopulateExistingInstance
                 // whether instanceInProperty is not null is checked in IFaker.Generate, when necessary
                 var o = innerFaker.Generate(instanceInProperty);
-                var innerClass = Convert.ChangeType(o, propertyType);
-                propertyInfo.SetValue(instance, innerClass);
+                //var innerClass = Convert.ChangeType(o, propertyType);
+                //propertyInfo.SetValue(instance, innerClass);
+                memberSetter(instance, o);
             }
             if (memberInfo is FieldInfo fieldInfo)
             {
@@ -384,8 +421,9 @@ namespace Faker
                 // null is valid value of instanceInProperty when innerFaker does not have CtorUsageFlag set to PopulateExistingInstance
                 // whether instanceInProperty is not null is checked if IFaker.Generate, when necessary
                 var o = innerFaker.Generate(instanceInField);
-                var innerClass = Convert.ChangeType(o, propertyType);
-                fieldInfo.SetValue(instance, innerClass);
+                //var innerClass = Convert.ChangeType(o, propertyType);
+                //fieldInfo.SetValue(instance, innerClass);
+                memberSetter(instance, o);
             }
         }
         /// <summary>

@@ -134,22 +134,25 @@ namespace FakerTests
         public byte Byte;
         public long Long { get; set; }
         public Base Base { get; set; }
-
+        public Derived Derived { get; set; }
         public override string ToString()
         {
             return TestUtils.InstanceToString(this);
         }
     }
+    public class DerivedFaker : BaseFaker<Derived> { }
+    public class BaseClassFaker :BaseFaker<Base> { }
 
     public class ConvertClassFaker : BaseFaker<ConvertClass>
     {
         public ConvertClassFaker()
         {
             Derived d = new();
-            //RuleFor(x => x.Int, rg => rg.Random.Double());
+            RuleFor(x => x.Int, rg => rg.Random.Double());
             RuleFor(x => x.Long, rg => rg.Random.Int());
             RuleFor(x=> x.Int, rg => rg.Random.Byte());
             RuleFor(x => x.Base, _ => d);
+            //SetFaker<Base>(x => x.Base, new DerivedFaker());
         }
     }
 
