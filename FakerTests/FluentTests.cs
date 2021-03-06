@@ -36,7 +36,8 @@ namespace FakerTests
         {
             public InnerClassFaker()
             {
-                RuleFor(x => x.InnerInt, rg => rg.Random.Int(upper: 42));
+                //RuleFor(x => x.InnerInt, rg => rg.Random.Int(upper: 42));
+                SetRuleFor(x => x.InnerInt).Rule(rg => rg.Random.Int(upper: 42));
             }
             
         }
@@ -45,7 +46,8 @@ namespace FakerTests
             public NestedClassFaker()
             {
                 SetFakerFor(x => x.Inner).Faker(new InnerClassFaker());
-                RuleFor(x => x.OuterByte, rg => rg.Random.Byte());
+                //RuleFor(x => x.OuterByte, rg => rg.Random.Byte());
+                SetRuleFor(x => x.OuterByte).Rule(rg => rg.Random.Byte());
             }
         }
 

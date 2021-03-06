@@ -10,11 +10,6 @@ namespace Faker
 {
     public class StrictFaker<TClass> : BaseFaker<TClass>, IFaker where TClass : class
     {
-        /// <summary>
-        /// Members requiring a Rule or InnerFaker set for them
-        /// </summary>
-        internal HashSet<MemberInfo> MembersToBeFilledInstance = new HashSet<MemberInfo>(MembersToBeFilledDefaultly); 
-
         static StrictFaker()
         {
             InitializeListOfRandomlyFilledMembers();
@@ -25,7 +20,7 @@ namespace Faker
         /// </summary>
         public StrictFaker() : base()
         {
-            InitializeListOfRandomlyFilledMembers();
+            this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
         /// <summary>
         /// new instance of StrictFaker customized to a given Culture that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
@@ -34,7 +29,7 @@ namespace Faker
         /// <param name="info"></param>
         public StrictFaker(CultureInfo info) : base(info)
         {
-            InitializeListOfRandomlyFilledMembers();
+            this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
         /// <summary>
         /// new instance of StrictFaker that creates a new instance of RandomGenerator with a given seed <br/>
@@ -43,7 +38,7 @@ namespace Faker
         /// <param name="seed"></param>
         public StrictFaker(ulong seed) : base(seed)
         {
-            InitializeListOfRandomlyFilledMembers();
+            this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
         /// <summary>
         /// new instance of StrictFaker customized to a given Culture that creates a new instance of RandomGenerator with a given seed <br/>
@@ -53,7 +48,7 @@ namespace Faker
         /// <param name="info"></param>
         public StrictFaker(ulong seed, CultureInfo info) : base(seed, info)
         {
-            InitializeListOfRandomlyFilledMembers();
+            this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
         /// <summary>
         /// new instance of StrictFaker that uses existing instance of RandomGenerator <br/>
@@ -64,7 +59,7 @@ namespace Faker
         /// <param name="randomGenerator"></param>
         public StrictFaker(RandomGenerator randomGenerator) : base(randomGenerator)
         {
-            InitializeListOfRandomlyFilledMembers();
+            this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
         /// <summary>
         /// indicates whether all members of this instance of TClass do have a Rule or an InnerFaker set for them <br/>
@@ -74,7 +69,7 @@ namespace Faker
         /// <returns></returns>
         public bool AllRulesSetShallow()
         {
-            return !this.MembersToBeFilledInstance.Any();
+            return !this.RulelessMembersInstance.Any();
         }
         /// <summary>
         /// Internal method to be called on InnerFakers  <br/>
@@ -114,7 +109,7 @@ namespace Faker
         public HashSet<MemberInfo> GetAllMembersRequiringRuleShallow()
         {
             HashSet<MemberInfo> toReturn = new HashSet<MemberInfo>();
-            foreach (var item in this.MembersToBeFilledInstance)
+            foreach (var item in this.RulelessMembersInstance)
             {
                 toReturn.Add(item);
             }
@@ -154,7 +149,7 @@ namespace Faker
         /// <param name="selector">lambda returning member to be filled </param>
         /// <param name="setter">random function to fill in the member </param>
         /// <exception cref="FakerException">Throws FakerException, when you are trying to set a RuleFor a member that already has a Rule or InnerFaker set or is Ignored by Ignore method</exception>
-        public new void RuleFor<TMember>(
+        /*public new void RuleFor<TMember>(
             Expression<Func<TClass, TMember>> selector,
             Func<RandomGenerator, TMember> setter)
         {
@@ -165,8 +160,8 @@ namespace Faker
         protected internal sealed override void _internalRuleFor<TMember>(MemberInfo memberInfo, Func<RandomGenerator, TMember> setter)
         {
             base._internalRuleFor(memberInfo, setter);
-            MembersToBeFilledInstance.Remove(memberInfo);
-        }
+            RulelessMembersInstance.Remove(memberInfo);
+        }*/
         /// <summary>
         /// Sets member as Ignored - this member won't be filled by default random function by AutoFaker instances <br/>
         /// </summary>
@@ -176,7 +171,7 @@ namespace Faker
         public void Ignore<TMember>(Expression<Func<TClass, TMember>> selector)
         {
             MemberInfo memberInfo = GetMemberFromExpression(selector);
-            MembersToBeFilledInstance.Remove(memberInfo);
+            RulelessMembersInstance.Remove(memberInfo);
             base._internalIgnore<TMember>(memberInfo);
         }
 
@@ -187,7 +182,7 @@ namespace Faker
         /// <param name="selector"> lambda returning the member </param>
         /// <param name="faker"> Faker to be used to generate contend of the member </param>
         /// <exception cref="FakerException">Throws FakerException, when you are trying to SetFaker for a member that already has a Rule or InnerFaker set or is Ignored by Ignore method</exception>
-        public new void SetFaker<TInnerClass>(
+        /*public new void SetFaker<TInnerClass>(
             Expression<Func<TClass, TInnerClass>> selector,
             BaseFaker<TInnerClass> faker) where TInnerClass : class
         {
@@ -198,8 +193,8 @@ namespace Faker
         protected internal sealed override void _internalSetFaker<TInnerClass>(MemberInfo memberInfo, BaseFaker<TInnerClass> faker)
         {
             base._internalSetFaker(memberInfo, faker);
-            MembersToBeFilledInstance.Remove(memberInfo);
-        }
+            RulelessMembersInstance.Remove(memberInfo);
+        }*/
         /// <summary>
         /// Use rules to fill the instance with a random content
         /// </summary>

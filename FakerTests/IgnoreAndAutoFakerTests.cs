@@ -37,7 +37,8 @@ namespace FakerTests
         public IgnoredPersonFaker()
         {
             //this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
-            RuleFor(p => p.Name, _ => "ABRAKA_FAKE");
+            //RuleFor(p => p.Name, _ => "ABRAKA_FAKE");
+            SetRuleFor(p => p.Name).Rule(_ => "ABRAKA_FAKE");
             Ignore(p => p.ProprertyThatShouldNotBeFaked);
             Ignore(p => p.FieldThatShouldNotBeFaked);
         }
@@ -98,14 +99,16 @@ namespace FakerTests
         public FlawedFakerIgnoreRuleFor()
         {
             Ignore(l => l.Int);
-            RuleFor(l => l.Int, _ => 73);
+            //RuleFor(l => l.Int, _ => 73);
+            SetRuleFor(l => l.Int).Rule(_ => 73);
         }
     }
     public class FlawedFakerRuleForIgnore : AutoFaker<ContainsValue>
     {
         public FlawedFakerRuleForIgnore()
         {
-            RuleFor(l => l.Int, _ => 73);
+            //RuleFor(l => l.Int, _ => 73);
+            SetRuleFor(l => l.Int).Rule(_ => 73);
             Ignore(l => l.Int);
         }
     }
@@ -114,14 +117,16 @@ namespace FakerTests
         public FlawedFakerIgnoreSetFaker()
         {
             Ignore(cv => cv.Val);
-            SetFaker(cv => cv.Val, new ValueFaker());
+            //SetFaker(cv => cv.Val, new ValueFaker());
+            SetFakerFor(cv => cv.Val).Faker(new ValueFaker());
         }
     }
     public class FlawedFakerSetFakerIgnore : AutoFaker<ContainsValue>
     {
         public FlawedFakerSetFakerIgnore()
         {
-            SetFaker(cv => cv.Val, new ValueFaker());
+            //SetFaker(cv => cv.Val, new ValueFaker());
+            SetFakerFor(cv => cv.Val).Faker(new ValueFaker());
             Ignore(cv => cv.Val);
         }
     }
@@ -129,16 +134,20 @@ namespace FakerTests
     {
         public FlawedFakerSetFakerRuleFor()
         {
-            SetFaker(cv => cv.Val, new ValueFaker());
-            RuleFor(cv => cv.Val, _ => new Value());
+            //SetFaker(cv => cv.Val, new ValueFaker());
+            SetFakerFor(cv => cv.Val).Faker(new ValueFaker());
+            //RuleFor(cv => cv.Val, _ => new Value());
+            SetRuleFor(cv => cv.Val).Rule(_ => new Value());
         }
     }
     public class FlawedFakerRuleForSetFaker : BaseFaker<ContainsValue>
     {
         public FlawedFakerRuleForSetFaker()
         {
-            RuleFor(cv => cv.Val, _ => new Value());
-            SetFaker(cv => cv.Val, new ValueFaker());
+            //RuleFor(cv => cv.Val, _ => new Value());
+            SetRuleFor(cv => cv.Val).Rule(_ => new Value());
+            //SetFaker(cv => cv.Val, new ValueFaker()); 
+            SetFakerFor(cv => cv.Val).Faker(new ValueFaker());
         }
     }
     public class IgnoreIgnoreFaker : AutoFaker<ContainsValue>
@@ -193,7 +202,8 @@ namespace FakerTests
     {
         public ValueFakerNonEmpty()
         {
-            RuleFor(x => x.value, _ => 73);
+            //RuleFor(x => x.value, _ => 73);
+            SetRuleFor(x => x.value).Rule(_ => 73);
         }
     }
 
@@ -202,8 +212,10 @@ namespace FakerTests
         public RuleForSetFakerForIgnoreATTRfaker()
         {
             //FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
-            RuleFor(x => x.IgnoredInt, _ => 73);
-            SetFaker(x => x.IgnoredVal, new ValueFakerNonEmpty());
+            //RuleFor(x => x.IgnoredInt, _ => 73);
+            SetRuleFor(x => x.IgnoredInt).Rule(_ => 73);
+            //SetFaker(x => x.IgnoredVal, new ValueFakerNonEmpty());
+            SetFakerFor(x => x.IgnoredVal).Faker(new ValueFakerNonEmpty());
         }
     }
 
@@ -271,7 +283,8 @@ namespace FakerTests
         public ContainsInnerATTRIgnoreFaker()
         {
             //this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
-            SetFaker(x => x.Inner, new InnerWithATTRIgnoreFaker());
+            //SetFaker(x => x.Inner, new InnerWithATTRIgnoreFaker());
+            SetFakerFor(x => x.Inner).Faker(new InnerWithATTRIgnoreFaker());
         }
     }
 
@@ -345,7 +358,7 @@ namespace FakerTests
 
 
     [TestClass]
-    public class BaseFakerIgnoreTests
+    public class IgnoreAndAutoFakerTests
     {
         [TestMethod]
         public void IgnoredBasicTest()
