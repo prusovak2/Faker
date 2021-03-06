@@ -21,7 +21,7 @@ namespace Faker
 
         internal class ChainedRule : RuleType
         {
-            //TODO: all implementation
+            public List<FluentAction> FluentActions { get; } = new List<FluentAction>();
         }
     }
 }
