@@ -194,6 +194,36 @@ namespace Faker
         {
             return AutoFakerCreator.CreateAutoFaker<TClass>();
         }
+        static internal Action<TClass, object> CreateSetterActionNotStroglyTyped(MemberInfo memberInfo)
+        {
+            //expression representing an instance which member is to  be set
+            ParameterExpression targetObjExpr = Expression.Parameter(typeof(TClass), "targetObjParam");
+            //expression representing a value to be set to the member
+            ParameterExpression valueToSetExpr = Expression.Parameter(typeof(object), "valueToSet");
+            //expression representing a member
+            MemberExpression memberExpression;
+            UnaryExpression convertedValue;
+            if (memberInfo is PropertyInfo propertyInfo)
+            {
+                memberExpression = Expression.Property(targetObjExpr, propertyInfo);
+                convertedValue = Expression.Convert(valueToSetExpr, propertyInfo.PropertyType);
+            }
+            else if (memberInfo is FieldInfo fieldInfo)
+            {
+                memberExpression = Expression.Field(targetObjExpr, fieldInfo);
+                convertedValue = Expression.Convert(valueToSetExpr, fieldInfo.FieldType);
+            }
+            else
+            {
+                throw new NotImplementedException("Unexpected");
+            }
+            BinaryExpression assignExpr = Expression.Assign(memberExpression, convertedValue);
+
+            Action<TClass, object> setter = Expression.Lambda<Action<TClass, object>>
+                (assignExpr, targetObjExpr, valueToSetExpr).Compile();
+            return setter;
+        }
+
     }
 
     internal class AutoFakerCreator
@@ -203,10 +233,10 @@ namespace Faker
         /// and recursively creates and set similar AutoFakers for members of user defined class types
         /// </summary>
         /// <returns> a newly created AutoFaker </returns>
-        public static AutoFaker<TMember> CreateAutoFaker<TMember>() where TMember : class
+        public static AutoFaker<TClass> CreateAutoFaker<TClass>() where TClass : class
         {
-            AutoFaker<TMember> faker = new AutoFaker<TMember>();
-            Type type = typeof(TMember);
+            AutoFaker<TClass> faker = new AutoFaker<TClass>();
+            Type type = typeof(TClass);
             List<MemberInfo> memberInfos = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && (IsUserDefinedClassType(memberInfo)) && (memberInfo.GetCustomAttributes<FakerIgnoreAttribute>().Count() == 0))).ToList();
             foreach (var memberInfo in memberInfos)
             {
@@ -215,11 +245,18 @@ namespace Faker
                     continue;
                 }
                 Type memberType = GetTypeFromMemberInfo(memberInfo);
+                if (!BaseFaker<TClass>.Setters.ContainsKey(memberInfo))
+                {
+                    var setter = AutoFaker<TClass>.CreateSetterActionNotStroglyTyped(memberInfo);
+                    BaseFaker<TClass>.Setters.Add(memberInfo, setter);
+                }
                 var memberAutoFaker = typeof(AutoFakerCreator).GetMethod("CreateAutoFaker").MakeGenericMethod(memberType).Invoke(null, null);
                 faker.InnerFakers.Add(memberInfo, (IFaker)memberAutoFaker);
             }
             return faker;
         }
+        
+
         /// <summary>
         /// if member is property or field, returns a type of corresponding property or field
         /// </summary>
