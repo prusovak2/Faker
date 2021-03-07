@@ -51,6 +51,35 @@ namespace FakerTests
             }
         }
 
+        public class LotOfMembers
+        {
+            public int Int;
+            public byte Byte;
+            public long Long;
+            public short Short { get; set; }
+            public DateTime DateTime { get; set; }
+            public double Double;
+            public Guid Guid;
+            public string IgnoredString { get; set; } = "IGNORED";
+            public int IgnoredInt = 42;
+
+            public override string ToString()
+            {
+                return TestUtils.InstanceToString(this);
+            }
+        }
+
+        public class LotOfMembersCoditionalFaker : BaseFaker<LotOfMembers>
+        {
+            public LotOfMembersCoditionalFaker()
+            {
+                For(x => x.Int).SetRule(rg => rg.Random.Int()).
+                    When(x => x == 42).
+                    For(x => x.Long).SetRule(rg => rg.Random.Long()).
+                    Otherwise().For(x => x.Long).SetRule(_ => 73);
+            }
+        }
+
         //TODO: far more tests
         [TestMethod]
         public void FluentSetFakerBasicTest()

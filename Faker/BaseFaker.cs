@@ -116,9 +116,9 @@ namespace Faker
 
         internal MemberInfo pendingMember = null;
 
-        public UncontionalRuleMemberFluent<TMember> SetRuleFor<TMember>(Expression<Func<TClass, TMember>> selector)
+        public UnconditionalMemberFluent<TMember> SetRuleFor<TMember>(Expression<Func<TClass, TMember>> selector)
         {
-            MemberInfo memberInfo = this.GetMemberFromExpression(selector);
+            MemberInfo memberInfo = GetMemberFromExpression(selector);
             if (this.InnerFakers.ContainsKey(memberInfo))
             {
                 throw new FakerException("You cannot state a RuleFor a member that already has a InnerFaker set for it.");
@@ -134,7 +134,7 @@ namespace Faker
             this.pendingMember = memberInfo;
             AddSetterIfNew<TMember>(memberInfo);
 
-            return new UncontionalRuleMemberFluent<TMember>(this);
+            return new UnconditionalMemberFluent<TMember>(this);
         }
         private void _uncoditionalRule<TMember>(Func<RandomGenerator, TMember> setter)
         {
@@ -144,6 +144,7 @@ namespace Faker
                 throw new NotImplementedException("this should never happen");
             }
             MemberInfo memberInfo = this.pendingMember;
+            this.pendingMember = null;
             //whether member the member isn't ignored or does not have a InnerFaker set for it already is checked in SetFakerFor method
             
             SimpleRule newRule = new SimpleRule(() => setter(this.Random));
@@ -155,12 +156,16 @@ namespace Faker
         public RefMemberFluent<TInnerClass> SetFakerFor<TInnerClass>(Expression<Func<TClass, TInnerClass>> selector) where TInnerClass: class
         {
             //TODO: add messages
-            MemberInfo memberInfo = this.GetMemberFromExpression(selector);
+            MemberInfo memberInfo = GetMemberFromExpression(selector);
             if (this.InnerFakers.ContainsKey(memberInfo))
             {
                 throw new FakerException("SOME MESSAGE");
             }
             if (this.Ignored.Contains(memberInfo))
+            {
+                throw new FakerException("SOME MESSAGE");
+            }
+            if (this.Rules.ContainsKey(memberInfo))
             {
                 throw new FakerException("SOME MESSAGE");
             }
@@ -179,11 +184,68 @@ namespace Faker
                 throw new NotImplementedException("this should never happen");
             }
             MemberInfo memberInfo = this.pendingMember;
+            this.pendingMember = null;
             //whether member the member isn't ignored or does not have a InnerFaker set for it already is checked in SetFakerFor method
             this.InnerFakers.Add(memberInfo, faker);
             this.RulelessMembersInstance.Remove(memberInfo);
         }
+        public ConditionalMemberFluent<TFirstMember, TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
+        {
+            //only the first one of the series on conditional rules in unconditional
+            //therefore can be set only a member with no unconditional rule or inner faker set for it
+            //multiple conditional rules can be set for a member
+            //TODO: add messages
+            MemberInfo memberInfo = GetMemberFromExpression(selector);
+            if (this.InnerFakers.ContainsKey(memberInfo))
+            {
+                throw new FakerException("SOME MESSAGE");
+            }
+            // ignored checked in private _For for both conditional and unconditional rules    
+            if (this.Rules.ContainsKey(memberInfo))
+            {
+                throw new FakerException("SOME MESSAGE");
+            }
 
+            this.pendingMember = memberInfo;
+
+            //TODO: some resolver initialization for this TFirstMember member here
+
+            return this._for<TFirstMember, TFirstMember>(memberInfo);
+        }
+
+        private ConditionalMemberFluent<TFirstMember, TCurMember> _for<TFirstMember, TCurMember>(MemberInfo memberInfo)
+        {
+            //TODO: add message
+            if (this.Ignored.Contains(memberInfo))
+            {
+                throw new FakerException("SOME MESSAGE");
+            }
+            AddSetterIfNew<TCurMember>(memberInfo);
+
+            //TODO: create some resolver structure here
+
+            return new ConditionalMemberFluent<TFirstMember, TCurMember>(this);
+        }
+        private ConditionalRuleFluent<TFirstMember> _setRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
+        {
+            //TODO: add info to resolver structure
+
+            return new ConditionalRuleFluent<TFirstMember>(this);
+        }
+
+        private ConditionFluent<TFirstMember> _when<TFirstMember>(Func<TFirstMember, bool> condition)
+        {
+            //TODO: add info to resolver structure
+
+            return new ConditionFluent<TFirstMember>(this);
+        }
+
+        private ConditionFluent<TFirstMember> _otherwise<TFirstMember>()
+        {
+            //TODO: add info to resolver structure
+
+            return new ConditionFluent<TFirstMember>(this);
+        }
 
         /// <summary>
         /// Adds Rule for how to generate a random content of particular member <br/>
@@ -471,7 +533,7 @@ namespace Faker
         /// <typeparam name="TMember"></typeparam>
         /// <param name="GetMemberLambda"></param>
         /// <returns></returns>
-        internal MemberInfo GetMemberFromExpression<TMember>(Expression<Func<TClass, TMember>> GetMemberLambda)
+        internal protected static MemberInfo GetMemberFromExpression<TMember>(Expression<Func<TClass, TMember>> GetMemberLambda)
         {
             MemberExpression expression;
 

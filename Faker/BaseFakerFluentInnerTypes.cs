@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace Faker
         }
         internal class FluentFor : FluentAction
         {
+            internal MemberInfo memberToBeFilled { get; }
             public sealed override void Resolve<TMember>(Resolver<TMember> resover)
             {
                 throw new NotImplementedException();

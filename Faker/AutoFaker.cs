@@ -97,7 +97,7 @@ namespace Faker
         /// <exception cref="FakerException">Throws FakerException, when you are trying to Ignore a member that already has a Rule or InnerFaker set for it</exception>
         public void Ignore<TMember>(Expression<Func<TClass, TMember>> selector)
         {
-            MemberInfo memberInfo = this.GetMemberFromExpression(selector);
+            MemberInfo memberInfo = GetMemberFromExpression(selector);
             RulelessMembersInstance.Remove(memberInfo);
             base._internalIgnore<TMember>(memberInfo);
         }
