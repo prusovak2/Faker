@@ -200,7 +200,10 @@ namespace Faker
             {
                 throw new FakerException("SOME MESSAGE");
             }
-            // ignored checked in private _For for both conditional and unconditional rules    
+            if (this.Ignored.Contains(memberInfo))
+            {
+                throw new FakerException("SOME MESSAGE");
+            }
             if (this.Rules.ContainsKey(memberInfo))
             {
                 throw new FakerException("SOME MESSAGE");
@@ -208,9 +211,12 @@ namespace Faker
 
             this.pendingMember = memberInfo;
 
-            //TODO: some resolver initialization for this TFirstMember member here
+            //resolver initialization for this TFirstMember member
+            //creates a new resolver<IFirstMember> that contains the first RulePack with this memberInfo an always true condition
+            ChainedRuleResolver<TFirstMember> resolver = new ChainedRuleResolver<TFirstMember>(memberInfo);
+            this.Rules.Add(memberInfo, resolver);
 
-            return this._for<TFirstMember, TFirstMember>(memberInfo);
+            return new ConditionalMemberFluent<TFirstMember, TFirstMember>(this);
         }
 
         private ConditionalMemberFluent<TFirstMember, TCurMember> _for<TFirstMember, TCurMember>(MemberInfo memberInfo)
@@ -222,29 +228,50 @@ namespace Faker
             }
             AddSetterIfNew<TCurMember>(memberInfo);
 
-            //TODO: create some resolver structure here
+            //add MemberInfo info to the resolver corresponding to pendingMember MemberInfo 
+            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo(this.pendingMember);
+            CurResolver.AddMemberToLastRulePack(memberInfo);
 
             return new ConditionalMemberFluent<TFirstMember, TCurMember>(this);
         }
         private ConditionalRuleFluent<TFirstMember> _setRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
         {
-            //TODO: add info to resolver structure
+            //add Function info to the resolver corresponding to pendingMember MemberInfo 
+            ChainedRuleResolver<TFirstMember> CurResolver  = GetResolverForMemberInfo(this.pendingMember);
+            CurResolver.AddFunctionToLastRulePack(setter);
 
             return new ConditionalRuleFluent<TFirstMember>(this);
         }
 
         private ConditionFluent<TFirstMember> _when<TFirstMember>(Func<TFirstMember, bool> condition)
         {
-            //TODO: add info to resolver structure
+            //add Condition info to the resolver corresponding to pendingMember MemberInfo 
+            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo(this.pendingMember);
+            CurResolver.AddNewRulePackWithCondition(condition);
 
             return new ConditionFluent<TFirstMember>(this);
         }
 
         private ConditionFluent<TFirstMember> _otherwise<TFirstMember>()
         {
-            //TODO: add info to resolver structure
+            //add Otherwise condition to the resolver corresponding to pendingMember MemberInfo 
+            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo(this.pendingMember);
+            CurResolver.AddNewRulePackWithOtherwiseCondition();
 
             return new ConditionFluent<TFirstMember>(this);
+        }
+
+        private ChainedRuleResolver<TFirstMember> GetResolverForMemberInfo<TFirstMember>(MemberInfo memberInfo)
+        {
+            if (!this.Rules.ContainsKey(memberInfo))
+            {
+                //TODO: delete when tested
+                throw new InvalidOperationException("This MemberInfo should be present in Rules dict, flawed implemenation");
+            }
+            if(this.Rules[memberInfo] is ChainedRuleResolver<TFirstMember> chainedRuleResover)
+            {
+                return chainedRuleResover;
+            }
         }
 
         /// <summary>

@@ -9,7 +9,8 @@ namespace Faker
 {
     public partial class BaseFaker<TClass> : IFaker where TClass : class
     {
-        internal class Resolver<TMember>
+        //TODO: delete
+        /*internal class Resolver<TMember>
         {
             public MemberInfo MemberToBeFilled { get; set; }
 
@@ -31,6 +32,6 @@ namespace Faker
 
             public bool UseRule { get; set; } = false;
             public bool UsedCondRule { get; set; } = false;
-        }
+        }*/
     }
 }
