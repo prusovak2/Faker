@@ -208,6 +208,7 @@ namespace Faker
             {
                 throw new FakerException("SOME MESSAGE");
             }
+            AddSetterIfNew<TFirstMember>(memberInfo);
 
             this.pendingMember = memberInfo;
 
@@ -215,6 +216,7 @@ namespace Faker
             //creates a new resolver<IFirstMember> that contains the first RulePack with this memberInfo an always true condition
             ChainedRuleResolver<TFirstMember> resolver = new ChainedRuleResolver<TFirstMember>(memberInfo);
             this.Rules.Add(memberInfo, resolver);
+
 
             return new ConditionalMemberFluent<TFirstMember, TFirstMember>(this);
         }
@@ -229,7 +231,7 @@ namespace Faker
             AddSetterIfNew<TCurMember>(memberInfo);
 
             //add MemberInfo info to the resolver corresponding to pendingMember MemberInfo 
-            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo(this.pendingMember);
+            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.AddMemberToLastRulePack(memberInfo);
 
             return new ConditionalMemberFluent<TFirstMember, TCurMember>(this);
@@ -237,8 +239,8 @@ namespace Faker
         private ConditionalRuleFluent<TFirstMember> _setRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
         {
             //add Function info to the resolver corresponding to pendingMember MemberInfo 
-            ChainedRuleResolver<TFirstMember> CurResolver  = GetResolverForMemberInfo(this.pendingMember);
-            CurResolver.AddFunctionToLastRulePack(setter);
+            ChainedRuleResolver<TFirstMember> CurResolver  = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
+            CurResolver.AddFunctionToLastRulePack(() => setter(this.Random));
 
             return new ConditionalRuleFluent<TFirstMember>(this);
         }
@@ -246,7 +248,7 @@ namespace Faker
         private ConditionFluent<TFirstMember> _when<TFirstMember>(Func<TFirstMember, bool> condition)
         {
             //add Condition info to the resolver corresponding to pendingMember MemberInfo 
-            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo(this.pendingMember);
+            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.AddNewRulePackWithCondition(condition);
 
             return new ConditionFluent<TFirstMember>(this);
@@ -255,7 +257,7 @@ namespace Faker
         private ConditionFluent<TFirstMember> _otherwise<TFirstMember>()
         {
             //add Otherwise condition to the resolver corresponding to pendingMember MemberInfo 
-            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo(this.pendingMember);
+            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.AddNewRulePackWithOtherwiseCondition();
 
             return new ConditionFluent<TFirstMember>(this);
@@ -272,6 +274,7 @@ namespace Faker
             {
                 return chainedRuleResover;
             }
+            throw new InvalidOperationException("Unexpected, this method should only be called with memberInfos corresponding to chainedRules");
         }
 
         /// <summary>
@@ -520,6 +523,30 @@ namespace Faker
                 //var value = Convert.ChangeType(o, fieldType);
                 //fieldInfo.SetValue(instance, value);
                 memberSetter(instance, o);
+            }
+            else
+            {
+                throw new ArgumentException("Member is not a property nor a field.");
+            }
+        }
+        internal TFirstMember UseRule<TFirstMember>(TClass instance, MemberInfo MemberInfo, Func<object> RandomFunc)
+        {
+            var memberSetter = Setters[MemberInfo];
+            //member is a property
+            if (MemberInfo is PropertyInfo propertyInfo)
+            {
+                Type propertyType = propertyInfo.PropertyType;
+                var randomValue = RandomFunc();
+                memberSetter(instance, randomValue);
+                return (TFirstMember)randomValue;
+            }
+            //member is a field
+            else if (MemberInfo is FieldInfo fieldInfo)
+            {
+                Type fieldType = fieldInfo.FieldType;
+                var randomValue = RandomFunc();
+                memberSetter(instance, randomValue);
+                return (TFirstMember)randomValue;
             }
             else
             {

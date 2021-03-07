@@ -32,30 +32,36 @@ namespace Faker
                 this.AddFirstPack(member);
             }
 
-            public TFirstMember ConditionValue
-            {
-                get => _conditionValue;
-                set
-                {
-                    if (!this._hasConditionValue)
-                    {
-                        this._hasConditionValue = true;
-                        _conditionValue = value;
-                    }
-                }
-            }
-            private TFirstMember _conditionValue;
-            private bool _hasConditionValue = false;
+            public TFirstMember ConditionValue { get; set; } //generation state
 
             public List<RulePack<TFirstMember>> ChainedRuleParts { get; } = new List<RulePack<TFirstMember>>();
 
-            public bool UsedRule { get; private set; } = false;
+            public bool UsedRule { get; private set; } = false; // generation state
 
             public override void ResolveChainedRule(TClass instance, BaseFaker<TClass> faker)
             {
-                throw new NotImplementedException();
-                
+                //first leading rule - unconditional, provides value to evaluate conditions with
+                RulePack<TFirstMember> leadingRulePack = this.ChainedRuleParts[0];
+                //set value that will be considered in following conditions and use rule
+                this.ConditionValue = faker.UseRule<TFirstMember>(instance, leadingRulePack.MemberInfo, leadingRulePack.RandomFunc);
+                for (int i = 1; i < this.ChainedRuleParts.Count; i++)
+                {
+                    RulePack<TFirstMember> curRule = this.ChainedRuleParts[i];
+                    if (curRule.Condition(this.ConditionValue))  //evaluate condition
+                    {
+                        faker.UseRule(instance, curRule.MemberInfo, curRule.RandomFunc);
+                        this.UsedRule = true; //some rule in this chain was used, otherwise branch is not gonna be carried out 
+                    }
+                    //else ignore this rule
+                }
+                this.ClearState(); //reset state so that this Resolver can be reused by another ._populate call 
             }
+            private void ClearState()
+            {
+                this.ConditionValue = default;
+                this.UsedRule = false;
+            }
+
             /// <summary>
             /// Called from BaseFaker.For
             /// </summary>
@@ -98,9 +104,8 @@ namespace Faker
             {
                 this.ChainedRuleParts[ChainedRuleParts.Count - 1].AddFunction(func);
             }
-            
         }
-        internal struct RulePack<TFirstMember>
+        internal class RulePack<TFirstMember>
         {
             public RulePack(Func<TFirstMember, bool> condition)
             {
@@ -129,7 +134,6 @@ namespace Faker
             {
                 this.RandomFunc = func;
             }
-           
         }
     }  
 }
