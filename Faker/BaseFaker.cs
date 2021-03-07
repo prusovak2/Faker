@@ -192,7 +192,7 @@ namespace Faker
         public ConditionalMemberFluent<TFirstMember, TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
         {
             //only the first one of the series on conditional rules in unconditional
-            //therefore can be set only a member with no unconditional rule or inner faker set for it
+            //therefore the For can be set only for a member with no unconditional rule or inner faker set for it
             //multiple conditional rules can be set for a member
             //TODO: add messages
             MemberInfo memberInfo = GetMemberFromExpression(selector);
