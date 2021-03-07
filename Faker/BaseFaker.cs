@@ -216,7 +216,7 @@ namespace Faker
             //creates a new resolver<IFirstMember> that contains the first RulePack with this memberInfo an always true condition
             ChainedRuleResolver<TFirstMember> resolver = new ChainedRuleResolver<TFirstMember>(memberInfo);
             this.Rules.Add(memberInfo, resolver);
-
+            RulelessMembersInstance.Remove(memberInfo);
 
             return new ConditionalMemberFluent<TFirstMember, TFirstMember>(this);
         }
@@ -233,6 +233,7 @@ namespace Faker
             //add MemberInfo info to the resolver corresponding to pendingMember MemberInfo 
             ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.AddMemberToLastRulePack(memberInfo);
+            RulelessMembersInstance.Remove(memberInfo);
 
             return new ConditionalMemberFluent<TFirstMember, TCurMember>(this);
         }
