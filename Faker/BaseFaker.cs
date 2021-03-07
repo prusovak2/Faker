@@ -450,6 +450,10 @@ namespace Faker
                 {
                     this.UseRule(instance, rule.Key, simpleRule.Rule);
                 }
+                if(rule.Value is ChainedRule chainedRule)
+                {
+                    chainedRule.ResolveChainedRule(instance, this);
+                }
             }
             // Use InnerFakers
             foreach (var innerFaker in this.InnerFakers)

@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace Faker
 {
+    //TODO: delete
     public partial class BaseFaker<TClass> : IFaker where TClass : class
     {
-        internal abstract class FluentAction
+       /* internal abstract class FluentAction
         {
             public abstract void Resolve<TMember>(Resolver<TMember> resover);
         }
@@ -41,6 +42,6 @@ namespace Faker
             {
                 throw new NotImplementedException();
             }
-        }
+        }*/
     }
 }
