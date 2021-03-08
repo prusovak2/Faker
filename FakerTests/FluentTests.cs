@@ -72,6 +72,17 @@ namespace FakerTests
                     .When(c => c == 2).For(x => x.Long).SetRule(_ => 73);
             }
         }
+        public class FewMembersChainedStrictFaker : StrictFaker<FewMembers>
+        {
+            public FewMembersChainedStrictFaker()
+            {
+                For(x => x.Sbyte).SetRule(rg => rg.Pick<sbyte>(0, 1, 2))
+                    .When(c => c == 0).For(x => x.Short).SetRule(_ => 73)
+                    .When(c => c == 1).For(x => x.Int).SetRule(_ => 73)
+                    .When(c => c == 2).For(x => x.Long).SetRule(_ => 73);
+            }
+        }
+
         public class ConditionalAndUncoditionalRulesFaker : AutoFaker<FewMembers>
         {
             public ConditionalAndUncoditionalRulesFaker()
@@ -124,7 +135,65 @@ namespace FakerTests
                     .When(c => c == 0).For(x => x.Short).SetRule(rg => rg.Random.Short());
                 Ignore(x => x.Short);
             }
-        } 
+        }
+        
+        public class SetFakerAndFor : AutoFaker<NestedClass>
+        {
+            public SetFakerAndFor()
+            {
+                SetFakerFor(x => x.Inner).Faker(new InnerClassFaker());
+                For(x => x.Inner).SetRule(_ => new InnerClass())
+                   .When(c => true).For(x => x.OuterByte).SetRule(_ => 42);
+            }
+        }
+
+        public class ForAndSetFaker : AutoFaker<NestedClass>
+        {
+            public ForAndSetFaker()
+            {
+                For(x => x.Inner).SetRule(_ => new InnerClass())
+                   .When(c => true).For(x => x.OuterByte).SetRule(_ => 42);
+                SetFakerFor(x => x.Inner).Faker(new InnerClassFaker());
+            }
+        }
+
+        public class SetRuleForAndFor : AutoFaker<FewMembers>
+        {
+            public SetRuleForAndFor()
+            {
+                SetRuleFor(x => x.Sbyte).Rule(rg => rg.Random.Sbyte());
+                For(x => x.Sbyte).SetRule(_ => 42);
+            }
+        }
+
+        public class ForAndSetRule : AutoFaker<FewMembers>
+        {
+            public ForAndSetRule()
+            {
+                For(x => x.Sbyte).SetRule(_ => 42)
+                    .When(x => x == 42).For(x => x.Long).SetRule(_ => 42);
+                SetRuleFor(x => x.Sbyte).Rule(rg => rg.Random.Sbyte());
+            }
+        }
+
+        public class IgnoreAndFor : AutoFaker<FewMembers>
+        {
+            public IgnoreAndFor()
+            {
+                Ignore(x => x.Sbyte);
+                For(x => x.Sbyte).SetRule(_ => 42);
+            }
+        }
+
+        public class ForAndIgnore : AutoFaker<FewMembers>
+        {
+            public ForAndIgnore()
+            {
+                For(x => x.Sbyte).SetRule(_ => 42)
+                   .When(x => x == 42).For(x => x.Long).SetRule(_ => 42);
+                Ignore(x => x.Sbyte);
+            }
+        }
 
 
         public class LotOfMembers
@@ -184,9 +253,6 @@ namespace FakerTests
             }
         }
 
-        //TOD0: strict faker, exceptions
-        //TODO: AutoFaker<T> passed to SetFaker instead of BaseFaker<T>
-
         public class SimpleConditionClass
         {
             public int ConditonInt { get; set; }
@@ -209,13 +275,53 @@ namespace FakerTests
             }
         }
 
+        public class AutoFakerAsInnerFaker : BaseFaker<NestedClass>
+        {
+            public AutoFakerAsInnerFaker()
+            {
+                SetFakerFor(x => x.Inner).Faker(new AutoFaker<InnerClass>());
+            }
+        }
+
+        [TestMethod]
+        public void AutoFakerAsInnerFakerTest()
+        {
+            AutoFakerAsInnerFaker faker = new();
+            int numIterations = 20;
+            Dictionary<int, int> innerIntCount = new();
+            for (int i = 0; i < numIterations; i++)
+            {
+                NestedClass n = faker.Generate();
+                Console.WriteLine(n);
+                Console.WriteLine();
+                IncInDic(innerIntCount, n.Inner.InnerInt);
+            }
+            CheckDic(innerIntCount, numIterations);
+        }
+
         [TestMethod]
         public void ChainedRulesExceptionsTest()
         {
             //should not throw the exception
+            CondRuleAndSetFaker f1 = new();
+            var i1 = f1.Generate();
+
+            SetFakerAndCondRule f2 = new();
+            var i2 = f2.Generate();
+
+            FewMembersChainedStrictFaker f3 = new();
+            var i3 = f3.Generate();
+            Assert.IsTrue(f3.AllRulesSetDeep());
+            Assert.IsTrue(f3.AllRulesSetShallow());
+
+            Assert.ThrowsException<FakerException>(() => { SetFakerAndFor f = new(); });
+            Assert.ThrowsException<FakerException>(() => { ForAndSetFaker f = new(); });
+            Assert.ThrowsException<FakerException>(() => { SetRuleForAndFor f = new(); });
+            Assert.ThrowsException<FakerException>(() => { ForAndSetRule f = new(); });
+            Assert.ThrowsException<FakerException>(() => { IgnoreAndFor f = new(); });
+            Assert.ThrowsException<FakerException>(() => { ForAndIgnore f = new(); });
         }
 
-        //TODO: far more tests
         [TestMethod]
         public void FluentSetFakerBasicTest()
         {
