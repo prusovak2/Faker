@@ -1,5 +1,14 @@
 # Implementation notes
 
+## Parallelism in test frameworks
+
+**Do run in parallel**
+
+* https://xunit.net/docs/running-tests-in-parallel
+* https://devblogs.microsoft.com/devops/mstest-v2-in-assembly-parallel-test-execution/
+* https://docs.nunit.org/articles/nunit/technical-notes/usage/Framework-Parallel-Test-Execution.html
+
+
 ## Random Generator Alg implementation
 
 https://en.wikipedia.org/wiki/Xorshift
