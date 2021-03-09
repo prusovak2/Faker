@@ -68,7 +68,7 @@ namespace Faker
         /// </summary>
         internal HashSet<MemberInfo> Ignored { get; } = new HashSet<MemberInfo>();
 
-        //internal HashSet<MemberInfo> TemporarilyIgnored { get; } = new HashSet<MemberInfo>();
+        //internal HashSet<MemberInfo> TemporarilyRuleless { get; } = new HashSet<MemberInfo>();
 
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically <br/>

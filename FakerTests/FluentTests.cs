@@ -56,6 +56,7 @@ namespace FakerTests
             public short Short { get; set; } = 42;
             public int Int = 42;
             public long Long { get; set; } = 42;
+            public bool Bool = true;
 
             public override string ToString()
             {
@@ -70,8 +71,15 @@ namespace FakerTests
                     .When(x => x == 73).For(x => x.Long).Ignore();
             }
         }
+        public class IgnoreVsIgnoredFaker : AutoFaker<FewMembers>
+        {
+            public IgnoreVsIgnoredFaker()
+            {
+                For(x => x.Int).Ignore();
+            }
+        }
 
-        public class FewMembersChainedAutoFaker : AutoFaker<FewMembers>
+        public class FewMembersChainedAutoFaker : BaseFaker<FewMembers>
         {
             public FewMembersChainedAutoFaker()
             {
@@ -89,10 +97,11 @@ namespace FakerTests
                     .When(c => c == 0).For(x => x.Short).SetRule(_ => 73)
                     .When(c => c == 1).For(x => x.Int).SetRule(_ => 73)
                     .When(c => c == 2).For(x => x.Long).SetRule(_ => 73);
+                Ignore(x => x.Bool);
             }
         }
 
-        public class ConditionalAndUncoditionalRulesFaker : AutoFaker<FewMembers>
+        public class ConditionalAndUncoditionalRulesFaker : BaseFaker<FewMembers>
         {
             public ConditionalAndUncoditionalRulesFaker()
             {
@@ -254,6 +263,7 @@ namespace FakerTests
                    .When(c =>!c).For(x => x.IgnoredString).SetRule(_ => "EMPTY");
 
                 Ignore(x => x.IgnoredInt);
+                Ignore(x => x.IgnoredString);
 
                 For(x => x.Long).SetRule(rg => rg.Pick<long>(0, 1, 2))
                     .When(c => c == 0).For(x => x.Int).SetRule(_ => 0)
@@ -292,6 +302,19 @@ namespace FakerTests
                 SetFakerFor(x => x.Inner).Faker(new AutoFaker<InnerClass>());
             }
         }
+        [TestMethod]
+        public void ForIgnoreTest()
+        {
+            IgnoreVsIgnoredFaker faker = new();
+            for (int i = 0; i < 30; i++)
+            {
+                FewMembers fm = faker.Generate();
+                Console.WriteLine(fm);
+                Console.WriteLine();
+                Assert.AreEqual(42, fm.Int);
+            }
+        }
+
         [TestMethod]
         public void ChainedIgnoreBasicTest()
         {

@@ -91,7 +91,7 @@ namespace Faker
             // mark cur RulePack ignored
             ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.SetLastRulePackIgnored();
-            MemberInfo curMember = CurResolver.GetLastMember();
+            //MemberInfo curMember = CurResolver.GetLastMember();
             //this.TemporarilyIgnored.Add(curMember);
             return new ConditionalRuleAutoFluent<TFirstMember>(this);
         }
@@ -176,7 +176,7 @@ namespace Faker
         {
             TClass PopulatedInstance = base._internal_populate(instance);
             RandomlyFillRemainingMembers(PopulatedInstance);
-            //this.TemporarilyIgnored.Clear();
+            //this.TemporarilyRuleless.Clear();
             return PopulatedInstance;
         }
         /// <summary>
@@ -186,7 +186,6 @@ namespace Faker
         internal void RandomlyFillRemainingMembers(TClass instance)
         {
             HashSet<MemberInfo> membersToFill = this.RulelessMembersInstance;
-            //membersToFill.ExceptWith(this.TemporarilyIgnored);
             foreach (var member in membersToFill)
             {
                 if (member is PropertyInfo propertyInfo)
