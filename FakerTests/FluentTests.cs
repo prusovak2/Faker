@@ -203,6 +203,8 @@ namespace FakerTests
             {
                 SetRuleFor(x => x.Sbyte).Rule(rg => rg.Random.Sbyte());
                 For(x => x.Sbyte).SetRule(_ => 42);
+
+               
             }
         }
 
@@ -232,6 +234,7 @@ namespace FakerTests
                 For(x => x.Sbyte).SetRule(_ => 42)
                    .When(x => x == 42).For(x => x.Long).SetRule(_ => 42);
                 Ignore(x => x.Sbyte);
+
             }
         }
 
@@ -324,6 +327,251 @@ namespace FakerTests
                 SetFakerFor(x => x.Inner).Faker(new AutoFaker<InnerClass>());
             }
         }
+
+        public class SimpleMultipleRulesForConditionAuto : AutoFaker<FewMembers>
+        {
+            public SimpleMultipleRulesForConditionAuto()
+            {
+                For(x => x.Bool).SetRule(rg => rg.Random.Bool())
+                    .When(x => x)
+                        .For(x => x.Int).SetRule(_ => 1)
+                        .For(x => x.Long).SetRule(_ => 1)
+                        .For(x => x.Sbyte).SetRule(_ => 1)
+                    .Otherwise()
+                        .For(x => x.Short).SetRule(_ => 73)
+                        .For(x => x.Sbyte).SetRule(_ => 73);
+            }
+        }
+
+        public class SimpleMultipleRulesForConditionBase : BaseFaker<FewMembers>
+        {
+            public SimpleMultipleRulesForConditionBase()
+            {
+                For(x => x.Bool).SetRule(rg => rg.Random.Bool())
+                    .When(x => x)
+                        .For(x => x.Int).SetRule(_ => 1)
+                        .For(x => x.Long).SetRule(_ => 1)
+                        .For(x => x.Sbyte).SetRule(_ => 1)
+                    .Otherwise()
+                        .For(x => x.Short).SetRule(_ => 73)
+                        .For(x => x.Sbyte).SetRule(_ => 73);
+            }
+        }
+
+        public class SimpleMultipleRulesForConditionStrict : StrictFaker<FewMembers>
+        {
+            public SimpleMultipleRulesForConditionStrict()
+            {
+                For(x => x.Bool).SetRule(rg => rg.Random.Bool())
+                    .When(x => x)
+                        .For(x => x.Int).SetRule(_ => 1)
+                        .For(x => x.Long).SetRule(_ => 1)
+                        .For(x => x.Sbyte).SetRule(_ => 1)
+                    .Otherwise()
+                        .For(x => x.Short).SetRule(_ => 73)
+                        .For(x => x.Sbyte).SetRule(_ => 73);
+            }
+        }
+        public class LotRulesPerConditionAuto : AutoFaker<LotOfMembers>
+        {
+            public LotRulesPerConditionAuto()
+            {
+                For(x => x.Bool).SetRule(_ => true)
+                    .When(x => x)
+                        .For(x => x.Byte).SetRule(_ => 42)
+                        .For(x => x.DateTime).SetRule(rg => rg.Random.DateTime())
+                        .For(x => x.Guid).SetRule(rg => rg.Random.Guid())
+                        .For(x => x.IgnoredInt).Ignore()
+                        .For(x => x.IgnoredString).Ignore()
+                        .For(x => x.Long).SetRule(_ => 42);
+            }
+        }
+        public class LotRulesPerConditionBase : BaseFaker<LotOfMembers>
+        {
+            public LotRulesPerConditionBase()
+            {
+                For(x => x.Bool).SetRule(_ => true)
+                    .When(x => x)
+                        .For(x => x.Byte).SetRule(_ => 42)
+                        .For(x => x.DateTime).SetRule(rg => rg.Random.DateTime())
+                        .For(x => x.Guid).SetRule(rg => rg.Random.Guid())
+                        .For(x => x.IgnoredInt).SetRule(_ => 73)
+                        .For(x => x.IgnoredString).SetRule(_=> "ABRAKA")
+                        .For(x => x.Long).SetRule(_ => 42);
+            }
+        }
+
+        [TestMethod]
+        public void AutoLotRulePerCondition()
+        {
+            /*
+             For(x => x.Bool).SetRule(_ => true)
+                    .When(x => x)
+                        .For(x => x.Byte).SetRule(_ => 42)
+                        .For(x => x.DateTime).SetRule(rg => rg.Random.DateTime())
+                        .For(x => x.Guid).SetRule(rg => rg.Random.Guid())
+                        .For(x => x.IgnoredInt).Ignore()
+                        .For(x => x.IgnoredString).Ignore()
+                        .For(x => x.Long).SetRule(_ => 42);
+            */
+            LotRulesPerConditionAuto faker = new();
+            int numIterations = 20;
+            Dictionary<DateTime, int> dateTimeCounts = new();
+            Dictionary<Guid, int> giudCounts = new();
+            Dictionary<short, int> shortCounts = new();
+            for (int i = 0; i < numIterations; i++)
+            {
+                LotOfMembers lom = faker.Generate();
+                Console.WriteLine(lom);
+                Console.WriteLine();
+
+                Assert.AreEqual(42, lom.Byte);
+                IncInDic(dateTimeCounts, lom.DateTime);
+                IncInDic(giudCounts, lom.Guid);
+                IncInDic(shortCounts, lom.Short);
+                Assert.AreEqual(42, lom.IgnoredInt);
+                Assert.AreEqual("IGNORED", lom.IgnoredString);
+                Assert.AreEqual(42, lom.Long);
+            }
+            CheckDic(dateTimeCounts, numIterations);
+            CheckDic(giudCounts, numIterations);
+            CheckDic(shortCounts, numIterations);
+        }
+
+        [TestMethod]
+        public void BaseLotRulePerCondition()
+        {
+            /*
+              For(x => x.Bool).SetRule(_ => true)
+                    .When(x => x)
+                        .For(x => x.Byte).SetRule(_ => 42)
+                        .For(x => x.DateTime).SetRule(rg => rg.Random.DateTime())
+                        .For(x => x.Guid).SetRule(rg => rg.Random.Guid())
+                        .For(x => x.IgnoredInt).SetRule(_ => 73)
+                        .For(x => x.IgnoredString).SetRule(_=> "ABRAKA")
+                        .For(x => x.Long).SetRule(_ => 42);
+            */
+            LotRulesPerConditionBase faker = new();
+            int numIterations = 20;
+            Dictionary<DateTime, int> dateTimeCounts = new();
+            Dictionary<Guid, int> giudCounts = new();
+            for (int i = 0; i < numIterations; i++)
+            {
+                LotOfMembers lom = faker.Generate();
+                Console.WriteLine(lom);
+                Console.WriteLine();
+
+                Assert.AreEqual(42, lom.Byte);
+                IncInDic(dateTimeCounts, lom.DateTime);
+                IncInDic(giudCounts, lom.Guid);
+                Assert.AreEqual(73, lom.IgnoredInt);
+                Assert.AreEqual("ABRAKA", lom.IgnoredString);
+                Assert.AreEqual(42, lom.Long);
+            }
+            CheckDic(dateTimeCounts, numIterations);
+            CheckDic(giudCounts, numIterations);
+        }
+
+
+        [TestMethod]
+        public void AutoMultipleRulesPerConditionBasicTest()
+        {
+            /*
+             For(x => x.Bool).SetRule(rg => rg.Random.Bool())
+                    .When(x => x)
+                        .For(x => x.Int).SetRule(_ => 1)
+                        .For(x => x.Long).SetRule(_ => 1)
+                        .For(x => x.Sbyte).SetRule(_ => 1)
+                    .Otherwise()
+                        .For(x => x.Short).SetRule(_ => 73)
+                        .For(x => x.Sbyte).SetRule(_ => 73);
+            */
+            SimpleMultipleRulesForConditionAuto faker = new();
+            for (int i = 0; i < 20; i++)
+            {
+                FewMembers fm = faker.Generate();
+                Console.WriteLine(fm);
+                Console.WriteLine();
+                if (fm.Bool)
+                {
+                    Assert.AreEqual(1, fm.Int);
+                    Assert.AreEqual(1, fm.Long);
+                    Assert.AreEqual(1, fm.Sbyte);
+                }
+                else
+                {
+                    Assert.AreEqual(73, fm.Short);
+                    Assert.AreEqual(73, fm.Sbyte);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void BaseMultipleRulesPerConditionBasicTest()
+        {
+            /*
+             For(x => x.Bool).SetRule(rg => rg.Random.Bool())
+                    .When(x => x)
+                        .For(x => x.Int).SetRule(_ => 1)
+                        .For(x => x.Long).SetRule(_ => 1)
+                        .For(x => x.Sbyte).SetRule(_ => 1)
+                    .Otherwise()
+                        .For(x => x.Short).SetRule(_ => 73)
+                        .For(x => x.Sbyte).SetRule(_ => 73);
+            */
+            SimpleMultipleRulesForConditionBase faker = new();
+            for (int i = 0; i < 20; i++)
+            {
+                FewMembers fm = faker.Generate();
+                Console.WriteLine(fm);
+                Console.WriteLine();
+                if (fm.Bool)
+                {
+                    Assert.AreEqual(1, fm.Int);
+                    Assert.AreEqual(1, fm.Long);
+                    Assert.AreEqual(1, fm.Sbyte);
+                }
+                else
+                {
+                    Assert.AreEqual(73, fm.Short);
+                    Assert.AreEqual(73, fm.Sbyte);
+                }
+            }
+        }
+        [TestMethod]
+        public void StrictMultipleRulesPerConditionBasicTest()
+        {
+            /*
+             For(x => x.Bool).SetRule(rg => rg.Random.Bool())
+                    .When(x => x)
+                        .For(x => x.Int).SetRule(_ => 1)
+                        .For(x => x.Long).SetRule(_ => 1)
+                        .For(x => x.Sbyte).SetRule(_ => 1)
+                    .Otherwise()
+                        .For(x => x.Short).SetRule(_ => 73)
+                        .For(x => x.Sbyte).SetRule(_ => 73);
+            */
+            SimpleMultipleRulesForConditionStrict faker = new();
+            for (int i = 0; i < 20; i++)
+            {
+                FewMembers fm = faker.Generate();
+                Console.WriteLine(fm);
+                Console.WriteLine();
+                if (fm.Bool)
+                {
+                    Assert.AreEqual(1, fm.Int);
+                    Assert.AreEqual(1, fm.Long);
+                    Assert.AreEqual(1, fm.Sbyte);
+                }
+                else
+                {
+                    Assert.AreEqual(73, fm.Short);
+                    Assert.AreEqual(73, fm.Sbyte);
+                }
+            }
+        }
+
+
         [TestMethod]
         public void ChainedIgnoreTest()
         {
@@ -351,6 +599,8 @@ namespace FakerTests
             CheckDic(boolCounts, numIterations);
             CheckDic(shortCounts, numIterations);
         }
+
+
 
         [TestMethod]
         public void ChainedIgnoreBasicTest()

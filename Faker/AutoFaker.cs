@@ -69,10 +69,10 @@ namespace Faker
             this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
 
-        public new ConditionalMemberAutoFirstFluent<TFirstMember, TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
+        public new FirstConditionalMemberAutoFluent<TFirstMember, TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
         {
             base.For<TFirstMember>(selector);
-            return new ConditionalMemberAutoFirstFluent<TFirstMember, TFirstMember>(this);
+            return new FirstConditionalMemberAutoFluent<TFirstMember, TFirstMember>(this);
         }
 
         protected new ConditionalMemberAutoFluent<TFirstMember, TCurMember> _for<TFirstMember, TCurMember>(MemberInfo memberInfo)
@@ -80,6 +80,12 @@ namespace Faker
             base._for<TFirstMember, TCurMember>(memberInfo);
             return new ConditionalMemberAutoFluent<TFirstMember, TCurMember>(this);
         }
+        protected new FirstConditionalRuleAutoFluent<TFirstMember> _firtsSetRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
+        {
+            base._firtsSetRule<TFirstMember, TCurMember>(setter);
+            return new FirstConditionalRuleAutoFluent<TFirstMember>(this);
+        }
+
         protected virtual new ConditionalRuleAutoFluent<TFirstMember> _setRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
         {
             base._setRule<TFirstMember, TCurMember>(setter);
@@ -88,7 +94,7 @@ namespace Faker
         internal ConditionalRuleAutoFluent<TFirstMember> _autoIgnore<TFirstMember>()
         {
             //add pending member to TemporarilyIgnored
-            // mark cur RulePack ignored
+            // mark cur ConditionPack ignored
             ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.SetLastRulePackIgnored();
             //MemberInfo curMember = CurResolver.GetLastMember();

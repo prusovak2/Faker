@@ -77,6 +77,16 @@ namespace Faker
             {
                 return (LastConditionFluent<TFirstMember>)FakerInstance._otherwise<TFirstMember>();
             }
+            //Type of a member to be filled changes with another call to For
+            public ConditionalMemberFluent<TFirstMember, TAnotherMember> For<TAnotherMember>(Expression<Func<TClass, TAnotherMember>> selector)
+            {
+                MemberInfo memberInfo = BaseFaker<TClass>.GetMemberFromExpression(selector);
+                return FakerInstance._for<TFirstMember, TAnotherMember>(memberInfo);
+            }
+            public static explicit operator LastConditionFluent<TFirstMember>(ConditionalRuleFluent<TFirstMember> original)
+            {
+                return new LastConditionFluent<TFirstMember>(original.FakerInstance);
+            }
         }
 
         public class ConditionFluent<TFirtsMember>
@@ -125,9 +135,43 @@ namespace Faker
             {
                 this.FakerInstance = faker;
             }
-            public void SetRule(Func<RandomGenerator, TCurMember> setter)
+            public LastConditionFluent<TFirstMember> SetRule(Func<RandomGenerator, TCurMember> setter)
             {
-                FakerInstance._setRule<TFirstMember, TCurMember>(setter);
+                return (LastConditionFluent<TFirstMember>)FakerInstance._setRule<TFirstMember, TCurMember>(setter);
+            }
+        }
+
+        public class FirstConditionalMemberFluent<TFirstMember, TCurMember>
+        {
+            private BaseFaker<TClass> FakerInstance { get; }
+
+            internal FirstConditionalMemberFluent(BaseFaker<TClass> faker)
+            {
+                this.FakerInstance = faker;
+            }
+
+            public FirstConditionalRuleFluent<TFirstMember> SetRule(Func<RandomGenerator, TCurMember> setter)
+            {
+                return (FirstConditionalRuleFluent<TFirstMember>)FakerInstance._firtsSetRule<TFirstMember, TCurMember>(setter);
+            }
+
+            /*public static explicit operator LastConditionalMemberAutoFluent<TFirstMember, TCurMember>(ConditionalMemberAutoFluent<TFirstMember, TCurMember> original)
+            {
+                return new LastConditionalMemberAutoFluent<TFirstMember, TCurMember>(original.FakerInstance);
+            }*/
+        }
+
+        public class FirstConditionalRuleFluent<TFirstMember>
+        {
+            private BaseFaker<TClass> FakerInstance { get; }
+
+            internal FirstConditionalRuleFluent(BaseFaker<TClass> faker)
+            {
+                this.FakerInstance = faker;
+            }
+            public ConditionFluent<TFirstMember> When(Func<TFirstMember, bool> condition)
+            {
+                return FakerInstance._when(condition);
             }
         }
     }

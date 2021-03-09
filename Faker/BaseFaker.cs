@@ -191,7 +191,7 @@ namespace Faker
             this.InnerFakers.Add(memberInfo, faker);
             this.RulelessMembersInstance.Remove(memberInfo);
         }
-        public ConditionalMemberFluent<TFirstMember, TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
+        public FirstConditionalMemberFluent<TFirstMember, TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
         {
             //only the first one of the series on conditional rules in unconditional
             //therefore the For can be set only for a member with no unconditional rule or inner faker set for it
@@ -215,12 +215,22 @@ namespace Faker
             this.pendingMember = memberInfo;
 
             //resolver initialization for this TFirstMember member
-            //creates a new resolver<IFirstMember> that contains the first RulePack with this memberInfo an always true condition
+            //creates a new resolver<IFirstMember> that contains the first ConditionPack with this memberInfo an always true condition
             ChainedRuleResolver<TFirstMember> resolver = new ChainedRuleResolver<TFirstMember>(memberInfo);
             this.Rules.Add(memberInfo, resolver);
             RulelessMembersInstance.Remove(memberInfo);
 
-            return new ConditionalMemberFluent<TFirstMember, TFirstMember>(this);
+            return new FirstConditionalMemberFluent<TFirstMember, TFirstMember>(this);
+        }
+
+        private protected FirstConditionalRuleFluent<TFirstMember> _firtsSetRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
+        {
+            //add Function info to the resolver corresponding to pendingMember MemberInfo 
+            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
+            //CurResolver.AddFunctionToLastRulePack(() => setter(this.Random));
+            CurResolver.AddFirstFunc(() => setter(this.Random));
+
+            return new FirstConditionalRuleFluent<TFirstMember>(this);
         }
 
         private protected ConditionalMemberFluent<TFirstMember, TCurMember> _for<TFirstMember, TCurMember>(MemberInfo memberInfo)
@@ -252,7 +262,7 @@ namespace Faker
         {
             //add Condition info to the resolver corresponding to pendingMember MemberInfo 
             ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
-            CurResolver.AddNewRulePackWithCondition(condition);
+            CurResolver.AddNewCondPackWithCondition(condition);
 
             return new ConditionFluent<TFirstMember>(this);
         }
@@ -261,7 +271,7 @@ namespace Faker
         {
             //add Otherwise condition to the resolver corresponding to pendingMember MemberInfo 
             ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
-            CurResolver.AddNewRulePackWithOtherwiseCondition();
+            CurResolver.AddNewCondPackWithOtherwiseCondition();
 
             return new ConditionFluent<TFirstMember>(this);
         }
