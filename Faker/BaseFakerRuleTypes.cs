@@ -47,7 +47,7 @@ namespace Faker
                 for (int i = 1; i < this.ChainedRuleParts.Count; i++)
                 {
                     RulePack<TFirstMember> curRule = this.ChainedRuleParts[i];
-                    if (curRule.Condition(this.ConditionValue))  //evaluate condition
+                    if ((!curRule.Ignore) && curRule.Condition(this.ConditionValue))  //evaluate condition
                     {
                         faker.UseRule(instance, curRule.MemberInfo, curRule.RandomFunc);
                         this.UsedRule = true; //some rule in this chain was used, otherwise branch is not gonna be carried out 
@@ -104,9 +104,25 @@ namespace Faker
             {
                 this.ChainedRuleParts[ChainedRuleParts.Count - 1].AddFunction(func);
             }
+            /// <summary>
+            /// Called from AutoFaker._autoIgnore
+            /// </summary>
+            public void SetLastRulePackIgnored()
+            {
+                this.ChainedRuleParts[ChainedRuleParts.Count - 1].SetIgnored();
+            }
+            public MemberInfo GetLastMember()
+            {
+                return this.ChainedRuleParts[ChainedRuleParts.Count - 1].MemberInfo;
+            }
         }
         internal class RulePack<TFirstMember>
         {
+            public Func<TFirstMember, bool> Condition { get; }
+            public MemberInfo MemberInfo { get; private set; }
+            public Func<object> RandomFunc { get; private set; }
+            public bool Ignore { get; private set; } = false;
+
             public RulePack(Func<TFirstMember, bool> condition)
             {
                 this.Condition = condition;
@@ -121,10 +137,6 @@ namespace Faker
                 this.RandomFunc = null;
             }
 
-            public Func<TFirstMember, bool> Condition { get; }
-            public MemberInfo MemberInfo { get; private set; }
-            public Func<object> RandomFunc { get; private set; }
-
             public void AddMember(MemberInfo member)
             {
                 this.MemberInfo = member;
@@ -133,6 +145,11 @@ namespace Faker
             public void AddFunction(Func<object> func)
             {
                 this.RandomFunc = func;
+            }
+            
+            public void SetIgnored()
+            {
+                this.Ignore = true;
             }
         }
     }  

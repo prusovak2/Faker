@@ -14,7 +14,7 @@ namespace Faker
     /// Faker that fills all members of TClass of basic types with no RuleFor set for them by calling a default random function for particular type 
     /// </summary>
     /// <typeparam name="TClass"></typeparam>
-    public class AutoFaker<TClass> : BaseFaker<TClass>, IFaker where TClass : class
+    public partial class AutoFaker<TClass> : BaseFaker<TClass>, IFaker where TClass : class
     {
         static AutoFaker()
         {
@@ -68,6 +68,46 @@ namespace Faker
         {
             this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
+
+        public new ConditionalMemberAutoFluent<TFirstMember, TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
+        {
+            base.For<TFirstMember>(selector);
+            return new ConditionalMemberAutoFluent<TFirstMember, TFirstMember>(this);
+        }
+
+        protected new ConditionalMemberAutoFluent<TFirstMember, TCurMember> _for<TFirstMember, TCurMember>(MemberInfo memberInfo)
+        {
+            base._for<TFirstMember, TCurMember>(memberInfo);
+            return new ConditionalMemberAutoFluent<TFirstMember, TCurMember>(this);
+        }
+        protected virtual new ConditionalRuleAutoFluent<TFirstMember> _setRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
+        {
+            base._setRule<TFirstMember, TCurMember>(setter);
+            return new ConditionalRuleAutoFluent<TFirstMember>(this);
+        }
+        internal ConditionalRuleAutoFluent<TFirstMember> _autoIgnore<TFirstMember>()
+        {
+            //add pending member to TemporarilyIgnored
+            // mark cur RulePack ignored
+            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
+            CurResolver.SetLastRulePackIgnored();
+            MemberInfo curMember = CurResolver.GetLastMember();
+            //this.TemporarilyIgnored.Add(curMember);
+            return new ConditionalRuleAutoFluent<TFirstMember>(this);
+        }
+        
+        protected new ConditionAutoFluent<TFirstMember> _when<TFirstMember>(Func<TFirstMember, bool> condition)
+        {
+            base._when<TFirstMember>(condition);
+            return new ConditionAutoFluent<TFirstMember>(this);
+        }
+
+        protected new ConditionAutoFluent<TFirstMember> _otherwise<TFirstMember>()
+        {
+            base._otherwise<TFirstMember>();
+            return new ConditionAutoFluent<TFirstMember>(this);
+        }
+
         /// <summary>
         /// Adds Rule for how to generate a random content of particular member <br/>
         /// selector and setter must have the same return type
@@ -132,10 +172,11 @@ namespace Faker
             return this._internal_populate(instance);
         }
 
-        protected internal sealed override TClass _internal_populate(TClass instance)
+        private protected sealed override TClass _internal_populate(TClass instance)
         {
             TClass PopulatedInstance = base._internal_populate(instance);
             RandomlyFillRemainingMembers(PopulatedInstance);
+            //this.TemporarilyIgnored.Clear();
             return PopulatedInstance;
         }
         /// <summary>
@@ -145,6 +186,7 @@ namespace Faker
         internal void RandomlyFillRemainingMembers(TClass instance)
         {
             HashSet<MemberInfo> membersToFill = this.RulelessMembersInstance;
+            //membersToFill.ExceptWith(this.TemporarilyIgnored);
             foreach (var member in membersToFill)
             {
                 if (member is PropertyInfo propertyInfo)

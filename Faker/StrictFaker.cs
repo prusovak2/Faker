@@ -205,7 +205,7 @@ namespace Faker
             return this._internal_populate(instance);
         }
 
-        protected internal sealed override TClass _internal_populate(TClass instance)
+        private protected sealed override TClass _internal_populate(TClass instance)
         {
             if (!this.AllRulesSetShallow())
             {

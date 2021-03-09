@@ -62,6 +62,15 @@ namespace FakerTests
                 return InstanceToString(this);
             }
         }
+        public class FewMembersChainedIgnoreFaker : AutoFaker<FewMembers>
+        {
+            public FewMembersChainedIgnoreFaker()
+            {
+                For(x => x.Int).SetRule(_ => 73)
+                    .When(x => x == 73).For(x => x.Long).Ignore();
+            }
+        }
+
         public class FewMembersChainedAutoFaker : AutoFaker<FewMembers>
         {
             public FewMembersChainedAutoFaker()
@@ -232,6 +241,7 @@ namespace FakerTests
                 For(x => x.Long).SetRule(rg => rg.Random.Long(0, 5))
                     .When(c => c == 1).For(x => x.IgnoredInt).SetRule(rg => rg.Random.Int(0, 10))
                     .When(c => c == 2).For(x => x.IgnoredInt).SetRule(rg => rg.Random.Int(11, 20));
+
             }
         }
 
@@ -280,6 +290,24 @@ namespace FakerTests
             public AutoFakerAsInnerFaker()
             {
                 SetFakerFor(x => x.Inner).Faker(new AutoFaker<InnerClass>());
+            }
+        }
+        [TestMethod]
+        public void ChainedIgnoreBasicTest()
+        {
+            /*
+            For(x => x.Int).SetRule(_ => 73)
+                    .When(x => x == 73).For(x => x.Long).Ignore();
+            */
+            FewMembersChainedIgnoreFaker faker = new();
+            int numIterations = 20;
+            for (int i = 0; i < numIterations; i++)
+            {
+                FewMembers fm = faker.Generate();
+                Console.WriteLine(fm);
+                Console.WriteLine();
+                Assert.AreEqual(73, fm.Int);
+                Assert.AreEqual(42, fm.Long);
             }
         }
 

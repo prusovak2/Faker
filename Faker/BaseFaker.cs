@@ -28,7 +28,7 @@ namespace Faker
         /// <summary>
         /// Setters for members of TClass compiled in runtime by Expression.Lambda.Compile
         /// </summary>
-        internal protected static Dictionary<MemberInfo, Action<TClass, object>> Setters = new();
+        internal static Dictionary<MemberInfo, Action<TClass, object>> Setters { get; set; } = new();
         /// <summary>
         /// Not ignored (by ignore attribute) members of TClass type, used by Strict and Auto Faker instances
         /// </summary>
@@ -67,6 +67,8 @@ namespace Faker
         /// once member is Ignored, it cannot have a RuleFor or InnnerFaker set for it in the same instance of the AutoFaker
         /// </summary>
         internal HashSet<MemberInfo> Ignored { get; } = new HashSet<MemberInfo>();
+
+        //internal HashSet<MemberInfo> TemporarilyIgnored { get; } = new HashSet<MemberInfo>();
 
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
@@ -221,7 +223,7 @@ namespace Faker
             return new ConditionalMemberFluent<TFirstMember, TFirstMember>(this);
         }
 
-        private ConditionalMemberFluent<TFirstMember, TCurMember> _for<TFirstMember, TCurMember>(MemberInfo memberInfo)
+        private protected ConditionalMemberFluent<TFirstMember, TCurMember> _for<TFirstMember, TCurMember>(MemberInfo memberInfo)
         {
             //TODO: add message
             if (this.Ignored.Contains(memberInfo))
@@ -233,11 +235,11 @@ namespace Faker
             //add MemberInfo info to the resolver corresponding to pendingMember MemberInfo 
             ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.AddMemberToLastRulePack(memberInfo);
-            RulelessMembersInstance.Remove(memberInfo);
+            RulelessMembersInstance.Remove(memberInfo);  //makes a member ignored by AutoFaker.RandomlyFillRemainingMembers
 
             return new ConditionalMemberFluent<TFirstMember, TCurMember>(this);
         }
-        private ConditionalRuleFluent<TFirstMember> _setRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
+        private protected ConditionalRuleFluent<TFirstMember> _setRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
         {
             //add Function info to the resolver corresponding to pendingMember MemberInfo 
             ChainedRuleResolver<TFirstMember> CurResolver  = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
@@ -246,7 +248,7 @@ namespace Faker
             return new ConditionalRuleFluent<TFirstMember>(this);
         }
 
-        private ConditionFluent<TFirstMember> _when<TFirstMember>(Func<TFirstMember, bool> condition)
+        private protected ConditionFluent<TFirstMember> _when<TFirstMember>(Func<TFirstMember, bool> condition)
         {
             //add Condition info to the resolver corresponding to pendingMember MemberInfo 
             ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
@@ -255,7 +257,7 @@ namespace Faker
             return new ConditionFluent<TFirstMember>(this);
         }
 
-        private ConditionFluent<TFirstMember> _otherwise<TFirstMember>()
+        private protected ConditionFluent<TFirstMember> _otherwise<TFirstMember>()
         {
             //add Otherwise condition to the resolver corresponding to pendingMember MemberInfo 
             ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
@@ -264,7 +266,7 @@ namespace Faker
             return new ConditionFluent<TFirstMember>(this);
         }
 
-        private ChainedRuleResolver<TFirstMember> GetResolverForMemberInfo<TFirstMember>(MemberInfo memberInfo)
+        private protected ChainedRuleResolver<TFirstMember> GetResolverForMemberInfo<TFirstMember>(MemberInfo memberInfo)
         {
             if (!this.Rules.ContainsKey(memberInfo))
             {
@@ -468,7 +470,7 @@ namespace Faker
         {
             return this._internal_populate(instance);
         }
-        internal protected virtual TClass _internal_populate(TClass instance)
+        private protected virtual TClass _internal_populate(TClass instance)
         {
             if(instance is null)
             {
@@ -592,7 +594,7 @@ namespace Faker
         /// <typeparam name="TMember"></typeparam>
         /// <param name="GetMemberLambda"></param>
         /// <returns></returns>
-        internal protected static MemberInfo GetMemberFromExpression<TMember>(Expression<Func<TClass, TMember>> GetMemberLambda)
+        private protected static MemberInfo GetMemberFromExpression<TMember>(Expression<Func<TClass, TMember>> GetMemberLambda)
         {
             MemberExpression expression;
 
