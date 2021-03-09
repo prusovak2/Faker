@@ -75,7 +75,29 @@ namespace FakerTests
         {
             public IgnoreVsIgnoredFaker()
             {
-                For(x => x.Int).Ignore();
+                //won't compile
+                //For(x => x.Int).Ignore();
+            }
+        }
+
+        public class ChainedIgnoreFaker: AutoFaker<FewMembers>
+        {
+            public ChainedIgnoreFaker()
+            {
+                Ignore(x => x.Sbyte);
+                For(x => x.Int).SetRule(_ => 73)
+                    .When(x => x == 73).For(x => x.Long).Ignore()
+                    .When(x => x == 42).For(x => x.Sbyte).Ignore();
+                Ignore(x=>x.Long);
+            }
+        }
+
+        public class InnerClassChainedIgnore : AutoFaker<NestedClass>
+        {
+            public InnerClassChainedIgnore()
+            {
+                For(x => x.OuterByte).SetRule(_ => 42)
+                    .When(x => x == 73).For(x => x.Inner).Ignore();
             }
         }
 
@@ -303,16 +325,31 @@ namespace FakerTests
             }
         }
         [TestMethod]
-        public void ForIgnoreTest()
+        public void ChainedIgnoreTest()
         {
-            IgnoreVsIgnoredFaker faker = new();
-            for (int i = 0; i < 30; i++)
+            /*
+            Ignore(x => x.Long);
+                For(x => x.Int).SetRule(_ => 73)
+                    .When(x => x == 73).For(x => x.Long).Ignore()
+                    .When(x => x == 42).For(x => x.Sbyte).Ignore();
+            */
+            ChainedIgnoreFaker faker = new();
+            int numIterations = 20;
+            Dictionary<bool, int> boolCounts = new();
+            Dictionary<short, int> shortCounts = new();
+            for (int i = 0; i < numIterations; i++)
             {
                 FewMembers fm = faker.Generate();
                 Console.WriteLine(fm);
                 Console.WriteLine();
-                Assert.AreEqual(42, fm.Int);
+                Assert.AreEqual(73, fm.Int);
+                Assert.AreEqual(42, fm.Long);
+                Assert.AreEqual(42, fm.Sbyte);
+                IncInDic(boolCounts, fm.Bool);
+                IncInDic(shortCounts, fm.Short);
             }
+            CheckDic(boolCounts, numIterations);
+            CheckDic(shortCounts, numIterations);
         }
 
         [TestMethod]
@@ -364,6 +401,10 @@ namespace FakerTests
             var i3 = f3.Generate();
             Assert.IsTrue(f3.AllRulesSetDeep());
             Assert.IsTrue(f3.AllRulesSetShallow());
+
+            InnerClassChainedIgnore f4 = new();
+            NestedClass n = f4.Generate();
+            Console.WriteLine(n);
 
             Assert.ThrowsException<FakerException>(() => { SetFakerAndFor f = new(); });
             Assert.ThrowsException<FakerException>(() => { ForAndSetFaker f = new(); });

@@ -36,6 +36,26 @@ namespace Faker
             }
         }
 
+        public class ConditionalMemberAutoFirstFluent<TFirstMember, TCurMember>
+        {
+            private AutoFaker<TClass> FakerInstance { get; }
+
+            internal ConditionalMemberAutoFirstFluent(AutoFaker<TClass> faker)
+            {
+                this.FakerInstance = faker;
+            }
+
+            public ConditionalRuleAutoFluent<TFirstMember> SetRule(Func<RandomGenerator, TCurMember> setter)
+            {
+                return FakerInstance._setRule<TFirstMember, TCurMember>(setter);
+            }
+
+            /*public static explicit operator LastConditionalMemberAutoFluent<TFirstMember, TCurMember>(ConditionalMemberAutoFluent<TFirstMember, TCurMember> original)
+            {
+                return new LastConditionalMemberAutoFluent<TFirstMember, TCurMember>(original.FakerInstance);
+            }*/
+        }
+
         public class ConditionalRuleAutoFluent<TFirstMember>
         {
             private AutoFaker<TClass> FakerInstance { get; }

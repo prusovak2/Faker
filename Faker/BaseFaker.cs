@@ -226,10 +226,10 @@ namespace Faker
         private protected ConditionalMemberFluent<TFirstMember, TCurMember> _for<TFirstMember, TCurMember>(MemberInfo memberInfo)
         {
             //TODO: add message
-            if (this.Ignored.Contains(memberInfo))
+            /*if (this.Ignored.Contains(memberInfo))
             {
                 throw new FakerException("SOME MESSAGE");
-            }
+            }*/
             AddSetterIfNew<TCurMember>(memberInfo);
 
             //add MemberInfo info to the resolver corresponding to pendingMember MemberInfo 

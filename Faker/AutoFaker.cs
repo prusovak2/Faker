@@ -69,10 +69,10 @@ namespace Faker
             this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
 
-        public new ConditionalMemberAutoFluent<TFirstMember, TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
+        public new ConditionalMemberAutoFirstFluent<TFirstMember, TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
         {
             base.For<TFirstMember>(selector);
-            return new ConditionalMemberAutoFluent<TFirstMember, TFirstMember>(this);
+            return new ConditionalMemberAutoFirstFluent<TFirstMember, TFirstMember>(this);
         }
 
         protected new ConditionalMemberAutoFluent<TFirstMember, TCurMember> _for<TFirstMember, TCurMember>(MemberInfo memberInfo)
