@@ -5,8 +5,14 @@
 **Do run in parallel**
 
 * https://xunit.net/docs/running-tests-in-parallel
+
 * https://devblogs.microsoft.com/devops/mstest-v2-in-assembly-parallel-test-execution/
+
 * https://docs.nunit.org/articles/nunit/technical-notes/usage/Framework-Parallel-Test-Execution.html
+
+**List of C# test frameworks**
+
+  https://dzone.com/articles/top-selenium-c-automation-testing-frameworks-for-2
 
 
 ## Random Generator Alg implementation
