@@ -118,7 +118,7 @@ namespace Faker
 
         internal MemberInfo pendingMember = null;
 
-        public UnconditionalMemberFluent<TMember> SetRuleFor<TMember>(Expression<Func<TClass, TMember>> selector)
+        /*public UnconditionalMemberFluent<TMember> For<TMember>(Expression<Func<TClass, TMember>> selector)
         {
             MemberInfo memberInfo = GetMemberFromExpression(selector);
             if (this.InnerFakers.ContainsKey(memberInfo))
@@ -152,7 +152,7 @@ namespace Faker
             SimpleRule newRule = new SimpleRule(() => setter(this.Random));
             this.Rules.Add(memberInfo, newRule);
             this.RulelessMembersInstance.Remove(memberInfo);
-        }
+        }*/
 
         //TODO: resolve management of MembersToBeFilledInstance in derived Fakers - maybe done
         public RefMemberFluent<TInnerClass> SetFakerFor<TInnerClass>(Expression<Func<TClass, TInnerClass>> selector) where TInnerClass: class
@@ -302,7 +302,7 @@ namespace Faker
             Expression<Func<TClass, TMember>> selector,
             Func<RandomGenerator, TMember> setter)
         {
-            MemberInfo memberInfo = this.GetMemberFromExpression(selector);
+            MemberInfo memberInfo = GetMemberFromExpression(selector);
             _internalRuleFor(memberInfo, setter);
         }
 

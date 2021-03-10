@@ -38,7 +38,7 @@ namespace FakerTests
         {
             //this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
             //RuleFor(p => p.Name, _ => "ABRAKA_FAKE");
-            SetRuleFor(p => p.Name).As(_ => "ABRAKA_FAKE");
+            For(p => p.Name).SetRule(_ => "ABRAKA_FAKE");
             Ignore(p => p.ProprertyThatShouldNotBeFaked);
             Ignore(p => p.FieldThatShouldNotBeFaked);
         }
@@ -100,7 +100,7 @@ namespace FakerTests
         {
             Ignore(l => l.Int);
             //RuleFor(l => l.Int, _ => 73);
-            SetRuleFor(l => l.Int).As(_ => 73);
+            For(l => l.Int).SetRule(_ => 73);
         }
     }
     public class FlawedFakerRuleForIgnore : AutoFaker<ContainsValue>
@@ -108,7 +108,7 @@ namespace FakerTests
         public FlawedFakerRuleForIgnore()
         {
             //RuleFor(l => l.Int, _ => 73);
-            SetRuleFor(l => l.Int).As(_ => 73);
+            For(l => l.Int).SetRule(_ => 73);
             Ignore(l => l.Int);
         }
     }
@@ -137,7 +137,7 @@ namespace FakerTests
             //SetFaker(cv => cv.Val, new ValueFaker());
             SetFakerFor(cv => cv.Val).As(new ValueFaker());
             //RuleFor(cv => cv.Val, _ => new Value());
-            SetRuleFor(cv => cv.Val).As(_ => new Value());
+            For(cv => cv.Val).SetRule(_ => new Value());
         }
     }
     public class FlawedFakerRuleForSetFaker : BaseFaker<ContainsValue>
@@ -145,7 +145,7 @@ namespace FakerTests
         public FlawedFakerRuleForSetFaker()
         {
             //RuleFor(cv => cv.Val, _ => new Value());
-            SetRuleFor(cv => cv.Val).As(_ => new Value());
+            For(cv => cv.Val).SetRule(_ => new Value());
             //SetFaker(cv => cv.Val, new ValueFaker()); 
             SetFakerFor(cv => cv.Val).As(new ValueFaker());
         }
@@ -203,7 +203,7 @@ namespace FakerTests
         public ValueFakerNonEmpty()
         {
             //RuleFor(x => x.value, _ => 73);
-            SetRuleFor(x => x.value).As(_ => 73);
+            For(x => x.value).SetRule(_ => 73);
         }
     }
 
@@ -213,7 +213,7 @@ namespace FakerTests
         {
             //FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
             //RuleFor(x => x.IgnoredInt, _ => 73);
-            SetRuleFor(x => x.IgnoredInt).As(_ => 73);
+            For(x => x.IgnoredInt).SetRule(_ => 73);
             //SetFaker(x => x.IgnoredVal, new ValueFakerNonEmpty());
             SetFakerFor(x => x.IgnoredVal).As(new ValueFakerNonEmpty());
         }

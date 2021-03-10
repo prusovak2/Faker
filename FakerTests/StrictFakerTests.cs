@@ -15,9 +15,9 @@ namespace FakerTests
         public ValueClassFakerAllRules()
         {
             //RuleFor(x => x.Value, _ => 42);
-            SetRuleFor(x => x.Value).As(_ => 42);
+            For(x => x.Value).SetRule(_ => 42);
             //RuleFor(x => x.AnotherVal,  r => r.Random.Int());
-            SetRuleFor(x => x.AnotherVal).As(r => r.Random.Int());
+            For(x => x.AnotherVal).SetRule(r => r.Random.Int());
         }
     }
 
@@ -26,11 +26,11 @@ namespace FakerTests
         public StorageFakerAllRules()
         {
             //RuleFor(x => x.Text, _ => "ABRAKA");
-            SetRuleFor(x => x.Text).As(_ => "ABRAKA");
+            For(x => x.Text).SetRule(_ => "ABRAKA");
             //RuleFor(x => x.Test,_ => 42);
-            SetRuleFor(x => x.Test).As(_ => 42);
+            For(x => x.Test).SetRule(_ => 42);
             //RuleFor(x => x.Field, rg => rg.Random.Byte());
-            SetRuleFor(x => x.Field).As(rg => rg.Random.Byte());
+            For(x => x.Field).SetRule(rg => rg.Random.Byte());
             //SetFaker(x => x.Value, new ValueClassFakerAllRules());
             SetFakerFor(x => x.Value).As(new ValueClassFakerAllRules());
         }
@@ -41,11 +41,11 @@ namespace FakerTests
         public StorageFakerFlawedValueFaker()
         {
             //RuleFor(x => x.Text, _ => "ABRAKA");
-            SetRuleFor(x => x.Text).As(_ => "ABRAKA");
+            For(x => x.Text).SetRule(_ => "ABRAKA");
             //RuleFor(x => x.Test, _ => 42);
-            SetRuleFor(x => x.Test).As(_ => 42);
+            For(x => x.Test).SetRule(_ => 42);
             //RuleFor(x => x.Field, rg => rg.Random.Byte());
-            SetRuleFor(x => x.Field).As(rg => rg.Random.Byte());
+            For(x => x.Field).SetRule(rg => rg.Random.Byte());
             //SetFaker(x => x.Value, new ValueClassFakerMissingRule());
             SetFakerFor(x => x.Value).As(new ValueClassFakerMissingRule());
         }
@@ -56,7 +56,7 @@ namespace FakerTests
         public ValueClassFakerMissingRule()
         {
             //RuleFor(x => x.Value, _ => 42);
-            SetRuleFor(x => x.Value).As(_ => 42);
+            For(x => x.Value).SetRule(_ => 42);
         }
     }
 
@@ -65,11 +65,11 @@ namespace FakerTests
         public StorageFakerMissingRule()
         {
             //RuleFor(x => x.Text, _ => "ABRAKA");
-            SetRuleFor(x => x.Text).As(_ => "ABRAKA");
+            For(x => x.Text).SetRule(_ => "ABRAKA");
             //RuleFor(x => x.Test, _ => 42);
-            SetRuleFor(x => x.Test).As(_ => 42);
+            For(x => x.Test).SetRule(_ => 42);
             //RuleFor(x => x.Field, rg => rg.Random.Byte());
-            SetRuleFor(x => x.Field).As(rg => rg.Random.Byte());
+            For(x => x.Field).SetRule(rg => rg.Random.Byte());
         }
     }
     public class ValueClassfakerAllRulesMissing : StrictFaker<ValueClass> { }

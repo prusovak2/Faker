@@ -26,7 +26,7 @@ namespace Faker
         }
 
 //Unconditional Rule Helpers
-        public class UnconditionalMemberFluent<TMember>
+       /* public class UnconditionalMemberFluent<TMember>
         {
             private BaseFaker<TClass> FakerInstance { get; }
 
@@ -35,11 +35,11 @@ namespace Faker
                 this.FakerInstance = faker;
             }
 
-            public void As(Func<RandomGenerator, TMember> setter)
+            public void SetRule(Func<RandomGenerator, TMember> setter)
             {
                 this.FakerInstance._uncoditionalRule<TMember>(setter);
             }
-        }
+        }*/
 //Conditional Rule Helpers
         public class ConditionalMemberFluent<TFirstMember, TCurMember>
         {

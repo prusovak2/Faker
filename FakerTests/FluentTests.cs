@@ -37,7 +37,7 @@ namespace FakerTests
             public InnerClassFaker()
             {
                 //RuleFor(x => x.InnerInt, rg => rg.Random.Int(upper: 42));
-                SetRuleFor(x => x.InnerInt).As(rg => rg.Random.Int(upper: 42));
+                For(x => x.InnerInt).SetRule(rg => rg.Random.Int(upper: 42));
             }
             
         }
@@ -46,7 +46,7 @@ namespace FakerTests
             public NestedClassFaker()
             {
                 SetFakerFor(x => x.Inner).As(new InnerClassFaker());
-                SetRuleFor(x => x.OuterByte).As(rg => rg.Random.Byte());
+                For(x => x.OuterByte).SetRule(rg => rg.Random.Byte());
             }
         }
 
@@ -131,8 +131,8 @@ namespace FakerTests
                     .When(c => c == 0).For(x => x.Short).SetRule(_ => 73)
                     .When(c => c == 1).For(x => x.Int).SetRule(_ => 73)
                     .When(c => c == 2).For(x => x.Long).SetRule(_ => 73);
-                SetRuleFor(x => x.Short).As(_ => 1);
-                SetRuleFor(x => x.Int).As(_ => 1);
+                For(x => x.Short).SetRule(_ => 1);
+                For(x => x.Int).SetRule(_ => 1);
                 For(x => x.Long).SetRule(_ => 1);
             }
         }
@@ -201,7 +201,7 @@ namespace FakerTests
         {
             public SetRuleForAndFor()
             {
-                SetRuleFor(x => x.Sbyte).As(rg => rg.Random.Sbyte());
+                For(x => x.Sbyte).SetRule(rg => rg.Random.Sbyte());
                 For(x => x.Sbyte).SetRule(_ => 42);
 
                
@@ -214,7 +214,7 @@ namespace FakerTests
             {
                 For(x => x.Sbyte).SetRule(_ => 42)
                     .When(x => x == 42).For(x => x.Long).SetRule(_ => 42);
-                SetRuleFor(x => x.Sbyte).As(rg => rg.Random.Sbyte());
+                For(x => x.Sbyte).SetRule(rg => rg.Random.Sbyte());
             }
         }
 
@@ -270,7 +270,7 @@ namespace FakerTests
                     .When(x => x == 1).For(x => x.Double).SetRule(_ => 4.2)
                     .Otherwise().For(x => x.Double).SetRule(_ => 7.3);
 
-                SetRuleFor(x => x.Short).As(rg => rg.Random.Short());
+                For(x => x.Short).SetRule(rg => rg.Random.Short());
 
                 For(x => x.Long).SetRule(rg => rg.Random.Long(0, 5))
                     .When(c => c == 1).For(x => x.IgnoredInt).SetRule(rg => rg.Random.Int(0, 10))
