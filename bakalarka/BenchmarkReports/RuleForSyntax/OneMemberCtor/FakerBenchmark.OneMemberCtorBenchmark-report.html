@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>FakerBenchmark.OneMemberCtorBenchmark-20210310-163332</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>           Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Rank</th><th>Gen 0</th><th>Gen 1</th><th>Gen 2</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>SetRuleForCtorOneMember</td><td>1.705 &mu;s</td><td>0.0322 &mu;s</td><td>0.0358 &mu;s</td><td>1</td><td>1.1005</td><td>-</td><td>-</td><td>1.69 KB</td>
+</tr><tr><td>RuleForCtorOneMember</td><td>1.714 &mu;s</td><td>0.0300 &mu;s</td><td>0.0234 &mu;s</td><td>1</td><td>1.0853</td><td>-</td><td>-</td><td>1.66 KB</td>
+</tr><tr><td>ForSetRuleCtorOneMember</td><td>2.022 &mu;s</td><td>0.0400 &mu;s</td><td>0.0679 &mu;s</td><td>2</td><td>1.1520</td><td>-</td><td>-</td><td>1.77 KB</td>
+</tr></tbody></table>
+</body>
+</html>

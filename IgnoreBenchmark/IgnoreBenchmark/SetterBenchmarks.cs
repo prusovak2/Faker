@@ -16,9 +16,9 @@ namespace FakerBenchmark
     public class SetterBenchmarks
     {
         private LotOfMembers lotOfMembers;
-        private LotOfMembersFaker lotOfMembersFaker;
+        private LotOfMembersRuleForFaker lotOfMembersFaker;
         private OneMember oneMember;
-        private OneMemberFaker oneMemberFaker;
+        private OneMemberRuleForFaker oneMemberFaker;
         private TwoMember twoMember;
         private TwoMemberFaker twoMemberFaker;
         private NestedClass nestedClass;
@@ -93,9 +93,9 @@ namespace FakerBenchmark
         public InnerClass Inner { get; set; }
         public byte OuterByte;
     }
-    public class LotOfMembersFaker : BaseFaker<LotOfMembers>
+    public class LotOfMembersRuleForFaker : BaseFaker<LotOfMembers>
     {
-        public LotOfMembersFaker()
+        public LotOfMembersRuleForFaker()
         {
             RuleFor(x => x.Int, rg => rg.Random.Int(upper: 42));
             RuleFor(x => x.Byte, rg => rg.Random.Byte());
@@ -108,9 +108,9 @@ namespace FakerBenchmark
         }
     }    
 
-    public class OneMemberFaker : BaseFaker<OneMember>
+    public class OneMemberRuleForFaker : BaseFaker<OneMember>
     {
-        public OneMemberFaker()
+        public OneMemberRuleForFaker()
         {
             RuleFor(x => x.Int, rg => rg.Random.Int(upper: 42));
         }
@@ -135,7 +135,7 @@ namespace FakerBenchmark
     {
         public NestedClassFaker()
         {
-            SetFaker(x => x.Inner, new InnerClassFaker());
+            //SetFaker(x => x.Inner, new InnerClassFaker());
             RuleFor(x => x.OuterByte, rg => rg.Random.Byte());
         }
     }
