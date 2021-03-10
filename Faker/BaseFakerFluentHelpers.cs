@@ -19,7 +19,7 @@ namespace Faker
                 this.FakerInstance = faker;
             }
 
-            public void Faker(BaseFaker<TInnerClass> faker)
+            public void As(BaseFaker<TInnerClass> faker)
             {
                 this.FakerInstance._faker(faker);
             }
@@ -35,7 +35,7 @@ namespace Faker
                 this.FakerInstance = faker;
             }
 
-            public void Rule(Func<RandomGenerator, TMember> setter)
+            public void As(Func<RandomGenerator, TMember> setter)
             {
                 this.FakerInstance._uncoditionalRule<TMember>(setter);
             }

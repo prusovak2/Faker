@@ -38,7 +38,7 @@ namespace FakerTests
         {
             //this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
             //RuleFor(p => p.Name, _ => "ABRAKA_FAKE");
-            SetRuleFor(p => p.Name).Rule(_ => "ABRAKA_FAKE");
+            SetRuleFor(p => p.Name).As(_ => "ABRAKA_FAKE");
             Ignore(p => p.ProprertyThatShouldNotBeFaked);
             Ignore(p => p.FieldThatShouldNotBeFaked);
         }
@@ -100,7 +100,7 @@ namespace FakerTests
         {
             Ignore(l => l.Int);
             //RuleFor(l => l.Int, _ => 73);
-            SetRuleFor(l => l.Int).Rule(_ => 73);
+            SetRuleFor(l => l.Int).As(_ => 73);
         }
     }
     public class FlawedFakerRuleForIgnore : AutoFaker<ContainsValue>
@@ -108,7 +108,7 @@ namespace FakerTests
         public FlawedFakerRuleForIgnore()
         {
             //RuleFor(l => l.Int, _ => 73);
-            SetRuleFor(l => l.Int).Rule(_ => 73);
+            SetRuleFor(l => l.Int).As(_ => 73);
             Ignore(l => l.Int);
         }
     }
@@ -118,7 +118,7 @@ namespace FakerTests
         {
             Ignore(cv => cv.Val);
             //SetFaker(cv => cv.Val, new ValueFaker());
-            SetFakerFor(cv => cv.Val).Faker(new ValueFaker());
+            SetFakerFor(cv => cv.Val).As(new ValueFaker());
         }
     }
     public class FlawedFakerSetFakerIgnore : AutoFaker<ContainsValue>
@@ -126,7 +126,7 @@ namespace FakerTests
         public FlawedFakerSetFakerIgnore()
         {
             //SetFaker(cv => cv.Val, new ValueFaker());
-            SetFakerFor(cv => cv.Val).Faker(new ValueFaker());
+            SetFakerFor(cv => cv.Val).As(new ValueFaker());
             Ignore(cv => cv.Val);
         }
     }
@@ -135,9 +135,9 @@ namespace FakerTests
         public FlawedFakerSetFakerRuleFor()
         {
             //SetFaker(cv => cv.Val, new ValueFaker());
-            SetFakerFor(cv => cv.Val).Faker(new ValueFaker());
+            SetFakerFor(cv => cv.Val).As(new ValueFaker());
             //RuleFor(cv => cv.Val, _ => new Value());
-            SetRuleFor(cv => cv.Val).Rule(_ => new Value());
+            SetRuleFor(cv => cv.Val).As(_ => new Value());
         }
     }
     public class FlawedFakerRuleForSetFaker : BaseFaker<ContainsValue>
@@ -145,9 +145,9 @@ namespace FakerTests
         public FlawedFakerRuleForSetFaker()
         {
             //RuleFor(cv => cv.Val, _ => new Value());
-            SetRuleFor(cv => cv.Val).Rule(_ => new Value());
+            SetRuleFor(cv => cv.Val).As(_ => new Value());
             //SetFaker(cv => cv.Val, new ValueFaker()); 
-            SetFakerFor(cv => cv.Val).Faker(new ValueFaker());
+            SetFakerFor(cv => cv.Val).As(new ValueFaker());
         }
     }
     public class IgnoreIgnoreFaker : AutoFaker<ContainsValue>
@@ -203,7 +203,7 @@ namespace FakerTests
         public ValueFakerNonEmpty()
         {
             //RuleFor(x => x.value, _ => 73);
-            SetRuleFor(x => x.value).Rule(_ => 73);
+            SetRuleFor(x => x.value).As(_ => 73);
         }
     }
 
@@ -213,9 +213,9 @@ namespace FakerTests
         {
             //FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
             //RuleFor(x => x.IgnoredInt, _ => 73);
-            SetRuleFor(x => x.IgnoredInt).Rule(_ => 73);
+            SetRuleFor(x => x.IgnoredInt).As(_ => 73);
             //SetFaker(x => x.IgnoredVal, new ValueFakerNonEmpty());
-            SetFakerFor(x => x.IgnoredVal).Faker(new ValueFakerNonEmpty());
+            SetFakerFor(x => x.IgnoredVal).As(new ValueFakerNonEmpty());
         }
     }
 
@@ -284,7 +284,7 @@ namespace FakerTests
         {
             //this.FillEmptyMembers = UnfilledMembers.DefaultRandomFunc;
             //SetFaker(x => x.Inner, new InnerWithATTRIgnoreFaker());
-            SetFakerFor(x => x.Inner).Faker(new InnerWithATTRIgnoreFaker());
+            SetFakerFor(x => x.Inner).As(new InnerWithATTRIgnoreFaker());
         }
     }
 
