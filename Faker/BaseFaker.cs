@@ -104,7 +104,7 @@ namespace Faker
             this.Random = new RandomGenerator(seed);
         }
         /// <summary>
-        ///  new instance of BaseFaker customized to given culture that creates a new instance of RandomGenerator with a given seed
+        /// new instance of BaseFaker customized to given culture that creates a new instance of RandomGenerator with a given seed
         /// </summary>
         /// <param name="seed"></param>
         /// <param name="info"></param>
@@ -124,11 +124,11 @@ namespace Faker
         }
 
         /// <summary>
-        /// selects member of TClass to have InnerFaker set for it
+        /// selects a member of TClass to have InnerFaker set for it
         /// </summary>
         /// <typeparam name="TInnerClass">Type of member</typeparam>
         /// <param name="selector"> lambda returning the member</param>
-        /// <returns></returns>
+        /// <returns>fluent syntax helper</returns>
         /// <exception cref="FakerException">Throws FakerException, when SetFakerFor is called with a member that already has a Rule or InnerFaker set or is Ignored by Ignore method</exception>
         public RefMemberFluent<TInnerClass> SetFakerFor<TInnerClass>(Expression<Func<TClass, TInnerClass>> selector) where TInnerClass: class
         {
@@ -161,29 +161,33 @@ namespace Faker
         {
             MemberInfo memberInfo = this.pendingMember;
             this.pendingMember = null;
-            //whether member the member isn't ignored or does not have a InnerFaker set for it already is checked in SetFakerFor method
+            // whether member the member isn't ignored or does not have a InnerFaker set for it already is checked in SetFakerFor method
             this.InnerFakers.Add(memberInfo, faker);
             this.RulelessMembersInstance.Remove(memberInfo);
         }
-
+        /// <summary>
+        /// selects a member of TClass to have an unconditional rule set for it
+        /// </summary>
+        /// <typeparam name="TFirstMember">Type of member</typeparam>
+        /// <param name="selector">lambda returning a member</param>
+        /// <returns>Fluent syntax helper</returns>
         public FirstConditionalMemberFluent<TFirstMember, TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
         {
-            //only the first one of the series on conditional rules in unconditional
-            //therefore the For can be set only for a member with no unconditional rule or inner faker set for it
-            //multiple conditional rules can be set for a member
-            //TODO: add messages
+            // the first one of series of chained rules is unconditional, the rest of rules are conditional
+            // therefore the For can be set only for a member with no unconditional rule or inner faker set for it
+            // multiple conditional rules can be set for a member
             MemberInfo memberInfo = GetMemberFromExpression(selector);
             if (this.InnerFakers.ContainsKey(memberInfo))
             {
-                throw new FakerException("SOME MESSAGE");
+                throw new FakerException("Unconditional rule cannot be set for a member that already has an inner faker set for it.");
             }
             if (this.Ignored.Contains(memberInfo))
             {
-                throw new FakerException("SOME MESSAGE");
+                throw new FakerException("Unconditional cannot be set for a member that is already marked Ignored by Ignore call");
             }
             if (this.Rules.ContainsKey(memberInfo))
             {
-                throw new FakerException("SOME MESSAGE");
+                throw new FakerException("Multiple unconditional rules cannot be set for the same member.");
             }
             AddSetterIfNew<TFirstMember>(memberInfo);
 
@@ -197,12 +201,20 @@ namespace Faker
 
             return new FirstConditionalMemberFluent<TFirstMember, TFirstMember>(this);
         }
-
+        /// <summary>
+        /// Set unconditional rule for a member <br/>
+        /// </summary>
+        /// <typeparam name="TFirstMember"></typeparam>
+        /// <typeparam name="TCurMember"></typeparam>
+        /// <param name="setter"></param>
+        /// <returns></returns>
         private protected FirstConditionalRuleFluent<TFirstMember> _firtsSetRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
         {
-            //add Function info to the resolver corresponding to pendingMember MemberInfo 
+            // this case needs to be treated by a separate method, because unconditional member and rule are to be stored differently than conditional ones
+            // .Otherwise method cannot be called on 'First' syntax helpers
+
+            // add Function info to the resolver corresponding to pendingMember MemberInfo 
             ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
-            //CurResolver.AddFunctionToLastRulePack(() => setter(this.Random));
             CurResolver.AddFirstFunc(() => setter(this.Random));
 
             return new FirstConditionalRuleFluent<TFirstMember>(this);
