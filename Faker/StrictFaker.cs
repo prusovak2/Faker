@@ -142,27 +142,6 @@ namespace Faker
             return ((IInnerFaker)this).GetAllMembersRequiringRuleDeep();
         }
         /// <summary>
-        /// Adds Rule for how to generate a random content of particular member <br/>
-        /// selector and setter must have the same return type
-        /// </summary>
-        /// <typeparam name="TMember">Type of member to be filled in </typeparam>
-        /// <param name="selector">lambda returning member to be filled </param>
-        /// <param name="setter">random function to fill in the member </param>
-        /// <exception cref="FakerException">Throws FakerException, when you are trying to set a RuleFor a member that already has a Rule or InnerFaker set or is Ignored by Ignore method</exception>
-        /*public new void RuleFor<TMember>(
-            Expression<Func<TClass, TMember>> selector,
-            Func<RandomGenerator, TMember> setter)
-        {
-            MemberInfo memberInfo = GetMemberFromExpression(selector);
-            _internalRuleFor(memberInfo, setter);
-        }
-
-        protected internal sealed override void _internalRuleFor<TMember>(MemberInfo memberInfo, Func<RandomGenerator, TMember> setter)
-        {
-            base._internalRuleFor(memberInfo, setter);
-            RulelessMembersInstance.Remove(memberInfo);
-        }*/
-        /// <summary>
         /// Sets member as Ignored - this member won't be filled by default random function by AutoFaker instances <br/>
         /// </summary>
         /// <typeparam name="TMember">Type of member to be ignored</typeparam>
@@ -174,27 +153,6 @@ namespace Faker
             RulelessMembersInstance.Remove(memberInfo);
             base._internalIgnore<TMember>(memberInfo);
         }
-
-        /// <summary>
-        /// sets InnerFaker for a member of TInnerClass type
-        /// </summary>
-        /// <typeparam name="TInnerClass"> type of member to has a faker set for it</typeparam>
-        /// <param name="selector"> lambda returning the member </param>
-        /// <param name="faker"> Faker to be used to generate contend of the member </param>
-        /// <exception cref="FakerException">Throws FakerException, when you are trying to SetFaker for a member that already has a Rule or InnerFaker set or is Ignored by Ignore method</exception>
-        /*public new void SetFaker<TInnerClass>(
-            Expression<Func<TClass, TInnerClass>> selector,
-            BaseFaker<TInnerClass> faker) where TInnerClass : class
-        {
-            MemberInfo memberInfo = GetMemberFromExpression(selector);
-            _internalSetFaker(memberInfo, faker);
-        }
-
-        protected internal sealed override void _internalSetFaker<TInnerClass>(MemberInfo memberInfo, BaseFaker<TInnerClass> faker)
-        {
-            base._internalSetFaker(memberInfo, faker);
-            RulelessMembersInstance.Remove(memberInfo);
-        }*/
         /// <summary>
         /// Use rules to fill the instance with a random content
         /// </summary>
