@@ -266,7 +266,7 @@ namespace Faker
             return new ConditionFluent<TFirstMember>(this);
         }
         /// <summary>
-        /// sets an Otherwise condition, it is satisfied if and only if any of .When conditions preceding this .Otherwise had not been satisfied
+        /// sets an Otherwise condition, it is satisfied if and only if any of .When conditions preceding this .Otherwise has not been satisfied
         /// </summary>
         /// <typeparam name="TFirstMember">Type of the first member in this rule chain</typeparam>
         /// <returns>fluent syntax helper</returns>
