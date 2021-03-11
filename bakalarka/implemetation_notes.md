@@ -1074,7 +1074,7 @@ Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cor
 
 [11.3. 2021]
 
-I've discovered  a problem regarding RuleFor and SetFaker syntax.  This methods were designed to be called as follows:
+I've discovered  a problem regarding `RuleFor` and `SetFaker` syntax.  This methods were designed to be called as follows:
 
 ```csharp
 RuleFor(x => x.Field, rg => rg.Random.Byte());
@@ -1147,3 +1147,50 @@ As we can see, `SetFaker` method was replaced by a two method that are to be cal
 
 This works better with rules thanks to implicit conversions. For some reason, the Faker specialized on a child class cannot be assigned to fill a parent instance.   
 
+### Chained rules 
+
+[11. 3. 2021]
+
+In the the similar though far more complex manner to the fluent syntax fix described above I've designed the fluent syntax API allowing to state a simple links between some rules. The API allows to chain several conditions that are all evaluated with respect to the random value generated when the first rule of the chain is applied. This first rule of the chain is always applied and is therefore is going to be referred to as the unconditional rule.  After the condition one or more conditional rules follow(s). Each of them is applied if and only if the corresponding condition is satisfied. The last condition in the chain can be the otherwise condition that is satisfied if and only if non of preceding conditions was satisfied. 
+
+This is how one rule chain may look like (multiple When branches may precede the Otherwise, Otherwise may be omitted).
+
+```csharp
+For(x => x.Bool).SetRule(rg => rg.Random.Bool())
+                    .When(x => x)
+                        .For(x => x.Int).SetRule(_ => 1)
+                        .For(x => x.Long).SetRule(_ => 1)
+                        .For(x => x.Sbyte).SetRule(_ => 1)
+                    .Otherwise()
+                        .For(x => x.Short).SetRule(_ => 73)
+                        .For(x => x.Sbyte).SetRule(_ => 73);
+            }
+```
+
+ The system of fluent syntax helpers (between which the methods are distributed carefully) is used ensure that the methods can be called only the expected order. 
+
+##### Allowed order of calls
+
+After `.For` there always need to come `.SetRule`. implementation further need to distinguish between the first pair of  `.For` , `.SetRule` calls and all subsequent calls as the first pair is unconditional and needs to be stored and  and evaluated in the special manner. To allow this a variant of a fluent syntax helpers with 'First' prefix is used. Happy side effect is that it also allows us to make it impossible to call Otherwise as the first condition (with no When preceding it).  If it were possible to call the Otherwise as the first condition, logic of the program would not be harmed, Otherwise with no When before it would simply be always satisfied condition. It is, however, a bit nicer to restrict syntax so that Otherwise can be called only after the When was called.
+
+What would not, however, make sense, would be allowing a When to be called after the Otherwise. To forbid this versions of fluent syntax helpers containing the word 'last' in their name are introduced. The Otherwise call return the last version of a fluent syntax helper so that no more When can follow. 
+
+Separate version of all fluent syntax helpers is implemented for the `AutoFaker`, because it is the only Faker for which it make sense to incorporate `.Ignore` method to the rule chains.  `BaseFaker` cannot benefit from .Ignore calls at all as it simply follows the Rules it has set and does not care for ruleless members at all. For `StrictFaker` it does not make sense to set members conditionally ignored.
+
+It is important to realize, however, that even thou the `.Ignore` in chained rules seems to be conditional, it is actually unconditional and moreover empty operation. It is impossible to determine whether the When conditions in one rule chains are disjunct or whether the rules  bind to the conditions are affecting the same members. All members that are encountered in chain rule declaration are therefore supposed to have a rule set for them and are therefore removed from the set of members to be filled by a default random functions (to avoid having a value set by a conditional rule with satisfied condition overwritten by a value provided by a default random function). That means that these members are effectively Ignored. `.Ignore` call in a rule chain is therefore only the empty operation (`RulePack` with no function and with a flag set to ignored).    
+
+##### How to make it all strongly typed? Generic fluent syntax magic
+
+
+
+##### How does Resolver evaluate rule chains 
+
+Rules are stored in a dictionary in the `BaseFaker`:
+
+```csharp
+ internal IDictionary<MemberInfo, ChainedRule> Rules { get; } = new Dictionary<MemberInfo, ChainedRule>();
+```
+
+`ChainedRule` is an abstract class from which `ChainedRuleResolver<TFirstMember>` is inherited. abstract common abstract parent makes it possible to stored resolver specialized on a different types in the same Dictionary. Each `ChainedRuleResolver` contains a few members that represents the state of the evaluation when one is in progress. This state includes a value of the `TFirstMember` type generated by the first rule and used to evaluate the conditions and a bool flag determining whether any of the conditions has been yet satisfied (important for Otherwise evaluation). Nextly contains a list of `ConditionalRules`. Each such rule consists of a condition and the list of `RulePacks` representing `.For`, `.SetRule` pairs of conditional rules.  When the chained rule is applied, firstly the unconditional rule at it's beginning is used to generate value with respect to which the conditions are to be evaluated. The value it immediately used as a pseudorandom contend of the first (unconditional) member.  Then conditions are evaluated in order in which they occurred in a source code. For a satisfied conditions all rules  bind to it are applied as well preserving the order from the source code. If the Faker is the `AutoFaker` derived instance, random filling is carried out after all rules are evaluated.  
+
+##### SetRuleFor idea and bechmarks
