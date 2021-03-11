@@ -8,13 +8,8 @@ using System.Reflection;
 
 namespace Faker
 {
-    public class StrictFaker<TClass> : BaseFaker<TClass>, IFaker where TClass : class
+    public class StrictFaker<TClass> : BaseFaker<TClass>, IInnerFaker where TClass : class
     {
-        /// <summary>
-        /// Members requiring a Rule or InnerFaker set for them
-        /// </summary>
-        internal HashSet<MemberInfo> MembersToBeFilledInstance = new HashSet<MemberInfo>(MembersToBeFilledDefaultly); 
-
         static StrictFaker()
         {
             InitializeListOfRandomlyFilledMembers();
@@ -25,7 +20,7 @@ namespace Faker
         /// </summary>
         public StrictFaker() : base()
         {
-            InitializeListOfRandomlyFilledMembers();
+            this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
         /// <summary>
         /// new instance of StrictFaker customized to a given Culture that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
@@ -34,7 +29,7 @@ namespace Faker
         /// <param name="info"></param>
         public StrictFaker(CultureInfo info) : base(info)
         {
-            InitializeListOfRandomlyFilledMembers();
+            this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
         /// <summary>
         /// new instance of StrictFaker that creates a new instance of RandomGenerator with a given seed <br/>
@@ -43,7 +38,7 @@ namespace Faker
         /// <param name="seed"></param>
         public StrictFaker(ulong seed) : base(seed)
         {
-            InitializeListOfRandomlyFilledMembers();
+            this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
         /// <summary>
         /// new instance of StrictFaker customized to a given Culture that creates a new instance of RandomGenerator with a given seed <br/>
@@ -53,7 +48,7 @@ namespace Faker
         /// <param name="info"></param>
         public StrictFaker(ulong seed, CultureInfo info) : base(seed, info)
         {
-            InitializeListOfRandomlyFilledMembers();
+            this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
         /// <summary>
         /// new instance of StrictFaker that uses existing instance of RandomGenerator <br/>
@@ -64,7 +59,7 @@ namespace Faker
         /// <param name="randomGenerator"></param>
         public StrictFaker(RandomGenerator randomGenerator) : base(randomGenerator)
         {
-            InitializeListOfRandomlyFilledMembers();
+            this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
         /// <summary>
         /// indicates whether all members of this instance of TClass do have a Rule or an InnerFaker set for them <br/>
@@ -74,7 +69,7 @@ namespace Faker
         /// <returns></returns>
         public bool AllRulesSetShallow()
         {
-            return !this.MembersToBeFilledInstance.Any();
+            return !this.RulelessMembersInstance.Any();
         }
         /// <summary>
         /// Internal method to be called on InnerFakers  <br/>
@@ -83,7 +78,7 @@ namespace Faker
         /// is false, attempt to call .Generate() or .Popuplate() on this instance of the StrictFaker will result in FakerException
         /// </summary>
         /// <returns></returns>
-        bool IFaker.AllRulesSetDeep()
+        bool IInnerFaker.AllRulesSetDeep()
         {
             bool allFiled = this.AllRulesSetShallow();
             if (!allFiled)
@@ -104,7 +99,7 @@ namespace Faker
         /// <returns></returns>
         public bool AllRulesSetDeep()
         {
-            return ((IFaker) this).AllRulesSetDeep();
+            return ((IInnerFaker) this).AllRulesSetDeep();
         }
         /// <summary>
         /// returns HashSet of the members of this instance of TClass that require a Rule or a InnerFaker to be set for them <br/>
@@ -114,7 +109,7 @@ namespace Faker
         public HashSet<MemberInfo> GetAllMembersRequiringRuleShallow()
         {
             HashSet<MemberInfo> toReturn = new HashSet<MemberInfo>();
-            foreach (var item in this.MembersToBeFilledInstance)
+            foreach (var item in this.RulelessMembersInstance)
             {
                 toReturn.Add(item);
             }
@@ -127,7 +122,7 @@ namespace Faker
         /// in the whole tree of members beneath this instance 
         /// </summary>
         /// <returns></returns>
-        HashSet<MemberInfo> IFaker.GetAllMembersRequiringRuleDeep()
+        HashSet<MemberInfo> IInnerFaker.GetAllMembersRequiringRuleDeep()
         {
             HashSet<MemberInfo> members = this.GetAllMembersRequiringRuleShallow();
             foreach (var innerFaker in InnerFakers)
@@ -144,28 +139,7 @@ namespace Faker
         /// <returns></returns>
         public HashSet<MemberInfo> GetAllMembersRequiringRuleDeep()
         {
-            return ((IFaker)this).GetAllMembersRequiringRuleDeep();
-        }
-        /// <summary>
-        /// Adds Rule for how to generate a random content of particular member <br/>
-        /// selector and setter must have the same return type
-        /// </summary>
-        /// <typeparam name="TMember">Type of member to be filled in </typeparam>
-        /// <param name="selector">lambda returning member to be filled </param>
-        /// <param name="setter">random function to fill in the member </param>
-        /// <exception cref="FakerException">Throws FakerException, when you are trying to set a RuleFor a member that already has a Rule or InnerFaker set or is Ignored by Ignore method</exception>
-        public new void RuleFor<TMember>(
-            Expression<Func<TClass, TMember>> selector,
-            Func<RandomGenerator, TMember> setter)
-        {
-            MemberInfo memberInfo = GetMemberFromExpression(selector);
-            _internalRuleFor(memberInfo, setter);
-        }
-
-        protected internal sealed override void _internalRuleFor<TMember>(MemberInfo memberInfo, Func<RandomGenerator, TMember> setter)
-        {
-            base._internalRuleFor(memberInfo, setter);
-            MembersToBeFilledInstance.Remove(memberInfo);
+            return ((IInnerFaker)this).GetAllMembersRequiringRuleDeep();
         }
         /// <summary>
         /// Sets member as Ignored - this member won't be filled by default random function by AutoFaker instances <br/>
@@ -176,29 +150,8 @@ namespace Faker
         public void Ignore<TMember>(Expression<Func<TClass, TMember>> selector)
         {
             MemberInfo memberInfo = GetMemberFromExpression(selector);
-            MembersToBeFilledInstance.Remove(memberInfo);
+            RulelessMembersInstance.Remove(memberInfo);
             base._internalIgnore<TMember>(memberInfo);
-        }
-
-        /// <summary>
-        /// sets InnerFaker for a member of TInnerClass type
-        /// </summary>
-        /// <typeparam name="TInnerClass"> type of member to has a faker set for it</typeparam>
-        /// <param name="selector"> lambda returning the member </param>
-        /// <param name="faker"> Faker to be used to generate contend of the member </param>
-        /// <exception cref="FakerException">Throws FakerException, when you are trying to SetFaker for a member that already has a Rule or InnerFaker set or is Ignored by Ignore method</exception>
-        public new void SetFaker<TInnerClass>(
-            Expression<Func<TClass, TInnerClass>> selector,
-            BaseFaker<TInnerClass> faker) where TInnerClass : class
-        {
-            MemberInfo memberInfo = GetMemberFromExpression(selector);
-            _internalSetFaker(memberInfo, faker);
-        }
-
-        protected internal sealed override void _internalSetFaker<TInnerClass>(MemberInfo memberInfo, BaseFaker<TInnerClass> faker)
-        {
-            base._internalSetFaker(memberInfo, faker);
-            MembersToBeFilledInstance.Remove(memberInfo);
         }
         /// <summary>
         /// Use rules to fill the instance with a random content
@@ -210,7 +163,7 @@ namespace Faker
             return this._internal_populate(instance);
         }
 
-        protected internal sealed override TClass _internal_populate(TClass instance)
+        private protected sealed override TClass _internal_populate(TClass instance)
         {
             if (!this.AllRulesSetShallow())
             {

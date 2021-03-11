@@ -18,7 +18,8 @@ namespace FakerTests
         {
             public SomeFaker()
             {
-                RuleFor(c => c.somePrime, rg => rg.Pick(2, 3, 5, 7, 13, 17, 73));
+                //RuleFor(c => c.somePrime, rg => rg.Pick(2, 3, 5, 7, 13, 17, 73));
+                For(c => c.somePrime).SetRule(rg => rg.Pick(2, 3, 5, 7, 13, 17, 73));
             }
         }
 

@@ -1,5 +1,20 @@
 # Implementation notes
 
+## Parallelism in test frameworks
+
+**Do run in parallel**
+
+* https://xunit.net/docs/running-tests-in-parallel
+
+* https://devblogs.microsoft.com/devops/mstest-v2-in-assembly-parallel-test-execution/
+
+* https://docs.nunit.org/articles/nunit/technical-notes/usage/Framework-Parallel-Test-Execution.html
+
+**List of C# test frameworks**
+
+  https://dzone.com/articles/top-selenium-c-automation-testing-frameworks-for-2
+
+
 ## Random Generator Alg implementation
 
 https://en.wikipedia.org/wiki/Xorshift
@@ -1024,3 +1039,4 @@ Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cor
 | GenerateParamless | 140.19 ns |  2.795 ns |  4.009 ns |    2 | 0.0865 |     - |     - |     136 B |
 | GenerateParam     | 551.59 ns | 10.869 ns | 12.939 ns |    3 | 0.2222 |     - |     - |     352 B |
 
+# TODO: if FLUENTWHEN branch fails, Repair CreateAutoFaker - make it add Setter to BaseFaker.Setters for member for which it creates Innner AutoFakers

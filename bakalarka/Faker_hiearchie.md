@@ -404,6 +404,14 @@ public class GalaxyResidentFaker : BaseFaker<GalaxyResidentClass>
 
 I don't think that **[1]** supports this feature.
 
+### SetIgnored (on AutoFaker and StrictFaker)
+
+- [ ] 
+
+**Priorita: 3**
+
+Add `.SetIgnore` method to fluent chained methods to set member ignored for this .Generate call if condition is satisfied. Not that difficult to add syntax for it (I hope), more difficult to incorporate it to ChainedRules resolving. Makes good sence for the AutoFaker, probably not as much for StrictFaker.
+
 ### Nastavit defaultní randomizační fce pro Nullable typy
 
 Doplnit `public Func<object> GetDefaultRandomFuncForType(object o)`  a `TypeExtensions.GetSampleInstance(this Type type)`o nullable typy.

@@ -10,7 +10,7 @@ namespace Faker
         /// <summary>
         /// underlying algorithm for generating random bit sequences that all other random entities are derived from
         /// </summary>
-        internal IRandomGeneratorAlg RandomGeneratorAlg { get; set; }
+        internal IRandomGeneratorAlg RandomGeneratorAlg { get; }
         /// <summary>
         /// affects a behavior of some of the methods on RandomGenerator to produce more culturally adequate values (names, city names...)  
         /// </summary>
