@@ -302,7 +302,7 @@ namespace Faker
         /// <typeparam name="TMember">Type of member to be ignored</typeparam>
         /// <param name="selector">lambda returning member to be ignored</param>
         /// <exception cref="FakerException">Throws FakerException, when you are trying to Ignore a member that already has a Rule or InnerFaker set for it</exception>
-        internal protected void _internalIgnore<TMember>(MemberInfo memberInfo)
+        private protected void _internalIgnore<TMember>(MemberInfo memberInfo)
         {            
             if (this.Rules.ContainsKey(memberInfo))
             {
