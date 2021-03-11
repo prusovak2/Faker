@@ -11,7 +11,7 @@ namespace FakerBenchmark
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<LotOfMembersGenerateBenchmark>();
+            BenchmarkRunner.Run<IgnoreWithoutIgnoreFakerBenchmark>();
         }
     }
 }

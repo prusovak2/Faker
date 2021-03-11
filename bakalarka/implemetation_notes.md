@@ -512,7 +512,38 @@ Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cor
 | AutoFakerAttributesRuleFor |  7,216.8 ns | 180.40 ns | 523.38 ns |  7,060.4 ns |    5 | 2.1820 |     - |     - |   3.34 KB |
 | AutoFakerNoAttributes      | 16,987.2 ns | 308.49 ns | 442.43 ns | 16,851.5 ns |    6 | 8.3618 |     - |     - |  12.81 KB |
 
+#### Virtual methods removed, `RulelessMembers` management right in `BaseFaker`  
 
+[11. 3. 2021]
+
+As a chained rules and fluent syntax were added to the Faker, yet another change occurred in the mechanism that manages the members that have no Rule or inner Faker set for them and nor are ignored. As an introduction of fluent  syntax and chained rules made a `BaseFaker` code and the way the Rules are stored more complicated, keeping a system of virtual and non virtual methods that would ensure that only the Auto and Strict Faker instance will work with the `RulelessMembers`set removing members from there when `RuleFor` or `SetFaker` method is invoked on them.
+
+In this new approach, there is a `static internal HashSet<MemberInfo> AllNotIgnoredMembers { get; set; } = null;` on a `BaseFaker`, that is initialized by the first static ctor of `AutoFaker` or `StrictFaker` that is ever called.  `internal HashSet<MemberInfo> RulelessMembersInstance { get; set; }` declared in `BaseFaker` remains in `BaseFaker` instances. Only `Auto` and `Strict` `Faker` instances  do copy the  `AllNotIgnoredMembers` set to the `RulelessMembersInstance` set and then maintain an actual list of `TClass` members that have not have a Rule or an InnerFaker set yet. In `BaseFaker` instances `RulelessMembersInstance` set remains empty.
+
+To avoid a necessity to declare a number of virtual methods to make `.RuleFor` and `.SetFaker` methods to behave differently when invoked on a `BaseFaker` and `AutoFaker` (`StrictFaker`) instances,  whenever a member is selected to have a Rule (`.For`, `._for` defined in the `BaseFaker`) or inner faker (`.SetFakerFor` defined in the `BaseFaker`)  by  any instance of Faker `RulelessMembersInstance.Remove(selectedMember)`is called.  This happens even in a `BaseFaker` instances that do have the said set empty, therefore to try to remove something from that set is useless. Original virtual method mechanism has been designed to avoid this senseless manipulation with a `HashSet` that carries no worthwhile data. However overhead that comes with a virtual calls proved itself to be commensurable with the one that comes with an unnecessary removal of items from an empty `HashSet` (is a removal from the empty `HashSet` optimized? is it only the condition check of Sets Count?)    as the following benchmark shows.
+
+This benchmark was run after a fluent syntax and chained rules were incorporated to Faker, therefore altering the `RulelessMembers` management is not by far the only change that has taken a place in the time between the previous and the following benchmarks were run. We can see, however, than non of these changes harmed the performance of the program in any significant manner. What is more,  on the most of  benchmark methods from this set, the program is performing a slightly better after said changes were introduced. 
+
+What I liked about the variant using  virtual methods was that it kept a `RulelessMembers` management only it these parts of the code, where it actually made sense. It therefore would not raise a question, why the `BaseFaker` is removing items from a set it never actually uses (which I understand may be confusing for somebody trying to understand the code in question). I personally  felt that the code was somewhat nicer with virtual methods. On the other hand, equally confusing as unnecessary removals from the `HashSet` (or maybe even far more confusing) would probably be all those virtual and non virtual methods overring and calling each other in attempt to avoid useless removals.     
+
+``` ini
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.804 (2004/?/20H1)
+Intel Core i5-7200U CPU 2.50GHz (Kaby Lake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.102
+  [Host]     : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT
+
+
+```
+
+| Method                     |        Mean |     Error |    StdDev | Rank |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+| -------------------------- | ----------: | --------: | --------: | ---: | -----: | ----: | ----: | --------: |
+| BaseFakerAttributes        |    681.5 ns |  13.25 ns |  14.17 ns |    1 | 0.8469 |     - |     - |    1.3 KB |
+| BaseFakerNoAttributes      |    682.4 ns |  13.54 ns |  18.54 ns |    1 | 0.8469 |     - |     - |    1.3 KB |
+| BaseFakerAttributesRuleFor |  2,089.9 ns |  40.59 ns |  45.12 ns |    2 | 1.3809 |     - |     - |   2.12 KB |
+| AutoFakerAttributes        |  4,082.7 ns |  80.82 ns | 105.09 ns |    3 | 1.8158 |     - |     - |   2.79 KB |
+| AutoFakerAttributesRuleFor |  5,907.5 ns | 113.96 ns | 139.95 ns |    4 | 2.3117 |     - |     - |   3.55 KB |
+| AutoFakerNoAttributes      | 17,088.3 ns | 324.92 ns | 303.93 ns |    5 | 8.4229 |     - |     - |  12.93 KB |
 
 
 

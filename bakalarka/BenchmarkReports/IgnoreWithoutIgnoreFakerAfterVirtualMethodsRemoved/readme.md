@@ -1,0 +1,1 @@
+This benchmark was rum 11.3. after fluent syntax was incorporated and virtual _setRuleFor and such stuff were removed and replaced by RulelessMembers management in corresponding methods right on the BaseFaker.

@@ -10,7 +10,7 @@ using Faker;
 namespace FakerBenchmark
 {
 
-    [MemoryDiagnoser]
+    /*[MemoryDiagnoser]
     [RankColumn]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class SetterBenchmarks
@@ -138,6 +138,6 @@ namespace FakerBenchmark
             //SetFaker(x => x.Inner, new InnerClassFaker());
             RuleFor(x => x.OuterByte, rg => rg.Random.Byte());
         }
-    }
+    }*/
 
 }

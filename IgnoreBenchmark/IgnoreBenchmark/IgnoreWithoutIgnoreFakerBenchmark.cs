@@ -60,7 +60,7 @@ namespace FakerBenchmark
         {
             WithIgnoreBaseFaker faker = new();
             WithIgnore x = faker.Generate();
-            faker.RuleFor(a => a.Byte, _ => 42);
+            faker.For(a => a.Byte).SetRule( _ => 42);
             x = faker.Generate();
         }
         public void AutoWith()
@@ -79,7 +79,7 @@ namespace FakerBenchmark
         {
             WithIgnoreAutoFaker faker = new();
             WithIgnore x = faker.Generate();
-            faker.RuleFor(a => a.Byte, _ => 42);
+            faker.For(a => a.Byte).SetRule( _ => 42);
             x = faker.Generate();
         }
         [Benchmark]

@@ -12,7 +12,7 @@ using Faker;
 
 namespace FakerBenchmark
 {
-    public class LotOfMembersSetRuleFoFaker : BaseFaker<LotOfMembers>
+    /*public class LotOfMembersSetRuleFoFaker : BaseFaker<LotOfMembers>
     {
         public LotOfMembersSetRuleFoFaker()
         {
@@ -177,5 +177,5 @@ namespace FakerBenchmark
         {
             LotOfMembers om = ForSetRuleFaker.Generate();
         }
-    }
+    }*/
 }
