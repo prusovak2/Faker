@@ -14,7 +14,7 @@ namespace Faker
     /// Faker that fills all members of TClass of basic types with no RuleFor set for them by calling a default random function for particular type 
     /// </summary>
     /// <typeparam name="TClass"></typeparam>
-    public partial class AutoFaker<TClass> : BaseFaker<TClass>, IFaker where TClass : class
+    public partial class AutoFaker<TClass> : BaseFaker<TClass>, IInnerFaker where TClass : class
     {
         static AutoFaker()
         {
@@ -69,29 +69,29 @@ namespace Faker
             this.RulelessMembersInstance = new HashSet<MemberInfo>(AllNotIgnoredMembers);
         }
 
-        public new FirstConditionalMemberAutoFluent<TFirstMember, TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
+        public new FirstMemberAutoFluent<TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
         {
             base.For<TFirstMember>(selector);
-            return new FirstConditionalMemberAutoFluent<TFirstMember, TFirstMember>(this);
+            return new FirstMemberAutoFluent<TFirstMember>(this);
         }
 
-        protected new ConditionalMemberAutoFluent<TFirstMember, TCurMember> _for<TFirstMember, TCurMember>(MemberInfo memberInfo)
+        protected new MemberAutoFluent<TFirstMember, TCurMember> _for<TFirstMember, TCurMember>(MemberInfo memberInfo)
         {
             base._for<TFirstMember, TCurMember>(memberInfo);
-            return new ConditionalMemberAutoFluent<TFirstMember, TCurMember>(this);
+            return new MemberAutoFluent<TFirstMember, TCurMember>(this);
         }
-        protected new FirstConditionalRuleAutoFluent<TFirstMember> _firtsSetRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
+        protected new FirstRuleAutoFluent<TFirstMember> _firtsSetRule<TFirstMember>(Func<RandomGenerator, TFirstMember> setter)
         {
-            base._firtsSetRule<TFirstMember, TCurMember>(setter);
-            return new FirstConditionalRuleAutoFluent<TFirstMember>(this);
+            base._firtsSetRule<TFirstMember>(setter);
+            return new FirstRuleAutoFluent<TFirstMember>(this);
         }
 
-        protected virtual new ConditionalRuleAutoFluent<TFirstMember> _setRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
+        protected virtual new RuleAutoFluent<TFirstMember> _setRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
         {
             base._setRule<TFirstMember, TCurMember>(setter);
-            return new ConditionalRuleAutoFluent<TFirstMember>(this);
+            return new RuleAutoFluent<TFirstMember>(this);
         }
-        internal ConditionalRuleAutoFluent<TFirstMember> _autoIgnore<TFirstMember>()
+        internal RuleAutoFluent<TFirstMember> _autoIgnore<TFirstMember>()
         {
             //add pending member to TemporarilyIgnored
             // mark cur ConditionPack ignored
@@ -99,7 +99,7 @@ namespace Faker
             CurResolver.SetLastRulePackIgnored();
             //MemberInfo curMember = CurResolver.GetLastMember();
             //this.TemporarilyIgnored.Add(curMember);
-            return new ConditionalRuleAutoFluent<TFirstMember>(this);
+            return new RuleAutoFluent<TFirstMember>(this);
         }
         
         protected new ConditionAutoFluent<TFirstMember> _when<TFirstMember>(Func<TFirstMember, bool> condition)
@@ -293,7 +293,7 @@ namespace Faker
                     BaseFaker<TClass>.Setters.Add(memberInfo, setter);
                 }
                 var memberAutoFaker = typeof(AutoFakerCreator).GetMethod("CreateAutoFaker").MakeGenericMethod(memberType).Invoke(null, null);
-                faker.InnerFakers.Add(memberInfo, (IFaker)memberAutoFaker);
+                faker.InnerFakers.Add(memberInfo, (IInnerFaker)memberAutoFaker);
             }
             return faker;
         }

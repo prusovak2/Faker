@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Faker
 {
-    public class StrictFaker<TClass> : BaseFaker<TClass>, IFaker where TClass : class
+    public class StrictFaker<TClass> : BaseFaker<TClass>, IInnerFaker where TClass : class
     {
         static StrictFaker()
         {
@@ -78,7 +78,7 @@ namespace Faker
         /// is false, attempt to call .Generate() or .Popuplate() on this instance of the StrictFaker will result in FakerException
         /// </summary>
         /// <returns></returns>
-        bool IFaker.AllRulesSetDeep()
+        bool IInnerFaker.AllRulesSetDeep()
         {
             bool allFiled = this.AllRulesSetShallow();
             if (!allFiled)
@@ -99,7 +99,7 @@ namespace Faker
         /// <returns></returns>
         public bool AllRulesSetDeep()
         {
-            return ((IFaker) this).AllRulesSetDeep();
+            return ((IInnerFaker) this).AllRulesSetDeep();
         }
         /// <summary>
         /// returns HashSet of the members of this instance of TClass that require a Rule or a InnerFaker to be set for them <br/>
@@ -122,7 +122,7 @@ namespace Faker
         /// in the whole tree of members beneath this instance 
         /// </summary>
         /// <returns></returns>
-        HashSet<MemberInfo> IFaker.GetAllMembersRequiringRuleDeep()
+        HashSet<MemberInfo> IInnerFaker.GetAllMembersRequiringRuleDeep()
         {
             HashSet<MemberInfo> members = this.GetAllMembersRequiringRuleShallow();
             foreach (var innerFaker in InnerFakers)
@@ -139,7 +139,7 @@ namespace Faker
         /// <returns></returns>
         public HashSet<MemberInfo> GetAllMembersRequiringRuleDeep()
         {
-            return ((IFaker)this).GetAllMembersRequiringRuleDeep();
+            return ((IInnerFaker)this).GetAllMembersRequiringRuleDeep();
         }
         /// <summary>
         /// Adds Rule for how to generate a random content of particular member <br/>

@@ -7,20 +7,9 @@ using System.Threading.Tasks;
 
 namespace Faker
 {
-    public partial class BaseFaker<TClass> : IFaker where TClass : class
+    public partial class BaseFaker<TClass> : IInnerFaker where TClass : class
     {
-        internal abstract class RuleType { }
-
-        internal class SimpleRule : RuleType
-        {
-            public SimpleRule(Func<object> randFunc)
-            {
-                this.Rule = randFunc;
-            }
-            public Func<object> Rule { get; }
-        }
-
-        internal abstract class ChainedRule : RuleType
+        internal abstract class ChainedRule 
         {
             public abstract void ResolveChainedRule(TClass instance, BaseFaker<TClass> faker);
         }

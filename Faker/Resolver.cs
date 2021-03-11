@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Faker
 {
-    public partial class BaseFaker<TClass> : IFaker where TClass : class
+    public partial class BaseFaker<TClass> : IInnerFaker where TClass : class
     {
         //TODO: delete
         /*internal class Resolver<TMember>

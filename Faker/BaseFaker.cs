@@ -17,13 +17,13 @@ using System.Text;
 
 namespace Faker
 {
-    internal interface IFaker
+    internal interface IInnerFaker
     {
         internal object Generate(object instance);
         internal bool AllRulesSetDeep();
         HashSet<MemberInfo> GetAllMembersRequiringRuleDeep();
     }
-    public partial class BaseFaker<TClass> : IFaker where TClass : class
+    public partial class BaseFaker<TClass> : IInnerFaker where TClass : class
     {
         /// <summary>
         /// Setters for members of TClass compiled in runtime by Expression.Lambda.Compile
@@ -59,11 +59,11 @@ namespace Faker
         /// <summary>
         /// Generate call on a faker calls Generate on all its innerFakers 
         /// </summary>
-        internal IDictionary<MemberInfo, IFaker> InnerFakers { get; } = new Dictionary<MemberInfo, IFaker>();
+        internal IDictionary<MemberInfo, IInnerFaker> InnerFakers { get; } = new Dictionary<MemberInfo, IInnerFaker>();
         /// <summary>
         /// rules used to generate pseudo-random content
         /// </summary>
-        internal IDictionary<MemberInfo, RuleType> Rules { get; } = new Dictionary<MemberInfo, RuleType>();
+        internal IDictionary<MemberInfo, ChainedRule> Rules { get; } = new Dictionary<MemberInfo, ChainedRule>();
         /// <summary>
         /// set of members whose content should not be filled by a default random function by AutoFaker <br/>
         /// rules are nor required for ignored members by the StrictFaker <br/>
@@ -171,7 +171,7 @@ namespace Faker
         /// <typeparam name="TFirstMember">Type of member</typeparam>
         /// <param name="selector">lambda returning a member</param>
         /// <returns>Fluent syntax helper</returns>
-        public FirstConditionalMemberFluent<TFirstMember, TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
+        public FirstMemberFluent<TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
         {
             // the first one of series of chained rules is unconditional, the rest of rules are conditional
             // therefore the For can be set only for a member with no unconditional rule or inner faker set for it
@@ -199,16 +199,15 @@ namespace Faker
             this.Rules.Add(memberInfo, resolver);
             RulelessMembersInstance.Remove(memberInfo);
 
-            return new FirstConditionalMemberFluent<TFirstMember, TFirstMember>(this);
+            return new FirstMemberFluent<TFirstMember>(this);
         }
         /// <summary>
         /// Set unconditional rule for a member <br/>
         /// </summary>
         /// <typeparam name="TFirstMember"></typeparam>
-        /// <typeparam name="TCurMember"></typeparam>
         /// <param name="setter"></param>
         /// <returns></returns>
-        private protected FirstConditionalRuleFluent<TFirstMember> _firtsSetRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
+        private protected FirstRuleFluent<TFirstMember> _firtsSetRule<TFirstMember>(Func<RandomGenerator, TFirstMember> setter)
         {
             // this case needs to be treated by a separate method, because unconditional member and rule are to be stored differently than conditional ones
             // .Otherwise method cannot be called on 'First' syntax helpers
@@ -217,16 +216,17 @@ namespace Faker
             ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.AddFirstFunc(() => setter(this.Random));
 
-            return new FirstConditionalRuleFluent<TFirstMember>(this);
+            return new FirstRuleFluent<TFirstMember>(this);
         }
-
-        private protected ConditionalMemberFluent<TFirstMember, TCurMember> _for<TFirstMember, TCurMember>(MemberInfo memberInfo)
+        /// <summary>
+        /// selects a member of a TClass to have a conditional rule set for it
+        /// </summary>
+        /// <typeparam name="TFirstMember">Type of the first member in this rule chain</typeparam>
+        /// <typeparam name="TCurMember">Type of member to have an unconditional rule set for it</typeparam>
+        /// <param name="memberInfo">member to have a rule set</param>
+        /// <returns>fluent syntax helper</returns>
+        private protected MemberFluent<TFirstMember, TCurMember> _for<TFirstMember, TCurMember>(MemberInfo memberInfo)
         {
-            //TODO: add message
-            /*if (this.Ignored.Contains(memberInfo))
-            {
-                throw new FakerException("SOME MESSAGE");
-            }*/
             AddSetterIfNew<TCurMember>(memberInfo);
 
             //add MemberInfo info to the resolver corresponding to pendingMember MemberInfo 
@@ -234,17 +234,29 @@ namespace Faker
             CurResolver.AddMemberToLastRulePack(memberInfo);
             RulelessMembersInstance.Remove(memberInfo);  //makes a member ignored by AutoFaker.RandomlyFillRemainingMembers
 
-            return new ConditionalMemberFluent<TFirstMember, TCurMember>(this);
+            return new MemberFluent<TFirstMember, TCurMember>(this);
         }
-        private protected ConditionalRuleFluent<TFirstMember> _setRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
+        /// <summary>
+        /// sets a conditional rule for a member
+        /// </summary>
+        /// <typeparam name="TFirstMember">Type of the first member in this rule chain</typeparam>
+        /// <typeparam name="TCurMember">Type of member to have an unconditional rule set for it</typeparam>
+        /// <param name="setter">function to be used to fill a member</param>
+        /// <returns>fluent syntax helper</returns>
+        private protected RuleFluent<TFirstMember> _setRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
         {
             //add Function info to the resolver corresponding to pendingMember MemberInfo 
-            ChainedRuleResolver<TFirstMember> CurResolver  = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
+            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.AddFunctionToLastRulePack(() => setter(this.Random));
 
-            return new ConditionalRuleFluent<TFirstMember>(this);
+            return new RuleFluent<TFirstMember>(this);
         }
-
+        /// <summary>
+        /// sets an condition using value generated by an unconditional rule at the beginning of this rule chain to be evaluated  
+        /// </summary>
+        /// <typeparam name="TFirstMember">Type of the first member in this rule chain</typeparam>
+        /// <param name="condition"></param>
+        /// <returns>fluent syntax helper</returns>
         private protected ConditionFluent<TFirstMember> _when<TFirstMember>(Func<TFirstMember, bool> condition)
         {
             //add Condition info to the resolver corresponding to pendingMember MemberInfo 
@@ -253,7 +265,11 @@ namespace Faker
 
             return new ConditionFluent<TFirstMember>(this);
         }
-
+        /// <summary>
+        /// sets an Otherwise condition, it is satisfied if and only if any of .When conditions preceding this .Otherwise had not been satisfied
+        /// </summary>
+        /// <typeparam name="TFirstMember">Type of the first member in this rule chain</typeparam>
+        /// <returns>fluent syntax helper</returns>
         private protected ConditionFluent<TFirstMember> _otherwise<TFirstMember>()
         {
             //add Otherwise condition to the resolver corresponding to pendingMember MemberInfo 
@@ -262,12 +278,16 @@ namespace Faker
 
             return new ConditionFluent<TFirstMember>(this);
         }
-
+        /// <summary>
+        /// returns a Resolver storing a rule chain corresponding to given leading member
+        /// </summary>
+        /// <typeparam name="TFirstMember"></typeparam>
+        /// <param name="memberInfo">the first member in particular rule chain</param>
+        /// <returns></returns>
         private protected ChainedRuleResolver<TFirstMember> GetResolverForMemberInfo<TFirstMember>(MemberInfo memberInfo)
         {
             if (!this.Rules.ContainsKey(memberInfo))
             {
-                //TODO: delete when tested
                 throw new InvalidOperationException("This MemberInfo should be present in Rules dict, flawed implemenation");
             }
             if(this.Rules[memberInfo] is ChainedRuleResolver<TFirstMember> chainedRuleResover)
@@ -276,43 +296,6 @@ namespace Faker
             }
             throw new InvalidOperationException("Unexpected, this method should only be called with memberInfos corresponding to chainedRules");
         }
-
-        /// <summary>
-        /// Adds Rule for how to generate a random content of particular member <br/>
-        /// selector and setter must have the same return type
-        /// </summary>
-        /// <typeparam name="TMember">Type of member to be filled in </typeparam>
-        /// <param name="selector">lambda returning member to be filled </param>
-        /// <param name="setter">random function to fill in the member </param>
-        /// <exception cref="FakerException">Throws FakerException, when you are trying to set a RuleFor a member that already has a Rule or InnerFaker set or is Ignored by Ignore method</exception>
-        /*public void RuleFor<TMember>(
-            Expression<Func<TClass, TMember>> selector,
-            Func<RandomGenerator, TMember> setter)
-        {
-            MemberInfo memberInfo = GetMemberFromExpression(selector);
-            _internalRuleFor(memberInfo, setter);
-        }
-
-        internal protected virtual void _internalRuleFor<TMember>(MemberInfo memberInfo, Func<RandomGenerator, TMember> setter)
-        {
-            if (this.InnerFakers.ContainsKey(memberInfo))
-            {
-                throw new FakerException("You cannot state a RuleFor a member that already has a InnerFaker set for it.");
-            }
-            if (this.Ignored.Contains(memberInfo))
-            {
-                throw new FakerException("You cannot state a RuleFor a member that was already marked as strictly Ignored by calling Ignore method.");
-            }
-            if (this.Rules.ContainsKey(memberInfo))
-            {
-                throw new FakerException("You cannot state multiple unconditional rules for the same member.");
-            }
-            SimpleRule newRule = new SimpleRule(() => setter(this.Random));
-            this.Rules.Add(memberInfo, newRule);
-           
-            AddSetterIfNew<TMember>(memberInfo);
-        }*/
-
         /// <summary>
         /// Sets member as Ignored - this member won't be filled by default random function by AutoFaker instances <br/>
         /// </summary>
@@ -329,42 +312,10 @@ namespace Faker
             {
                 throw new FakerException("You cannot mark a member as strictly Ignored by Ignore method when it already has an InnerFaker set for it");
             }
-            //does not throw exception when member info is already present in the HashSet, returns false
-            //Ignored method called multiple times with the same member as the parameter won't change the semantics of the program
-            //no need to throw the FakerException here
-            this.Ignored.Add(memberInfo);
-        }
-        
-        /// <summary>
-        /// Called when faker is used as an innerFaker
-        /// </summary>
-        /// <returns> generated instance </returns>
-        object IFaker.Generate(object instance)
-        {
-            switch (this.CtorUsageFlag)
-            {
-                case InnerFakerConstructorUsage.Parameterless:
-                    return this.Generate();
-                case InnerFakerConstructorUsage.GivenParameters:
-                    return this.Generate(this.CtorParameters);
-                case InnerFakerConstructorUsage.PopulateExistingInstance:
-                    if(instance is null)
-                    {
-                        throw new FakerException("InnerFaker set to PopulateExisting instance can only be used to fill member, that is already initialized by instance of particular type.");
-                    }
-                    return this.Populate((TClass)instance);
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-        bool IFaker.AllRulesSetDeep()
-        {
-            return true;
-        }
-
-        HashSet<MemberInfo> IFaker.GetAllMembersRequiringRuleDeep()
-        {
-            return new HashSet<MemberInfo>();
+            
+            // Ignored method called multiple times with the same member as the parameter won't change the semantics of the program
+            // no need to throw the FakerException here
+            this.Ignored.Add(memberInfo); //does not throw exception when member info is already present in the HashSet, returns false
         }
 
         /// <summary>
@@ -432,27 +383,15 @@ namespace Faker
                 throw new FakerException($"Argument of Populate must be existing instance of {typeof(TClass)} type");
             }
             // Use rules
-            foreach (var rule in this.Rules)
+            foreach (var chainedRulePair in this.Rules)
             {
-                if(rule.Value is SimpleRule simpleRule)
-                {
-                    this.UseRule(instance, rule.Key, simpleRule.Rule);
-                }
-                if(rule.Value is ChainedRule chainedRule)
-                {
-                    chainedRule.ResolveChainedRule(instance, this);
-                }
+                chainedRulePair.Value.ResolveChainedRule(instance, this);
             }
             // Use InnerFakers
             foreach (var innerFaker in this.InnerFakers)
             {
                 this.UseInnerFaker(instance, innerFaker.Key, innerFaker.Value);
             }
-            //if required, fill remaining members with default random functions corresponding to their types
-            /*if (this.FillEmptyMembers == UnfilledMembers.DefaultRandomFunc)
-            {
-                this.RandomlyFillRemainingMembers(instance);
-            }*/
             return instance;
         }
         /// <summary>
@@ -461,50 +400,25 @@ namespace Faker
         /// <param name="instance">instance, whose member is to be filled</param>
         /// <param name="MemberInfo">info about member to be filled</param>
         /// <param name="RandomFunc">Function, that generates a content to be used as the member value</param>
-        internal void UseRule(TClass instance, MemberInfo MemberInfo, Func<object> RandomFunc)
+        /// <returns>Generated random value</returns>
+        internal object UseRule(TClass instance, MemberInfo MemberInfo, Func<object> RandomFunc)
         {
             var memberSetter = Setters[MemberInfo];
             //member is a property
             if(MemberInfo is PropertyInfo propertyInfo)
             {
                 Type propertyType = propertyInfo.PropertyType;
-                var o = RandomFunc();
-                //var value = Convert.ChangeType(o, propertyType);
-                //propertyInfo.SetValue(instance, value);
-                memberSetter(instance, o);
+                var randomValue = RandomFunc();
+                memberSetter(instance, randomValue);
+                return randomValue;
             }
             //member is a field
             else if(MemberInfo is FieldInfo fieldInfo)
             {
                 Type fieldType = fieldInfo.FieldType;
-                var o = RandomFunc();
-                //var value = Convert.ChangeType(o, fieldType);
-                //fieldInfo.SetValue(instance, value);
-                memberSetter(instance, o);
-            }
-            else
-            {
-                throw new ArgumentException("Member is not a property nor a field.");
-            }
-        }
-        internal TFirstMember UseRule<TFirstMember>(TClass instance, MemberInfo MemberInfo, Func<object> RandomFunc)
-        {
-            var memberSetter = Setters[MemberInfo];
-            //member is a property
-            if (MemberInfo is PropertyInfo propertyInfo)
-            {
-                Type propertyType = propertyInfo.PropertyType;
                 var randomValue = RandomFunc();
                 memberSetter(instance, randomValue);
-                return (TFirstMember)randomValue;
-            }
-            //member is a field
-            else if (MemberInfo is FieldInfo fieldInfo)
-            {
-                Type fieldType = fieldInfo.FieldType;
-                var randomValue = RandomFunc();
-                memberSetter(instance, randomValue);
-                return (TFirstMember)randomValue;
+                return randomValue;
             }
             else
             {
@@ -512,20 +426,34 @@ namespace Faker
             }
         }
         /// <summary>
+        /// Fill one member with a random contend <br/>
+        /// Used to fill first member (unconditional) in a rule chain and to set value against which following conditions are to be evaluated
+        /// </summary>
+        /// <typeparam name="TFirstMember"></typeparam>
+        /// <param name="instance">instance, whose member is to be filled</param>
+        /// <param name="MemberInfo">info about member to be filled</param>
+        /// <param name="RandomFunc">Function, that generates a content to be used as the member value</param>
+        /// <returns>strongly typed random value generated to fill the member</returns>
+        internal TFirstMember UseRule<TFirstMember>(TClass instance, MemberInfo MemberInfo, Func<object> RandomFunc)
+        {
+            return (TFirstMember)UseRule(instance, MemberInfo, RandomFunc);
+        }
+        /// <summary>
         /// Fill one member using InnerFaker
         /// </summary>
-        /// <param name="instance"></param>
-        /// <param name="memberInfo"></param>
-        /// <param name="innerFaker"></param>
-        internal void UseInnerFaker(TClass instance, MemberInfo memberInfo, IFaker innerFaker)
+        /// <param name="instance">instance, whose member is to be filled</param>
+        /// <param name="MemberInfo">info about member to be filled</param>
+        /// <param name="innerFaker">faker to be used to generate a random contend of the member</param>
+        internal void UseInnerFaker(TClass instance, MemberInfo memberInfo, IInnerFaker innerFaker)
         {
             var memberSetter = Setters[memberInfo];
             if (memberInfo is PropertyInfo propertyInfo)
             {
+                // TODO: get rid of GetValue call - as much as possible
                 Type propertyType = propertyInfo.PropertyType;
                 var instanceInProperty =  propertyInfo.GetValue(instance);
                 // null is valid value of instanceInProperty when innerFaker does not have CtorUsageFlag set to PopulateExistingInstance
-                // whether instanceInProperty is not null is checked in IFaker.Generate, when necessary
+                // whether instanceInProperty is not null is checked in IInnerFaker.Generate, when necessary
                 var o = innerFaker.Generate(instanceInProperty);
                 //var innerClass = Convert.ChangeType(o, propertyType);
                 //propertyInfo.SetValue(instance, innerClass);
@@ -533,10 +461,11 @@ namespace Faker
             }
             if (memberInfo is FieldInfo fieldInfo)
             {
+                // TODO: get rid of GetValue call - as much as possible
                 Type propertyType = fieldInfo.FieldType;
                 var instanceInField = fieldInfo.GetValue(instance);
                 // null is valid value of instanceInProperty when innerFaker does not have CtorUsageFlag set to PopulateExistingInstance
-                // whether instanceInProperty is not null is checked if IFaker.Generate, when necessary
+                // whether instanceInProperty is not null is checked if IInnerFaker.Generate, when necessary
                 var o = innerFaker.Generate(instanceInField);
                 //var innerClass = Convert.ChangeType(o, propertyType);
                 //fieldInfo.SetValue(instance, innerClass);
@@ -636,28 +565,37 @@ namespace Faker
                 (assignExpr, targetObjExpr, valueToSetExpr).Compile();
             return (inst, val) => setter(inst, (TMember)Convert.ChangeType(val, typeof(TMember)));
         }
-
         /// <summary>
-        /// returns HashSet of all fields and properties of TClass that does not have RuleFor or InnerFaker set in this Faker
+        /// Called when faker is used as an innerFaker
         /// </summary>
-        /// <returns></returns>
-        /*internal HashSet<MemberInfo> GetSetOfMembersToBeFilledByDefaultRandFunc()
+        /// <returns> generated instance </returns>
+        object IInnerFaker.Generate(object instance)
         {
-            if(AllNotIgnoredMembers is null)
+            switch (this.CtorUsageFlag)
             {
-                Type type = typeof(TClass);
-                AllNotIgnoredMembers = type.GetMembers().Where(memberInfo => ((memberInfo is PropertyInfo || memberInfo is FieldInfo) && memberInfo.GetCustomAttributes<FakerIgnoreAttribute>().Count() == 0)).ToHashSet();
+                case InnerFakerConstructorUsage.Parameterless:
+                    return this.Generate();
+                case InnerFakerConstructorUsage.GivenParameters:
+                    return this.Generate(this.CtorParameters);
+                case InnerFakerConstructorUsage.PopulateExistingInstance:
+                    if (instance is null)
+                    {
+                        throw new FakerException("InnerFaker set to PopulateExisting instance can only be used to fill member, that is already initialized by instance of particular type.");
+                    }
+                    return this.Populate((TClass)instance);
+                default:
+                    throw new NotImplementedException();
             }
-            HashSet<MemberInfo> memberInfos = AllNotIgnoredMembers;
-            HashSet<MemberInfo> HasRulefor = this.Rules.Keys.ToHashSet();
-            HashSet<MemberInfo> HasSetFaker = this.InnerFakers.Keys.ToHashSet();
-            memberInfos.ExceptWith(HasRulefor);
-            memberInfos.ExceptWith(HasSetFaker);
-            memberInfos.ExceptWith(this.Ignored);
-            
-            return memberInfos;
-        }*/
+        }
+        bool IInnerFaker.AllRulesSetDeep()
+        {
+            return true;
+        }
 
+        HashSet<MemberInfo> IInnerFaker.GetAllMembersRequiringRuleDeep()
+        {
+            return new HashSet<MemberInfo>();
+        }
         /// <summary>
         /// which ctor should be used to create instances of TClass when faker is used as inner faker
         /// </summary>
