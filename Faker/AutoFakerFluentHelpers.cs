@@ -27,7 +27,7 @@ namespace Faker
 
             public RuleAutoFluent<TFirstMember> Ignore()
             {
-                return FakerInstance._autoIgnore<TFirstMember>();
+                return FakerInstance._chainedIgnore<TFirstMember>();
             }
 
             public static explicit operator LastMemberAutoFluent<TFirstMember, TCurMember>(MemberAutoFluent<TFirstMember, TCurMember> original)
@@ -124,7 +124,7 @@ namespace Faker
             }
             public LastConditionAutoFluent<TFirstMember> Ignore()
             {
-                return (LastConditionAutoFluent<TFirstMember>)FakerInstance._autoIgnore<TFirstMember>();
+                return (LastConditionAutoFluent<TFirstMember>)FakerInstance._chainedIgnore<TFirstMember>();
             }
         }
         public class FirstMemberAutoFluent<TFirstMember>
