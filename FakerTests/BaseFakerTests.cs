@@ -529,7 +529,7 @@ namespace FakerTests
         [TestMethod]
         public void AwesomeEmptyDefaultFillTest()
         {
-            AwesomeFakerNoRules af = new AwesomeFakerNoRules(BaseFaker<AwesomeClass>.InnerFakerConstructorUsage.Parameterless, null);
+            AwesomeFakerNoRules af = new AwesomeFakerNoRules(InnerFakerConstructorUsage.Parameterless, null);
             int numIterations = 20;
 
             Dictionary<int, int> numberCounts = new();

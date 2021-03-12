@@ -17,12 +17,15 @@ using System.Text;
 
 namespace Faker
 {
+
     internal interface IInnerFaker
     {
+        public InnerFakerConstructorUsage CtorUsageFlag { get; }
         internal object Generate(object instance);
         internal bool AllRulesSetDeep();
         HashSet<MemberInfo> GetAllMembersRequiringRuleDeep();
     }
+
     public partial class BaseFaker<TClass> : IInnerFaker where TClass : class
     {
         /// <summary>
@@ -449,26 +452,26 @@ namespace Faker
             var memberSetter = Setters[memberInfo];
             if (memberInfo is PropertyInfo propertyInfo)
             {
-                // TODO: get rid of GetValue call - as much as possible
                 Type propertyType = propertyInfo.PropertyType;
-                var instanceInProperty =  propertyInfo.GetValue(instance);
-                // null is valid value of instanceInProperty when innerFaker does not have CtorUsageFlag set to PopulateExistingInstance
+                object instanceInProperty = null;
+                if (innerFaker.CtorUsageFlag == InnerFakerConstructorUsage.PopulateExistingInstance)
+                {
+                    instanceInProperty = propertyInfo.GetValue(instance);
+                }
                 // whether instanceInProperty is not null is checked in IInnerFaker.Generate, when necessary
                 var o = innerFaker.Generate(instanceInProperty);
-                //var innerClass = Convert.ChangeType(o, propertyType);
-                //propertyInfo.SetValue(instance, innerClass);
                 memberSetter(instance, o);
             }
             if (memberInfo is FieldInfo fieldInfo)
             {
-                // TODO: get rid of GetValue call - as much as possible
                 Type propertyType = fieldInfo.FieldType;
-                var instanceInField = fieldInfo.GetValue(instance);
-                // null is valid value of instanceInProperty when innerFaker does not have CtorUsageFlag set to PopulateExistingInstance
-                // whether instanceInProperty is not null is checked if IInnerFaker.Generate, when necessary
+                object instanceInField = null;
+                if (innerFaker.CtorUsageFlag == InnerFakerConstructorUsage.PopulateExistingInstance)
+                {
+                    instanceInField = fieldInfo.GetValue(instance);
+                }
+                // whether instanceInField is not null is checked in IInnerFaker.Generate, when necessary
                 var o = innerFaker.Generate(instanceInField);
-                //var innerClass = Convert.ChangeType(o, propertyType);
-                //fieldInfo.SetValue(instance, innerClass);
                 memberSetter(instance, o);
             }
         }
@@ -596,14 +599,14 @@ namespace Faker
         {
             return new HashSet<MemberInfo>();
         }
-        /// <summary>
-        /// which ctor should be used to create instances of TClass when faker is used as inner faker
-        /// </summary>
-        public enum InnerFakerConstructorUsage
-        {
-            Parameterless,
-            GivenParameters,
-            PopulateExistingInstance
-        }
+    }
+    /// <summary>
+    /// which ctor should be used to create instances of TClass when faker is used as inner faker
+    /// </summary>
+    public enum InnerFakerConstructorUsage
+    {
+        Parameterless,
+        GivenParameters,
+        PopulateExistingInstance
     }
 }
