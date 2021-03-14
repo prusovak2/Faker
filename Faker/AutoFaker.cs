@@ -125,7 +125,7 @@ namespace Faker
         {
             //add pending member to TemporarilyIgnored
             // mark cur ConditionPack ignored
-            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
+            ChainedRuleTyped<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.SetLastRulePackIgnored();
             return new RuleAutoFluent<TFirstMember>(this);
         }

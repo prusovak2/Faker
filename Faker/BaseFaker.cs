@@ -251,7 +251,7 @@ namespace Faker
 
             //resolver initialization for this TFirstMember member
             //creates a new resolver<IFirstMember> that contains the first ConditionPack with this memberInfo an always true condition
-            ChainedRuleResolver<TFirstMember> resolver = new ChainedRuleResolver<TFirstMember>(memberInfo);
+            ChainedRuleTyped<TFirstMember> resolver = new ChainedRuleTyped<TFirstMember>(memberInfo);
             this.Rules.Add(memberInfo, resolver);
             RulelessMembersInstance.Remove(memberInfo);
 
@@ -269,7 +269,7 @@ namespace Faker
             AddSetterIfNew<TCurMember>(memberInfo);
 
             //add MemberInfo info to the resolver corresponding to pendingMember MemberInfo 
-            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
+            ChainedRuleTyped<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.AddMemberToLastRulePack(memberInfo);
             RulelessMembersInstance.Remove(memberInfo);  //makes a member ignored by AutoFaker.RandomlyFillRemainingMembers
 
@@ -287,7 +287,7 @@ namespace Faker
             // .Otherwise method cannot be called on 'First' syntax helpers
 
             // add Function info to the resolver corresponding to pendingMember MemberInfo 
-            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
+            ChainedRuleTyped<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.AddFirstFunc(() => setter(this.Random));
 
             return new FirstRuleFluent<TFirstMember>(this);
@@ -302,7 +302,7 @@ namespace Faker
         private protected RuleFluent<TFirstMember> _setRule<TFirstMember, TCurMember>(Func<RandomGenerator, TCurMember> setter)
         {
             //add Function info to the resolver corresponding to pendingMember MemberInfo 
-            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
+            ChainedRuleTyped<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.AddFunctionToLastRulePack(() => setter(this.Random));
 
             return new RuleFluent<TFirstMember>(this);
@@ -316,7 +316,7 @@ namespace Faker
         private protected ConditionFluent<TFirstMember> _when<TFirstMember>(Func<TFirstMember, bool> condition)
         {
             //add Condition info to the resolver corresponding to pendingMember MemberInfo 
-            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
+            ChainedRuleTyped<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.AddNewCondPackWithCondition(condition);
 
             return new ConditionFluent<TFirstMember>(this);
@@ -329,7 +329,7 @@ namespace Faker
         private protected ConditionFluent<TFirstMember> _otherwise<TFirstMember>()
         {
             //add Otherwise condition to the resolver corresponding to pendingMember MemberInfo 
-            ChainedRuleResolver<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
+            ChainedRuleTyped<TFirstMember> CurResolver = GetResolverForMemberInfo<TFirstMember>(this.pendingMember);
             CurResolver.AddNewCondPackWithOtherwiseCondition();
 
             return new ConditionFluent<TFirstMember>(this);
@@ -340,13 +340,13 @@ namespace Faker
         /// <typeparam name="TFirstMember"></typeparam>
         /// <param name="memberInfo">the first member in particular rule chain</param>
         /// <returns></returns>
-        private protected ChainedRuleResolver<TFirstMember> GetResolverForMemberInfo<TFirstMember>(MemberInfo memberInfo)
+        private protected ChainedRuleTyped<TFirstMember> GetResolverForMemberInfo<TFirstMember>(MemberInfo memberInfo)
         {
             if (!this.Rules.ContainsKey(memberInfo))
             {
                 throw new InvalidOperationException("This MemberInfo should be present in Rules dict, flawed implemenation");
             }
-            if(this.Rules[memberInfo] is ChainedRuleResolver<TFirstMember> chainedRuleResover)
+            if(this.Rules[memberInfo] is ChainedRuleTyped<TFirstMember> chainedRuleResover)
             {
                 return chainedRuleResover;
             }

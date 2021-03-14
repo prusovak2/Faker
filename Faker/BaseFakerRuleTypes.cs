@@ -17,13 +17,13 @@ namespace Faker
         /// Stores chained rule and evaluates it when it is to be used
         /// </summary>
         /// <typeparam name="TFirstMember"></typeparam>
-        internal class ChainedRuleResolver<TFirstMember> : ChainedRule
+        internal class ChainedRuleTyped<TFirstMember> : ChainedRule
         {
             /// <summary>
             /// Create new resolver with given leading member
             /// </summary>
             /// <param name="member"></param>
-            public ChainedRuleResolver(MemberInfo member)
+            public ChainedRuleTyped(MemberInfo member)
             {
                 this.AddFirstRule(member);
             }
@@ -36,31 +36,23 @@ namespace Faker
             /// </summary>
             public Func<object> FirstFunc { get; private set; }
             /// <summary>
-            /// Random value generated when the leading unconditional rule was evaluated <br/>
-            /// All condition in this chained rule are evaluated with respect to this value
-            /// </summary>
-            public TFirstMember ConditionValue { get; set; } //generation state
-            /// <summary>
             /// List of conditional rules
             /// </summary>
             public List<ConditionPack<TFirstMember>> ChainedRuleParts { get; } = new List<ConditionPack<TFirstMember>>();
-            /// <summary>
-            /// Has any of .When conditions satisfied? <br/>
-            /// Used to evaluate .Otherwise condition
-            /// </summary>
-            public bool UsedRule { get; private set; } = false; // generation state
 
             public override void ResolveChainedRule(TClass instance, BaseFaker<TClass> faker)
             {
+                ChainedRuleResolvingState state = new();  //state is local to the function, it cannot be influenced from multiple threads
                 // first leading rule - unconditional, provides value to evaluate conditions with
-                this.ConditionValue = faker.UseRule<TFirstMember>(instance, FirstMember, FirstFunc); // set the value that will be considered in following conditions and use rule
+                state.ConditionValue = faker.UseRule<TFirstMember>(instance, FirstMember, FirstFunc); // set the value that will be considered in following conditions and use rule
                 // evaluate conditional rules
                 for (int i = 0; i < this.ChainedRuleParts.Count; i++)
                 {
                     ConditionPack<TFirstMember> curCondChain = this.ChainedRuleParts[i];
-                    if (curCondChain.Condition(this.ConditionValue))
+                    if ((curCondChain.ConditionType == ConditionType.Otherwise  && !state.UsedRule)
+                         || (curCondChain.ConditionType == ConditionType.When ) && curCondChain.Condition(state.ConditionValue))
                     {
-                        this.UsedRule = true; //some rule in this chain was used, otherwise branch is not gonna be carried out 
+                        state.UsedRule = true; //some rule in this chain was used, otherwise branch is not gonna be carried out 
                         for (int j = 0; j < curCondChain.Rules.Count; j++)
                         {
                             RulePack curRule = curCondChain.Rules[j];
@@ -71,16 +63,8 @@ namespace Faker
                         }
                     }
                 }
-                this.ClearState(); //reset state so that this Resolver can be reused by another ._populate call 
             }
-            /// <summary>
-            /// resets state so that this Resolver can be reused by another ._populate call 
-            /// </summary>
-            private void ClearState()
-            {
-                this.ConditionValue = default;
-                this.UsedRule = false;
-            }
+
             /// <summary>
             /// Sets the FirstMember (unconditional) of this Resolver <br/>
             /// Called from BaseFaker.For
@@ -115,7 +99,7 @@ namespace Faker
             /// </summary>
             public void AddNewCondPackWithOtherwiseCondition()
             {
-                ConditionPack<TFirstMember> rulePack = new ConditionPack<TFirstMember>( _ => !this.UsedRule);
+                ConditionPack<TFirstMember> rulePack = new ConditionPack<TFirstMember>();
                 this.ChainedRuleParts.Add(rulePack);
             }
             /// <summary>
@@ -153,23 +137,53 @@ namespace Faker
             {
                 return this.ChainedRuleParts[ChainedRuleParts.Count - 1].GetLastMember();
             }
+
+            /// <summary>
+            /// represents a state of ChainedRule evaluation
+            /// </summary>
+            internal class ChainedRuleResolvingState
+            {
+                /// <summary>
+                /// Random value generated when the leading unconditional rule was evaluated <br/>
+                /// All condition in this chained rule are evaluated with respect to this value
+                /// </summary>
+                public TFirstMember ConditionValue { get; set; } //generation state
+
+                /// <summary>
+                /// Has any of .When conditions satisfied? <br/>
+                /// Used to evaluate .Otherwise condition
+                /// </summary>
+                public bool UsedRule { get; set; } = false; // generation state
+            }
         }
+
         /// <summary>
         /// Represent one condition and series of Rules to be applied if and only if the condition is satisfied
         /// </summary>
         /// <typeparam name="TFirstMember"></typeparam>
         internal class ConditionPack<TFirstMember>
         {
+            public ConditionType ConditionType { get; }
             public Func<TFirstMember, bool> Condition { get; }
 
             public List<RulePack> Rules { get; } = new();
+
             /// <summary>
-            /// new RulePack with a given condition
+            /// new ConditionPack representing Otherwise condition
+            /// </summary>
+            public ConditionPack()
+            {
+                this.ConditionType = ConditionType.Otherwise;
+            }
+
+            /// <summary>
+            /// new ConditionPack with a given condition
             /// </summary>
             /// <param name="condition"></param>
             public ConditionPack(Func<TFirstMember, bool> condition)
             {
                 this.Condition = condition;
+                this.ConditionType = ConditionType.When;
             }
             /// <summary>
             /// Adds new Rule with given member
@@ -204,6 +218,12 @@ namespace Faker
             }
 
         }
+        internal enum ConditionType
+        {
+            When,
+            Otherwise
+        }
+
         /// <summary>
         /// Represents a pair of a member and a function to be used to fill the member with a pseudo-random contend
         /// </summary>
