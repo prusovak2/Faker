@@ -23,7 +23,7 @@ namespace Faker
     /// </summary>
     internal class Xoshiro256starstar : IRandomGeneratorAlg
     {
-        const double oneStep = 1.0 / (1UL << 53);
+        private const double oneStep = 1.0 / (1UL << 53);
         /// <summary>
         /// seed of this RNG, any instance created with the same value of seed is going to produce the same sequence of pseudo-random numbers
         /// </summary>
@@ -36,6 +36,8 @@ namespace Faker
         /// uses given seed or new seed based on the current time and the Weyl's sequence to generate a pseudo-random initial state for xorshift algorithm
         /// </summary>
         internal Splitmix64 StateRandomGenerator;
+
+        private readonly object XoshiroLock = new object();
         /// <summary>
         /// Initialize seed by a current time <br/>
         /// due to use of Weyl's sequence, seeds of two RandomGenerators created soon after each other should differ
@@ -74,18 +76,21 @@ namespace Faker
         /// <returns></returns>
         public ulong Next()
         {
-            ulong result = Roll64(this.State[1] * 5, 7) * 9;
-            ulong t = this.State[1] << 17;
+            ulong result;
+            lock (XoshiroLock)
+            {
+                result = Roll64(this.State[1] * 5, 7) * 9;
+                ulong t = this.State[1] << 17;
 
-            this.State[2] ^= this.State[0];
-            this.State[3] ^= this.State[1];
-            this.State[1] ^= this.State[2];
-            this.State[0] ^= this.State[3];
+                this.State[2] ^= this.State[0];
+                this.State[3] ^= this.State[1];
+                this.State[1] ^= this.State[2];
+                this.State[0] ^= this.State[3];
 
-            this.State[2] ^= t;
+                this.State[2] ^= t;
 
-            this.State[3] = Roll64(this.State[3], 45);
-
+                this.State[3] = Roll64(this.State[3], 45);
+            }
             return result;
         }
         /// <summary>
@@ -120,6 +125,8 @@ namespace Faker
         internal static readonly object WeylsCounterLock = new object();
         public ulong Seed { get; }
         internal ulong State { get; set; }
+
+        private readonly object SplitmixLock = new object();
         /// <summary>
         /// Initialize seed by a given value
         /// </summary>
@@ -156,7 +163,11 @@ namespace Faker
         /// <returns></returns>
         public ulong Next()
         {
-            ulong next = (this.State += 0x9e3779b97f4a7c15);
+            ulong next;
+            lock (SplitmixLock)
+            {
+                next = (this.State += 0x9e3779b97f4a7c15);
+            }
             next = (next ^ (next >> 30)) * 0xbf58476d1ce4e5b9;
             next = (next ^ (next >> 27)) * 0x94d049bb133111eb;
             return next ^ (next >> 31);
