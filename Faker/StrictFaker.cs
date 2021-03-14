@@ -147,11 +147,12 @@ namespace Faker
         /// <typeparam name="TMember">Type of member to be ignored</typeparam>
         /// <param name="selector">lambda returning member to be ignored</param>
         /// <exception cref="FakerException">Throws FakerException, when you are trying to Ignore a member that already has a Rule or InnerFaker set for it</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the instance is already frozen.</exception>
         public void Ignore<TMember>(Expression<Func<TClass, TMember>> selector)
         {
-            MemberInfo memberInfo = GetMemberFromExpression(selector);
+            MemberInfo memberInfo = GetMemberFromExpression(selector); //does not work with a state at all
+            base._internalIgnore<TMember>(memberInfo); // checks for frozen
             RulelessMembersInstance.Remove(memberInfo);
-            base._internalIgnore<TMember>(memberInfo);
         }
         /// <summary>
         /// Use rules to fill the instance with a random content
@@ -169,7 +170,7 @@ namespace Faker
             {
                 throw new FakerException("IgnoreFaker must have RuleFor or InnerFaker set for every member of TClass or the members must be marked ignored before Generate method is called.");
             }
-            TClass PopulatedInstance = base._internal_populate(instance);
+            TClass PopulatedInstance = base._internal_populate(instance); // freezes the instance
             return PopulatedInstance;
         }
     }

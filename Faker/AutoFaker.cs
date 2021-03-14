@@ -74,6 +74,8 @@ namespace Faker
         /// <typeparam name="TFirstMember">Type of member</typeparam>
         /// <param name="selector">lambda returning a member</param>
         /// <returns>Fluent syntax helper</returns>
+        /// <exception cref="FakerException">Throws FakerException, when you are trying to Ignore a member that already has a Rule or InnerFaker set for it</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the instance is already frozen.</exception>
         public new FirstMemberAutoFluent<TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
         {
             base.For<TFirstMember>(selector);
@@ -154,11 +156,12 @@ namespace Faker
         /// <typeparam name="TMember">Type of member to be ignored</typeparam>
         /// <param name="selector">lambda returning member to be ignored</param>
         /// <exception cref="FakerException">Throws FakerException, when you are trying to Ignore a member that already has a Rule or InnerFaker set for it</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the instance is already frozen.</exception>
         public void Ignore<TMember>(Expression<Func<TClass, TMember>> selector)
         {
-            MemberInfo memberInfo = GetMemberFromExpression(selector);
+            MemberInfo memberInfo = GetMemberFromExpression(selector); // does not work with a Faker state at all
+            base._internalIgnore<TMember>(memberInfo);  //checks for frozen
             RulelessMembersInstance.Remove(memberInfo);
-            base._internalIgnore<TMember>(memberInfo);
         }
         /// <summary>
         /// Use rules to fill the instance with a random content
@@ -172,7 +175,7 @@ namespace Faker
 
         private protected sealed override TClass _internal_populate(TClass instance)
         {
-            TClass PopulatedInstance = base._internal_populate(instance);
+            TClass PopulatedInstance = base._internal_populate(instance); //freezes the instance
             RandomlyFillRemainingMembers(PopulatedInstance);
             return PopulatedInstance;
         }

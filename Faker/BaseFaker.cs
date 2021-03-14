@@ -46,11 +46,41 @@ namespace Faker
         /// (and Generate method is called automatically) <br/>
         /// default is InnerFakerConstructorUsage.Parameterless
         /// </summary>
-        public InnerFakerConstructorUsage CtorUsageFlag { get; protected set; } = InnerFakerConstructorUsage.Parameterless;
+        public InnerFakerConstructorUsage CtorUsageFlag 
+        {
+            get 
+            {
+                return this._ctorUsageFlag;
+            }
+            protected set
+            {
+                if (this.IsFrozen)
+                {
+                    throw new InvalidOperationException("State of the frozen Faker cannot be changed");
+                }
+                this._ctorUsageFlag = value;
+            }
+        } 
+        private InnerFakerConstructorUsage _ctorUsageFlag = InnerFakerConstructorUsage.Parameterless;
         /// <summary>
         /// Parameters for TClass constructor used when CtorUsageFlag = InnerFakerConstructorUsage.GivenParameters 
         /// </summary>
-        public object[] CtorParameters { get; set; } = new object[] { };
+        public object[] CtorParameters 
+        {
+            get
+            {
+                return this._ctorParams;
+            }
+            protected set
+            {
+                if (this.IsFrozen)
+                {
+                    throw new InvalidOperationException("State of the frozen Faker cannot be changed");
+                }
+                this._ctorParams = value;
+            }
+        } 
+        private object[] _ctorParams = new object[] { };
         /// <summary>
         /// affects a behavior of some of the methods on RandomGenerator to produce more culturally adequate values (names, city names...)  
         /// </summary>
@@ -79,6 +109,11 @@ namespace Faker
         /// used for constructing chains of related rules
         /// </summary>
         internal MemberInfo pendingMember { get; private set; } = null;
+        /// <summary>
+        /// If frozen, no more rules can be added to this Faker <br/>
+        /// The first .Generate call freezes the instance
+        /// </summary>
+        public bool IsFrozen { get; private set; } = false;
 
         /// <summary>
         /// new instance of BaseFaker that creates a new instance of the RandomGenerator and produces its seed automatically <br/>
@@ -125,6 +160,13 @@ namespace Faker
         {
             this.Random = randomGenerator;
         }
+        /// <summary>
+        /// Freezes this instance, no mo rules can be added
+        /// </summary>
+        public void Freeze()
+        {
+            this.IsFrozen = true;
+        }
 
         /// <summary>
         /// Selects a member of TClass to have InnerFaker set for it
@@ -133,8 +175,13 @@ namespace Faker
         /// <param name="selector"> lambda returning the member</param>
         /// <returns>fluent syntax helper</returns>
         /// <exception cref="FakerException">Throws FakerException, when SetFakerFor is called with a member that already has a Rule or InnerFaker set or is Ignored by Ignore method</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the instance is already frozen.</exception>
         public RefMemberFluent<TInnerClass> SetFakerFor<TInnerClass>(Expression<Func<TClass, TInnerClass>> selector) where TInnerClass: class
         {
+            if (this.IsFrozen)
+            {
+                throw new InvalidOperationException("No more rules can be added to the frozen instance of the Faker.\n The first invocation of Generate or Populate method freezes the instance.");
+            }
             MemberInfo memberInfo = GetMemberFromExpression(selector);
             if (this.InnerFakers.ContainsKey(memberInfo))
             {
@@ -160,7 +207,7 @@ namespace Faker
         /// </summary>
         /// <typeparam name="TInnerClass">Type of member to have inner faker set for it</typeparam>
         /// <param name="faker">faker to be used as an inner faker </param>
-        private void _faker<TInnerClass>(BaseFaker<TInnerClass> faker) where TInnerClass : class
+        private protected void _faker<TInnerClass>(BaseFaker<TInnerClass> faker) where TInnerClass : class
         {
             MemberInfo memberInfo = this.pendingMember;
             this.pendingMember = null;
@@ -174,8 +221,14 @@ namespace Faker
         /// <typeparam name="TFirstMember">Type of member</typeparam>
         /// <param name="selector">lambda returning a member</param>
         /// <returns>Fluent syntax helper</returns>
+        /// <exception cref="FakerException">Throws FakerException, when For is called with a member that already has a Rule or InnerFaker set or is Ignored by Ignore method</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the instance is already frozen.</exception>
         public FirstMemberFluent<TFirstMember> For<TFirstMember>(Expression<Func<TClass, TFirstMember>> selector)
         {
+            if (this.IsFrozen)
+            {
+                throw new InvalidOperationException("No more rules can be added to the frozen instance of Faker.");
+            }
             // the first one of series of chained rules is unconditional, the rest of rules are conditional
             // therefore the For can be set only for a member with no unconditional rule or inner faker set for it
             // multiple conditional rules can be set for a member
@@ -305,8 +358,13 @@ namespace Faker
         /// <typeparam name="TMember">Type of member to be ignored</typeparam>
         /// <param name="selector">lambda returning member to be ignored</param>
         /// <exception cref="FakerException">Throws FakerException, when you are trying to Ignore a member that already has a Rule or InnerFaker set for it</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the instance is already frozen.</exception>
         private protected void _internalIgnore<TMember>(MemberInfo memberInfo)
-        {            
+        {
+            if (this.IsFrozen)
+            {
+                throw new InvalidOperationException("No more rules can be added to the frozen instance of Faker.");
+            }
             if (this.Rules.ContainsKey(memberInfo))
             {
                 throw new FakerException("You cannot mark a member as strictly Ignored by Ignore method when it already has an RuleFor set for it");
@@ -381,6 +439,7 @@ namespace Faker
         }
         private protected virtual TClass _internal_populate(TClass instance)
         {
+            this.IsFrozen = true; //Freeze this instance right before the rules are accessed
             if(instance is null)
             {
                 throw new FakerException($"Argument of Populate must be existing instance of {typeof(TClass)} type");
